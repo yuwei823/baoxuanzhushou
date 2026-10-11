@@ -1,0 +1,22 @@
+[
+  {
+    "source": "法律法规\\保险销售行为管理办法.doc",
+    "sha256": "e929839e427ed300853ed7417bdc7c1688c955e62df47cfe3f27f9231681b52a",
+    "extractor": "WPS COM Content.Text",
+    "version": "12.0",
+    "characters": 8489,
+    "paragraphs": 125,
+    "output": "data\\extracted\\保险销售行为管理办法.txt",
+    "verified": false
+  },
+  {
+    "source": "法律法规\\互联网保险业务监管办法.doc",
+    "sha256": "70222ac5d0ab7819bfdc7eabbaf6c8eeb8414b2d038e16b99ca8de09a90efd9a",
+    "extractor": "WPS COM Content.Text",
+    "version": "12.0",
+    "characters": 13891,
+    "paragraphs": 201,
+    "output": "data\\extracted\\互联网保险业务监管办法.txt",
+    "verified": false
+  }
+]
