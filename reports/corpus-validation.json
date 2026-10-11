@@ -1,0 +1,15 @@
+{
+  "ruleset_id": "official-v1-2026-10-11",
+  "structural_valid": true,
+  "release_ready": true,
+  "integrity_error_count": 0,
+  "review_gate_count": 0,
+  "counts": {
+    "documents": 3,
+    "articles": 172,
+    "chunks": 172,
+    "rules": 34,
+    "ledger": 172
+  },
+  "issues": []
+}

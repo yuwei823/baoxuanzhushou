@@ -1,58 +1,13 @@
 {
-  "registry_schema_version": "1.0",
-  "generated_at_utc": "2026-10-11T09:15:45.656606+00:00",
-  "generated_by": "scripts/build_extraction_registry.py",
+  "registry_schema_version": "2.0",
+  "generated_at_utc": "2026-10-11T10:31:08.972418+00:00",
+  "generated_by": "insurance_audit.corpus.registry",
   "ruleset_id": "official-v1-2026-10-11",
-  "ruleset_status": "candidate_unpublished",
-  "catalog_version": 1,
+  "ruleset_status": "published",
+  "ruleset_published": true,
   "source_count": 5,
   "source_hashes_all_match": true,
-  "legal_text_verified": false,
-  "ruleset_published": false,
-  "corpus": {
-    "article_count": 172,
-    "rule_card_count": 9,
-    "verified_rule_card_count": 0,
-    "by_document": {
-      "insurance_sales_behavior_order_2023_02": 50,
-      "financial_network_marketing_order_2026_09": 39,
-      "internet_insurance_supervision_order_2020_13": 83
-    },
-    "parser": "scripts/parse_official_articles.py",
-    "status": "candidate_unverified",
-    "artifacts": [
-      {
-        "path": "data/corpus/official-v1-2026-10-11/documents.jsonl",
-        "exists": true,
-        "size_bytes": 1845,
-        "sha256": "06128d38e6a26b0cc43a7f2430925620807ad42358f136a634ba845f13a7f89c"
-      },
-      {
-        "path": "data/corpus/official-v1-2026-10-11/articles.jsonl",
-        "exists": true,
-        "size_bytes": 253772,
-        "sha256": "f9ec9289c6a4eb9e2cc31f7b4fe5e3efa07db5638b712c92de9d8b201dbaef93"
-      },
-      {
-        "path": "data/corpus/official-v1-2026-10-11/chunks.jsonl",
-        "exists": true,
-        "size_bytes": 127245,
-        "sha256": "84d780e492428d045b289ce631c8ac57b89af6d457730ef19a1fc2a3311571dc"
-      },
-      {
-        "path": "data/corpus/official-v1-2026-10-11/rule_cards.jsonl",
-        "exists": true,
-        "size_bytes": 12910,
-        "sha256": "7de548a1f3921667201247efd2259ae4b2d49a3c1dc0d3146c438b4f022b7aca"
-      },
-      {
-        "path": "data/corpus/official-v1-2026-10-11/parse-summary.json",
-        "exists": true,
-        "size_bytes": 378,
-        "sha256": "2953c53a057a57d41447cd7ee3053a9eb3b692c0b1ee1f4f11520a05791a2be1"
-      }
-    ]
-  },
+  "legal_text_verified": true,
   "documents": [
     {
       "document_id": "insurance_sales_behavior_order_2023_02",
@@ -60,17 +15,13 @@
       "source": {
         "path": "法律法规/保险销售行为管理办法.doc",
         "exists": true,
-        "size_bytes": 56832,
         "sha256_expected": "e929839e427ed300853ed7417bdc7c1688c955e62df47cfe3f27f9231681b52a",
         "sha256_actual": "e929839e427ed300853ed7417bdc7c1688c955e62df47cfe3f27f9231681b52a",
         "sha256_matches_catalog": true,
-        "source_type": "departmental_regulation",
         "document_status": "effective",
         "membership": "include",
-        "published_on": "2023-09-20",
-        "effective_on": "2024-03-01",
-        "last_amended_on": null,
-        "official_source_url": "https://www.nfra.gov.cn/cn/view/pages/rulesDetail.html?docId=1129945"
+        "source_type": "departmental_regulation",
+        "effective_on": "2024-03-01"
       },
       "extraction": {
         "status": "extracted",
@@ -83,16 +34,10 @@
         },
         "outputs": [
           {
-            "path": "data/extracted/保险销售行为管理办法.txt",
+            "path": "data/corpus/official-v1-2026-10-11/extracted-files/保险销售行为管理办法.paragraphs.json",
             "exists": true,
-            "size_bytes": 25042,
-            "sha256": "09ba444cf489a5103ee8dd785e8dc9c66f8d2dc6ccd2f51df943e54375d4b10c"
-          },
-          {
-            "path": "data/extracted/保险销售行为管理办法.paragraphs.json",
-            "exists": true,
-            "size_bytes": 25920,
-            "sha256": "b3c2b176162b64eaf5d6d3c05d55415b2fd1cd572088b100517bd242cc1b4954"
+            "sha256": "b3c2b176162b64eaf5d6d3c05d55415b2fd1cd572088b100517bd242cc1b4954",
+            "expected_sha256": "b3c2b176162b64eaf5d6d3c05d55415b2fd1cd572088b100517bd242cc1b4954"
           }
         ],
         "missing_outputs": [],
@@ -100,12 +45,19 @@
       },
       "validation": {
         "source_hash": "passed",
-        "structure": "passed",
-        "article_marker_count": 50,
-        "legal_text": "not_verified",
-        "rule_mapping": "not_completed",
-        "corpus_article_count": 50
-      }
+        "legal_text": "reviewed",
+        "reviewer_type": "implementation_agent",
+        "rule_mapping": "reviewed",
+        "workflow_status": "include",
+        "previous_checks": {
+          "structure": "passed",
+          "article_marker_count": 50,
+          "corpus_article_count": 50
+        }
+      },
+      "snapshots": [
+        "official-v1-2026-10-11"
+      ]
     },
     {
       "document_id": "financial_network_marketing_order_2026_09",
@@ -113,17 +65,13 @@
       "source": {
         "path": "法律法规/金融产品网络营销管理办法.pdf",
         "exists": true,
-        "size_bytes": 206424,
         "sha256_expected": "7bc3f991244609af7a171c302282ab03bdc8d6540a86bd20cc5cbeb5b9e8f001",
         "sha256_actual": "7bc3f991244609af7a171c302282ab03bdc8d6540a86bd20cc5cbeb5b9e8f001",
         "sha256_matches_catalog": true,
-        "source_type": "multi_department_regulation",
         "document_status": "effective",
         "membership": "include",
-        "published_on": "2026-04-21",
-        "effective_on": "2026-09-30",
-        "last_amended_on": null,
-        "official_source_url": "https://www.samr.gov.cn/ggjgs/tzgg/art/2026/art_45df2e4c27674b2c82b9a5b4489b64ad.html"
+        "source_type": "multi_department_regulation",
+        "effective_on": "2026-09-30"
       },
       "extraction": {
         "status": "extracted",
@@ -154,22 +102,10 @@
         },
         "outputs": [
           {
-            "path": "data/extracted/金融产品网络营销管理办法.txt",
+            "path": "data/corpus/official-v1-2026-10-11/extracted-files/金融产品网络营销管理办法.pages.json",
             "exists": true,
-            "size_bytes": 23250,
-            "sha256": "be3572429b7dde4c7cf4be5a1a3ef72c9e18cadf76a4a0ee88db2c9754f4710f"
-          },
-          {
-            "path": "data/extracted/金融产品网络营销管理办法.pages.json",
-            "exists": true,
-            "size_bytes": 23269,
-            "sha256": "1b3772d5645418fe05c34a9901fa26ee5697e1c7a3ea1041f07b2a0950852eef"
-          },
-          {
-            "path": "data/extracted/金融产品网络营销管理办法.metadata.json",
-            "exists": true,
-            "size_bytes": 650,
-            "sha256": "6af2f82121d24fcbad5c7a9304fc365cc7c142ad0ba01fd36261edf7a81de0e8"
+            "sha256": "1b3772d5645418fe05c34a9901fa26ee5697e1c7a3ea1041f07b2a0950852eef",
+            "expected_sha256": "1b3772d5645418fe05c34a9901fa26ee5697e1c7a3ea1041f07b2a0950852eef"
           }
         ],
         "missing_outputs": [],
@@ -177,12 +113,19 @@
       },
       "validation": {
         "source_hash": "passed",
-        "structure": "passed",
-        "article_marker_count": 39,
-        "legal_text": "not_verified",
-        "rule_mapping": "not_completed",
-        "corpus_article_count": 39
-      }
+        "legal_text": "reviewed",
+        "reviewer_type": "implementation_agent",
+        "rule_mapping": "reviewed",
+        "workflow_status": "include",
+        "previous_checks": {
+          "structure": "passed",
+          "article_marker_count": 39,
+          "corpus_article_count": 39
+        }
+      },
+      "snapshots": [
+        "official-v1-2026-10-11"
+      ]
     },
     {
       "document_id": "internet_insurance_supervision_order_2020_13",
@@ -190,17 +133,13 @@
       "source": {
         "path": "法律法规/互联网保险业务监管办法.doc",
         "exists": true,
-        "size_bytes": 112128,
         "sha256_expected": "70222ac5d0ab7819bfdc7eabbaf6c8eeb8414b2d038e16b99ca8de09a90efd9a",
         "sha256_actual": "70222ac5d0ab7819bfdc7eabbaf6c8eeb8414b2d038e16b99ca8de09a90efd9a",
         "sha256_matches_catalog": true,
-        "source_type": "departmental_regulation",
         "document_status": "effective",
         "membership": "include",
-        "published_on": "2020-12-07",
-        "effective_on": "2021-02-01",
-        "last_amended_on": null,
-        "official_source_url": "https://www.nfra.gov.cn/cn/view/pages/ItemDetail.html?docId=949137"
+        "source_type": "departmental_regulation",
+        "effective_on": "2021-02-01"
       },
       "extraction": {
         "status": "extracted",
@@ -213,16 +152,10 @@
         },
         "outputs": [
           {
-            "path": "data/extracted/互联网保险业务监管办法.txt",
+            "path": "data/corpus/official-v1-2026-10-11/extracted-files/互联网保险业务监管办法.paragraphs.json",
             "exists": true,
-            "size_bytes": 41236,
-            "sha256": "6022af69f5fc85e749a0e3d5655f6609294a56d74bf031ff53ac2a3f898884a8"
-          },
-          {
-            "path": "data/extracted/互联网保险业务监管办法.paragraphs.json",
-            "exists": true,
-            "size_bytes": 42646,
-            "sha256": "9b2023d26273ccc12dde84d6b8c4e2aedd78733f0b7a9dcd1ab25b6703ebca2e"
+            "sha256": "9b2023d26273ccc12dde84d6b8c4e2aedd78733f0b7a9dcd1ab25b6703ebca2e",
+            "expected_sha256": "9b2023d26273ccc12dde84d6b8c4e2aedd78733f0b7a9dcd1ab25b6703ebca2e"
           }
         ],
         "missing_outputs": [],
@@ -230,12 +163,19 @@
       },
       "validation": {
         "source_hash": "passed",
-        "structure": "passed",
-        "article_marker_count": 83,
-        "legal_text": "not_verified",
-        "rule_mapping": "not_completed",
-        "corpus_article_count": 83
-      }
+        "legal_text": "reviewed",
+        "reviewer_type": "implementation_agent",
+        "rule_mapping": "reviewed",
+        "workflow_status": "include",
+        "previous_checks": {
+          "structure": "passed",
+          "article_marker_count": 83,
+          "corpus_article_count": 83
+        }
+      },
+      "snapshots": [
+        "official-v1-2026-10-11"
+      ]
     },
     {
       "document_id": "insurance_law_local_2015_consolidation",
@@ -243,17 +183,13 @@
       "source": {
         "path": "法律法规/中华人民共和国保险法.doc",
         "exists": true,
-        "size_bytes": 80896,
         "sha256_expected": "083a55d495a75a6335c02af3c90c139f3fd8f3db14548967179a397dad86527c",
         "sha256_actual": "083a55d495a75a6335c02af3c90c139f3fd8f3db14548967179a397dad86527c",
         "sha256_matches_catalog": true,
-        "source_type": "statute",
         "document_status": "effective",
         "membership": "include_pending_extraction",
-        "published_on": "1995-06-30",
-        "effective_on": null,
-        "last_amended_on": "2015-04-24",
-        "official_source_url": "https://www.samr.gov.cn/zw/zfxxgk/fdzdgknr/bgt/art/2023/art_4c715a53f3d4402c89f62ae77809f638.html"
+        "source_type": "statute",
+        "effective_on": null
       },
       "extraction": {
         "status": "failed",
@@ -277,12 +213,17 @@
       },
       "validation": {
         "source_hash": "passed",
-        "structure": "not_run",
-        "article_marker_count": null,
         "legal_text": "not_verified",
-        "rule_mapping": "not_completed",
-        "corpus_article_count": 0
-      }
+        "reviewer_type": null,
+        "rule_mapping": "pending_review",
+        "workflow_status": "extraction_deferred_by_user",
+        "previous_checks": {
+          "structure": "not_run",
+          "article_marker_count": null,
+          "corpus_article_count": 0
+        }
+      },
+      "snapshots": []
     },
     {
       "document_id": "consumer_financial_rights_guidance_2015",
@@ -290,17 +231,13 @@
       "source": {
         "path": "法律法规/国务院办公厅关于加强金融消费者权益保护工作的指导意见.doc",
         "exists": true,
-        "size_bytes": 29184,
         "sha256_expected": "cee82068a6578315212b0391f7e96f8a3fa7ecd6e86dc938831cbb46e80d0b7f",
         "sha256_actual": "cee82068a6578315212b0391f7e96f8a3fa7ecd6e86dc938831cbb46e80d0b7f",
         "sha256_matches_catalog": true,
-        "source_type": "guidance",
         "document_status": "unknown",
         "membership": "reference_only",
-        "published_on": null,
-        "effective_on": null,
-        "last_amended_on": null,
-        "official_source_url": null
+        "source_type": "guidance",
+        "effective_on": null
       },
       "extraction": {
         "status": "not_selected",
@@ -313,12 +250,78 @@
       },
       "validation": {
         "source_hash": "passed",
-        "structure": "not_run",
-        "article_marker_count": null,
         "legal_text": "not_verified",
-        "rule_mapping": "not_completed",
-        "corpus_article_count": 0
-      }
+        "reviewer_type": null,
+        "rule_mapping": "pending_review",
+        "workflow_status": "reference_only",
+        "previous_checks": {
+          "structure": "not_run",
+          "article_marker_count": null,
+          "corpus_article_count": 0
+        }
+      },
+      "snapshots": []
     }
-  ]
+  ],
+  "snapshots": [
+    {
+      "ruleset_id": "official-v1-2026-10-11",
+      "status": "published",
+      "manifest_path": "data/corpus/official-v1-2026-10-11/manifest.json",
+      "manifest_sha256": "255be926a0ac6c8dadb6c1e033d761c480c91c586f11b8a3c01e75afcc0eb81c",
+      "artifacts": {
+        "documents.jsonl": "d4348ca42156f46ddf935e825956510ddd51a49b9d341b5e0dfa568ddc4a8fdf",
+        "articles.jsonl": "b84d6aa21573cd6aabfcb6368a7b7bfb6394bf81fbd68686f2fcc4fdf802245d",
+        "chunks.jsonl": "388455e24e2b95d77839abb8bfaecb834206b373db6f1aebfdbc39c7bcec9c28",
+        "rule_cards.jsonl": "df0a0150643bd6b9f9d1b7df77127783a70d66cf16fc62a4587734f6834df3d4",
+        "article-review-ledger.jsonl": "462b754d09b11c4c92bff5f54d432ad3e933426cb74636ef1976f144d2023d5f",
+        "review.json": "bd1870bdd29fa31cf9476591942616ace1f57009615fbec79c71ee3ac48d2a91"
+      },
+      "document_ids": [
+        "insurance_sales_behavior_order_2023_02",
+        "financial_network_marketing_order_2026_09",
+        "internet_insurance_supervision_order_2020_13"
+      ]
+    }
+  ],
+  "pipeline": {
+    "schema_version": 1,
+    "base_ruleset": "official-v1-2026-10-11",
+    "observations": {
+      "法律法规/中华人民共和国保险法.doc": {
+        "sha256": "083a55d495a75a6335c02af3c90c139f3fd8f3db14548967179a397dad86527c",
+        "first_seen": 1791714084.2612333,
+        "present": true,
+        "status": "extraction_deferred_by_user"
+      },
+      "法律法规/互联网保险业务监管办法.doc": {
+        "sha256": "70222ac5d0ab7819bfdc7eabbaf6c8eeb8414b2d038e16b99ca8de09a90efd9a",
+        "first_seen": 1791714084.2612333,
+        "present": true,
+        "status": "registered_existing"
+      },
+      "法律法规/保险销售行为管理办法.doc": {
+        "sha256": "e929839e427ed300853ed7417bdc7c1688c955e62df47cfe3f27f9231681b52a",
+        "first_seen": 1791714084.2622328,
+        "present": true,
+        "status": "registered_existing"
+      },
+      "法律法规/国务院办公厅关于加强金融消费者权益保护工作的指导意见.doc": {
+        "sha256": "cee82068a6578315212b0391f7e96f8a3fa7ecd6e86dc938831cbb46e80d0b7f",
+        "first_seen": 1791714084.2622328,
+        "present": true,
+        "status": "reference_only"
+      },
+      "法律法规/金融产品网络营销管理办法.pdf": {
+        "sha256": "7bc3f991244609af7a171c302282ab03bdc8d6540a86bd20cc5cbeb5b9e8f001",
+        "first_seen": 1791714084.2622328,
+        "present": true,
+        "status": "registered_existing"
+      }
+    },
+    "versions": {},
+    "candidates": {},
+    "last_run": "2026-10-11T10:31:08.964572+00:00",
+    "pid": 19704
+  }
 }

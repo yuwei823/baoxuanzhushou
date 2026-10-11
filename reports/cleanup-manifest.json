@@ -1,0 +1,104 @@
+[
+  {
+    "path": "D:\\保宣合规助手\\tmp",
+    "file_count": 58,
+    "bytes": 84660025.0,
+    "sha256": null
+  },
+  {
+    "path": "D:\\保宣合规助手\\.venv-verify",
+    "file_count": 9955,
+    "bytes": 273385673.0,
+    "sha256": null
+  },
+  {
+    "path": "D:\\保宣合规助手\\.pytest_cache",
+    "file_count": 5,
+    "bytes": 3580.0,
+    "sha256": null
+  },
+  {
+    "path": "D:\\保宣合规助手\\.ruff_cache",
+    "file_count": 6,
+    "bytes": 1798.0,
+    "sha256": null
+  },
+  {
+    "path": "D:\\保宣合规助手\\scripts\\audit_extractions.py",
+    "file_count": 1,
+    "bytes": 3637.0,
+    "sha256": "121AF08DCFBE44B2B75CBA70B4BD5D014BC04548030FFD7010A252AE90EFB406"
+  },
+  {
+    "path": "D:\\保宣合规助手\\scripts\\build_extraction_registry.py",
+    "file_count": 1,
+    "bytes": 10840.0,
+    "sha256": "23D989F68043C6294D3F1283A12464DC658A5A699713ECEE56B3EE15F0E3C4D1"
+  },
+  {
+    "path": "D:\\保宣合规助手\\scripts\\build_source_manifest.py",
+    "file_count": 1,
+    "bytes": 2931.0,
+    "sha256": "09B43F725E73AA83CF114E08494933B3386E369EA5E44FEC2A57CB56B25F04FC"
+  },
+  {
+    "path": "D:\\保宣合规助手\\scripts\\extract_doc_sources.py",
+    "file_count": 1,
+    "bytes": 2811.0,
+    "sha256": "1A0EE5447CB45DB52B4EACBD60C61D77B7F84BEE12EC7B52F74B989449A61694"
+  },
+  {
+    "path": "D:\\保宣合规助手\\scripts\\inspect_pdf_source.py",
+    "file_count": 1,
+    "bytes": 1967.0,
+    "sha256": "6B4129603E5207743E88DB98546A3FE3DDC24463716F1E9C7321364FA403443E"
+  },
+  {
+    "path": "D:\\保宣合规助手\\scripts\\parse_official_articles.py",
+    "file_count": 1,
+    "bytes": 510.0,
+    "sha256": "8B36646ECD96573B149B3ACF6D7D5C7BB441F5A3462428937781BF19E3A07B11"
+  },
+  {
+    "path": "D:\\保宣合规助手\\reports\\rule-card-mapping-review.md",
+    "file_count": 1,
+    "bytes": 6384.0,
+    "sha256": "B36F6A0F644998158166AAA984BD6AE3C372F1069A9E5C8E7229AE9B997BBE43"
+  },
+  {
+    "path": "D:\\保宣合规助手\\reports\\rule-card-candidate-check.md",
+    "file_count": 1,
+    "bytes": 2492.0,
+    "sha256": "2A2A611B3231BCAEA3DE11904EF2D080391F03B7D14A905333DA15EEEAA0B3C3"
+  },
+  {
+    "path": "D:\\保宣合规助手\\src\\insurance_audit\\__pycache__",
+    "file_count": 2,
+    "bytes": 7231.0,
+    "sha256": null
+  },
+  {
+    "path": "D:\\保宣合规助手\\src\\insurance_audit\\corpus\\__pycache__",
+    "file_count": 7,
+    "bytes": 99683.0,
+    "sha256": null
+  },
+  {
+    "path": "D:\\保宣合规助手\\scripts\\__pycache__",
+    "file_count": 9,
+    "bytes": 79802.0,
+    "sha256": null
+  },
+  {
+    "path": "D:\\保宣合规助手\\tests\\integration\\__pycache__",
+    "file_count": 1,
+    "bytes": 6528.0,
+    "sha256": null
+  },
+  {
+    "path": "D:\\保宣合规助手\\tests\\unit\\__pycache__",
+    "file_count": 2,
+    "bytes": 56980.0,
+    "sha256": null
+  }
+]

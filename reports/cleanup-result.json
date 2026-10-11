@@ -1,0 +1,87 @@
+[
+  {
+    "path": "D:\\保宣合规助手\\tmp",
+    "remaining": true,
+    "bytes": 84660025.0
+  },
+  {
+    "path": "D:\\保宣合规助手\\.venv-verify",
+    "remaining": true,
+    "bytes": 273385673.0
+  },
+  {
+    "path": "D:\\保宣合规助手\\.pytest_cache",
+    "remaining": true,
+    "bytes": 3580.0
+  },
+  {
+    "path": "D:\\保宣合规助手\\.ruff_cache",
+    "remaining": true,
+    "bytes": 1798.0
+  },
+  {
+    "path": "D:\\保宣合规助手\\scripts\\audit_extractions.py",
+    "remaining": false,
+    "bytes": 3637.0
+  },
+  {
+    "path": "D:\\保宣合规助手\\scripts\\build_extraction_registry.py",
+    "remaining": false,
+    "bytes": 10840.0
+  },
+  {
+    "path": "D:\\保宣合规助手\\scripts\\build_source_manifest.py",
+    "remaining": false,
+    "bytes": 2931.0
+  },
+  {
+    "path": "D:\\保宣合规助手\\scripts\\extract_doc_sources.py",
+    "remaining": false,
+    "bytes": 2811.0
+  },
+  {
+    "path": "D:\\保宣合规助手\\scripts\\inspect_pdf_source.py",
+    "remaining": false,
+    "bytes": 1967.0
+  },
+  {
+    "path": "D:\\保宣合规助手\\scripts\\parse_official_articles.py",
+    "remaining": false,
+    "bytes": 510.0
+  },
+  {
+    "path": "D:\\保宣合规助手\\reports\\rule-card-mapping-review.md",
+    "remaining": false,
+    "bytes": 6384.0
+  },
+  {
+    "path": "D:\\保宣合规助手\\reports\\rule-card-candidate-check.md",
+    "remaining": false,
+    "bytes": 2492.0
+  },
+  {
+    "path": "D:\\保宣合规助手\\src\\insurance_audit\\__pycache__",
+    "remaining": true,
+    "bytes": 7231.0
+  },
+  {
+    "path": "D:\\保宣合规助手\\src\\insurance_audit\\corpus\\__pycache__",
+    "remaining": true,
+    "bytes": 99683.0
+  },
+  {
+    "path": "D:\\保宣合规助手\\scripts\\__pycache__",
+    "remaining": true,
+    "bytes": 79802.0
+  },
+  {
+    "path": "D:\\保宣合规助手\\tests\\integration\\__pycache__",
+    "remaining": true,
+    "bytes": 6528.0
+  },
+  {
+    "path": "D:\\保宣合规助手\\tests\\unit\\__pycache__",
+    "remaining": true,
+    "bytes": 56980.0
+  }
+]

@@ -12,21 +12,50 @@ resolved = ROOT / "tmp" / "requirements-resolved.txt"
 wheels = ROOT / "tmp" / "lock-distributions"
 wheels.mkdir(parents=True, exist_ok=True)
 if "--resolved" not in sys.argv:
-    subprocess.run([
-        sys.executable, "-m", "piptools", "compile", "--extra", "dev", "--allow-unsafe", "--strip-extras",
-        "--output-file", str(resolved), "pyproject.toml", "requirements-build.in", "--quiet",
-    ], cwd=ROOT, check=True)
-subprocess.run([
-    sys.executable, "-m", "pip", "download", "--no-deps", "--no-build-isolation",
-    "-r", str(resolved), "-d", str(wheels),
-], cwd=ROOT, check=True)
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "piptools",
+            "compile",
+            "--extra",
+            "dev",
+            "--allow-unsafe",
+            "--strip-extras",
+            "--output-file",
+            str(resolved),
+            "pyproject.toml",
+            "requirements-build.in",
+            "--quiet",
+        ],
+        cwd=ROOT,
+        check=True,
+    )
+subprocess.run(
+    [
+        sys.executable,
+        "-m",
+        "pip",
+        "download",
+        "--no-deps",
+        "--no-build-isolation",
+        "-r",
+        str(resolved),
+        "-d",
+        str(wheels),
+    ],
+    cwd=ROOT,
+    check=True,
+)
 artifacts = {}
 for path in wheels.iterdir():
     if path.suffix == ".whl":
         name, version, _, _ = parse_wheel_filename(path.name)
     else:
         name, version = parse_sdist_filename(path.name)
-    artifacts[(canonicalize_name(name), str(version))] = hashlib.sha256(path.read_bytes()).hexdigest()
+    artifacts[(canonicalize_name(name), str(version))] = hashlib.sha256(
+        path.read_bytes()
+    ).hexdigest()
 lines = [
     "# Windows x64 / Python 3.11 selected distribution hashes.",
     "# Regenerate: python scripts/lock_dependencies.py",
@@ -39,9 +68,13 @@ for line in resolved.read_text(encoding="utf-8").splitlines():
     digest = artifacts[(canonicalize_name(name), version)]
     lines.append(f"{name}=={version} --hash=sha256:{digest}")
 (ROOT / "requirements-dev.lock").write_text("\n".join(lines) + "\n", encoding="utf-8")
-bootstrap = [line for line in lines[3:] if line.split("==")[0] in {"setuptools", "wheel", "packaging"}]
+bootstrap = [
+    line for line in lines[3:] if line.split("==")[0] in {"setuptools", "wheel", "packaging"}
+]
 (ROOT / "requirements-build.lock").write_text(
-    "# Hashed bootstrap dependencies for source distribution builds.\n" + "\n".join(bootstrap) + "\n",
+    "# Hashed bootstrap dependencies for source distribution builds.\n"
+    + "\n".join(bootstrap)
+    + "\n",
     encoding="utf-8",
 )
 print(f"Locked {len(lines) - 3} packages for this platform")

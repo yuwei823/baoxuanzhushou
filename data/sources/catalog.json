@@ -9,11 +9,12 @@
       "source_type": "departmental_regulation",
       "document_status": "effective",
       "membership": "include",
-      "verification_status": "structural_only",
+      "verification_status": "agent_reviewed_local_source",
       "source_sha256": "e929839e427ed300853ed7417bdc7c1688c955e62df47cfe3f27f9231681b52a",
       "published_on": "2023-09-20",
       "effective_on": "2024-03-01",
-      "official_source_url": "https://www.nfra.gov.cn/cn/view/pages/rulesDetail.html?docId=1129945"
+      "official_source_url": "https://www.nfra.gov.cn/cn/view/pages/rulesDetail.html?docId=1129945",
+      "reviewer_type": "implementation_agent"
     },
     {
       "document_id": "financial_network_marketing_order_2026_09",
@@ -22,11 +23,12 @@
       "source_type": "multi_department_regulation",
       "document_status": "effective",
       "membership": "include",
-      "verification_status": "structural_only",
+      "verification_status": "agent_reviewed_local_source",
       "source_sha256": "7bc3f991244609af7a171c302282ab03bdc8d6540a86bd20cc5cbeb5b9e8f001",
       "published_on": "2026-04-21",
       "effective_on": "2026-09-30",
-      "official_source_url": "https://www.samr.gov.cn/ggjgs/tzgg/art/2026/art_45df2e4c27674b2c82b9a5b4489b64ad.html"
+      "official_source_url": "https://www.samr.gov.cn/ggjgs/tzgg/art/2026/art_45df2e4c27674b2c82b9a5b4489b64ad.html",
+      "reviewer_type": "implementation_agent"
     },
     {
       "document_id": "internet_insurance_supervision_order_2020_13",
@@ -35,11 +37,12 @@
       "source_type": "departmental_regulation",
       "document_status": "effective",
       "membership": "include",
-      "verification_status": "structural_only",
+      "verification_status": "agent_reviewed_local_source",
       "source_sha256": "70222ac5d0ab7819bfdc7eabbaf6c8eeb8414b2d038e16b99ca8de09a90efd9a",
       "published_on": "2020-12-07",
       "effective_on": "2021-02-01",
-      "official_source_url": "https://www.nfra.gov.cn/cn/view/pages/ItemDetail.html?docId=949137"
+      "official_source_url": "https://www.nfra.gov.cn/cn/view/pages/ItemDetail.html?docId=949137",
+      "reviewer_type": "implementation_agent"
     },
     {
       "document_id": "insurance_law_local_2015_consolidation",
@@ -54,7 +57,8 @@
       "last_amended_on": "2015-04-24",
       "amendment_effective_on": "2015-04-24",
       "official_source_url": "https://www.samr.gov.cn/zw/zfxxgk/fdzdgknr/bgt/art/2023/art_4c715a53f3d4402c89f62ae77809f638.html",
-      "note": "Use the user-provided DOC as the operative source text; compare local version metadata and sampled wording before release."
+      "note": "Use the user-provided DOC as the operative source text; compare local version metadata and sampled wording before release.",
+      "workflow_status": "extraction_deferred_by_user"
     },
     {
       "document_id": "consumer_financial_rights_guidance_2015",
