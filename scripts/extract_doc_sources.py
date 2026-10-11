@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 
 import win32com.client
+from build_extraction_registry import build_registry
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -23,7 +24,11 @@ def main():
         word.DisplayAlerts = 0
         word.AutomationSecurity = 3  # Disable macros in opened documents.
         version = str(word.Version)
-        for name in ["保险销售行为管理办法.doc", "互联网保险业务监管办法.doc"]:
+        for name in [
+            "保险销售行为管理办法.doc",
+            "互联网保险业务监管办法.doc",
+            "中华人民共和国保险法.doc",
+        ]:
             source = ROOT / "法律法规" / name
             before = hashlib.sha256(source.read_bytes()).hexdigest()
             document = word.Documents.Open(
@@ -53,6 +58,7 @@ def main():
     (output / "doc-extraction.json").write_text(
         json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8"
     )
+    build_registry()
     print(json.dumps(records, ensure_ascii=False, indent=2))
 
 

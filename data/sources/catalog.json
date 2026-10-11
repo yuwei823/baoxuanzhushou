@@ -1,0 +1,71 @@
+{
+  "catalog_version": 1,
+  "catalog_policy": "Files are never activated by directory discovery alone. A source must be explicitly reviewed and assigned to a ruleset snapshot.",
+  "sources": [
+    {
+      "document_id": "insurance_sales_behavior_order_2023_02",
+      "title": "保险销售行为管理办法",
+      "source_path": "法律法规/保险销售行为管理办法.doc",
+      "source_type": "departmental_regulation",
+      "document_status": "effective",
+      "membership": "include",
+      "verification_status": "structural_only",
+      "source_sha256": "e929839e427ed300853ed7417bdc7c1688c955e62df47cfe3f27f9231681b52a",
+      "published_on": "2023-09-20",
+      "effective_on": "2024-03-01",
+      "official_source_url": "https://www.nfra.gov.cn/cn/view/pages/rulesDetail.html?docId=1129945"
+    },
+    {
+      "document_id": "financial_network_marketing_order_2026_09",
+      "title": "金融产品网络营销管理办法",
+      "source_path": "法律法规/金融产品网络营销管理办法.pdf",
+      "source_type": "multi_department_regulation",
+      "document_status": "effective",
+      "membership": "include",
+      "verification_status": "structural_only",
+      "source_sha256": "7bc3f991244609af7a171c302282ab03bdc8d6540a86bd20cc5cbeb5b9e8f001",
+      "published_on": "2026-04-21",
+      "effective_on": "2026-09-30",
+      "official_source_url": "https://www.samr.gov.cn/ggjgs/tzgg/art/2026/art_45df2e4c27674b2c82b9a5b4489b64ad.html"
+    },
+    {
+      "document_id": "internet_insurance_supervision_order_2020_13",
+      "title": "互联网保险业务监管办法",
+      "source_path": "法律法规/互联网保险业务监管办法.doc",
+      "source_type": "departmental_regulation",
+      "document_status": "effective",
+      "membership": "include",
+      "verification_status": "structural_only",
+      "source_sha256": "70222ac5d0ab7819bfdc7eabbaf6c8eeb8414b2d038e16b99ca8de09a90efd9a",
+      "published_on": "2020-12-07",
+      "effective_on": "2021-02-01",
+      "official_source_url": "https://www.nfra.gov.cn/cn/view/pages/ItemDetail.html?docId=949137"
+    },
+    {
+      "document_id": "insurance_law_local_2015_consolidation",
+      "title": "中华人民共和国保险法",
+      "source_path": "法律法规/中华人民共和国保险法.doc",
+      "source_type": "statute",
+      "document_status": "effective",
+      "membership": "include_pending_extraction",
+      "verification_status": "metadata_pending_local_text_extraction",
+      "source_sha256": "083a55d495a75a6335c02af3c90c139f3fd8f3db14548967179a397dad86527c",
+      "published_on": "1995-06-30",
+      "last_amended_on": "2015-04-24",
+      "amendment_effective_on": "2015-04-24",
+      "official_source_url": "https://www.samr.gov.cn/zw/zfxxgk/fdzdgknr/bgt/art/2023/art_4c715a53f3d4402c89f62ae77809f638.html",
+      "note": "Use the user-provided DOC as the operative source text; compare local version metadata and sampled wording before release."
+    },
+    {
+      "document_id": "consumer_financial_rights_guidance_2015",
+      "title": "国务院办公厅关于加强金融消费者权益保护工作的指导意见",
+      "source_path": "法律法规/国务院办公厅关于加强金融消费者权益保护工作的指导意见.doc",
+      "source_type": "guidance",
+      "document_status": "unknown",
+      "membership": "reference_only",
+      "verification_status": "not_reviewed_for_this_ruleset",
+      "source_sha256": "cee82068a6578315212b0391f7e96f8a3fa7ecd6e86dc938831cbb46e80d0b7f",
+      "note": "Catalogued local supplement; not part of the user-requested current adjudication set unless later reviewed and explicitly added to a new snapshot."
+    }
+  ]
+}

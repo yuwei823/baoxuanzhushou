@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 import pymupdf
+from build_extraction_registry import build_registry
 
 ROOT = Path(__file__).resolve().parents[1]
 source = ROOT / "法律法规" / "金融产品网络营销管理办法.pdf"
@@ -40,3 +41,4 @@ with pymupdf.open(source) as document:
         )
 print(json.dumps({"pages": len(pages), "sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
                   "first_page": pages[0], "last_page": pages[-1]}, ensure_ascii=False))
+build_registry()

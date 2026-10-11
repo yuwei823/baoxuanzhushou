@@ -7,6 +7,8 @@ import json
 import re
 from pathlib import Path
 
+from build_extraction_registry import build_registry
+
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data/corpus/official-v1-2026-10-11"
 OUT.mkdir(parents=True, exist_ok=True)
@@ -67,4 +69,5 @@ for doc in DOCS:
 (OUT/"chunks.jsonl").write_text("".join(json.dumps({"chunk_id":a["article_id"],"article_id":a["article_id"],"document_id":a["document_id"],"text":a["original_text"],"chapter":a["chapter"]},ensure_ascii=False)+"\n" for a in articles),encoding="utf-8")
 summary={"ruleset_id":"official-v1-2026-10-11","document_count":len(documents),"article_count":len(articles),"by_document":{d["document_id"]:sum(a["document_id"]==d["document_id"] for a in articles) for d in documents},"all_text_nonempty":all(a["original_text"] for a in articles),"article_text_verified":False,"ruleset_published":False}
 (OUT/"parse-summary.json").write_text(json.dumps(summary,ensure_ascii=False,indent=2),encoding="utf-8")
+build_registry()
 print(json.dumps(summary,ensure_ascii=False,indent=2))

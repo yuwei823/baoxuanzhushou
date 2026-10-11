@@ -11,6 +11,23 @@
 - 模型/Key：未调用百炼；当前未配置 Key。
 - 下一步：P0-04 逐条核验营销相关条文与规则卡映射，记录不适用范围和例外；不得把候选解析用于正式审核。
 
+## 2026-10-11 — 来源范围扩充与版本扩展设计
+
+- 用户澄清：以本地 `法律法规/中华人民共和国保险法.doc` 已生效版本为依据；《金融产品网络营销管理办法.pdf》已在核心来源中，无需重复导入。不要以网上修订草案替代本地法。
+- 文件核对：`法律法规/` 共五份文件。本地保险法 SHA-256 `083a55d495a75a6335c02af3c90c139f3fd8f3db14548967179a397dad86527c`。官方市场监管总局页面记载保险法最近一次修正信息为2015-04-24；金融监管总局在2026-09-04另发布修订草案征求意见，明确是征求意见材料。来源链接见 SPEC 与下方官方来源。
+- 当前阻塞：把保险法加入 DOC 抽取脚本后重试 WPS `DispatchEx("kwps.application")`，返回 `0x80070005 access denied`；改用 `Dispatch` 仍被拒绝。未改写本地 DOC；摘录、全文条数及适用条文尚未进入语料。P0-03A 未验收，P0-04 的正式映射需等待其完成。
+- 扩展方案：新增 `data/sources/catalog.json`，列出来源类别、状态、成员资格、版本元数据、来源哈希与官方核对 URL。文件夹新增文件不自动启用；每个候选规则集显式固定文档版本/哈希。发布后规则集不可覆盖，更新或新规另建 ID，保留历史快照；每次审核 pin 规则集及 manifest/hash。草案、有效、废止和未知状态隔离；候选新集经语料门禁、规则映射复核和回归评估后才切换。
+- 修改：`SPEC.md`、`PLAN.md`、`docs/environment.md`、`docs/corpus-review.md`、`scripts/extract_doc_sources.py`、`data/sources/catalog.json`。
+- 下一步：恢复本地 DOC 可靠读取，完成保险法版本确认与条文提取，再按其与监管办法适用范围建立跨法规 rule_cards；不使用网络草案或替换下载文本作为最终依据。
+
+## 2026-10-11 — 集中抽取登记已建立
+
+- 完成：建立 `data/extracted/extraction-registry.json` 作为统一汇总入口，按 document_id 将本地来源、源文件哈希、抽取工具/版本、产物路径/大小/哈希、失败尝试、结构核验状态、法律核验状态、语料条数与 corpus 工件哈希关联。
+- 状态：5 个本地来源都登记；3 个核心来源已抽取（50/39/83 条）；保险法为 `failed`（WPS COM 拒绝访问，0 条入库）；消费者权益指导意见为 `not_selected`。结构检查通过不代表法律文本或规则映射核验通过；候选规则集仍未发布。
+- 维护：`scripts/build_extraction_registry.py` 可单独重建；DOC/PDF 抽取、结构审计及语料解析脚本成功运行后会自动刷新集中登记。
+- 验证：JSON 解析、Ruff、compileall 通过；断言检查 5 个源哈希均与 catalog 一致、网络营销 PDF 状态为 extracted、保险法为 failed、候选语料 172 条且每个 corpus 工件哈希存在。
+- 修改：`data/extracted/extraction-registry.json`、`data/extracted/extraction-attempts.json`、`scripts/build_extraction_registry.py`、`scripts/{extract_doc_sources,inspect_pdf_source,audit_extractions,parse_official_articles}.py`、SPEC.md、PLAN.md、docs/corpus-review.md。
+
 ## 2026-10-11 — P0-01 已验收
 
 - 完成：读取计划、规格及题目；核对环境、五份实际附件大小和 SHA-256、密钥配置存在性。

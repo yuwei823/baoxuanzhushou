@@ -5,6 +5,8 @@ import json
 import re
 from pathlib import Path
 
+from build_extraction_registry import build_registry
+
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "data" / "extracted"
 DIGITS = {"零": 0, "〇": 0, "一": 1, "二": 2, "三": 3, "四": 4,
@@ -81,6 +83,7 @@ def main() -> None:
     }
     target = OUT / "source-audit.json"
     target.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+    build_registry()
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
 
