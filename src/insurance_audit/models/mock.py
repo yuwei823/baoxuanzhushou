@@ -7,6 +7,11 @@ from pathlib import Path
 
 
 class MockProvider:
+    async def embed(self, texts, budget):
+        from insurance_audit.models.bailian import ModelFailure
+
+        raise ModelFailure("embedding_not_configured", "模拟模式请显式选择 RETRIEVAL_MODE=bm25。")
+
     async def close(self):
         pass
 

@@ -13,12 +13,13 @@ from insurance_audit.schemas import (
     RuleLedger,
     VisionOutput,
 )
+from insurance_audit.vector_index import digest
 from insurance_audit.workflow import (
     PROMPT_VERSION,
     image_sources,
     judge_messages,
+    resolve_condition_ids,
     text_sources,
-    validate_findings,
     verify,
     vision_messages,
 )
@@ -138,7 +139,7 @@ class AuditService:
                     messages,
                     JudgeOutput,
                     budget,
-                    validate=lambda value: validate_findings(value, cards, sources),
+                    validate=lambda value: resolve_condition_ids(value, cards, sources),
                     max_tokens=12000,
                 )
                 return [(cards, result, None)]
@@ -218,7 +219,11 @@ class AuditService:
             meta={
                 "ruleset_hash": self.corpus.hash,
                 "prompt_version": PROMPT_VERSION,
-                "workflow_version": "1.0",
+                "workflow_version": "1.1-rag",
+                "retrieval_version": "segment512-rrf60-top8-v1",
+                "index_id": digest(self.corpus.vector_manifest)
+                if self.corpus.vector_manifest
+                else None,
                 "model_ids": {
                     "text": self.settings.bailian_text_model,
                     "vision": self.settings.bailian_vision_model,

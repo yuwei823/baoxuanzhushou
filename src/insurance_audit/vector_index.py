@@ -16,9 +16,13 @@ def digest(value):
 
 
 def normalize(vector, dimensions):
-    if len(vector) != dimensions or any(
-        isinstance(x, bool) or not isinstance(x, (int, float)) or not math.isfinite(x)
-        for x in vector
+    if (
+        not isinstance(vector, list)
+        or len(vector) != dimensions
+        or any(
+            isinstance(x, bool) or not isinstance(x, (int, float)) or not math.isfinite(x)
+            for x in vector
+        )
     ):
         raise ValueError("向量维度或数值无效。")
     norm = math.sqrt(sum(x * x for x in vector))
@@ -62,8 +66,10 @@ def load_index(corpus, settings):
     meta, _ = specification(corpus, settings)
     path = index_path(settings, meta)
     payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict) or not isinstance(payload.get("vectors"), list):
+        raise ValueError("向量索引格式无效。")  # noqa: TRY004 - corrupt persisted data
     vectors = payload["vectors"]
-    if payload["manifest"] != meta or payload["vectors_sha256"] != digest(vectors):
+    if payload.get("manifest") != meta or payload.get("vectors_sha256") != digest(vectors):
         raise ValueError("向量索引版本或哈希不匹配。")
     if len(vectors) != len(corpus.ids):
         raise ValueError("向量索引条目不完整。")

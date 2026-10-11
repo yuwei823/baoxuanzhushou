@@ -219,7 +219,12 @@ async def structured(provider, kind, messages, schema, budget, validate=None, ma
             }
             detail = [str(failure) if str(failure) in allowed else "invalid_json_or_schema"]
         budget.validation_errors.append(
-            {"kind": kind, "attempt": attempt + 1, "categories": detail}
+            {
+                "kind": kind,
+                "attempt": attempt + 1,
+                "categories": detail,
+                "rule_id": getattr(failure, "rule_id", None),
+            }
         )
         if not attempt:
             messages = [
@@ -228,7 +233,9 @@ async def structured(provider, kind, messages, schema, budget, validate=None, ma
                     "role": "user",
                     "content": "上次输出未通过校验，错误类别："
                     + json.dumps(detail)
-                    + "。重新检查原始材料，仅输出完整 JSON，覆盖全部 rule_id 和逐字 trigger_conditions；即使不适用也不能省略条件。不得伪造引用或证据。",
+                    + "，失败规则："
+                    + (getattr(failure, "rule_id", None) or "见本批 Schema")
+                    + "。重新检查原始材料，仅输出完整 JSON，覆盖全部 rule_id 及 condition_bindings 中 c1/c2 等条件 ID；即使不适用也不能省略条件。不得伪造引用或证据。",
                 },
             ]
     raise ModelFailure(

@@ -135,3 +135,16 @@ pytest 33 passed，包括独立监视进程投递/停止实测与真实 PDF 39 �
 - 验证：pytest 65 passed in 9.26s；本轮修改文件 Ruff 通过。完整结果见 reports/text-smoke.md。原始失败证据保留，未覆盖已发布知识库。
 - 用户要求模型使用 RAG 并先给方案：docs/text-rag-plan.md 已写入，尚未实现 hybrid。已明确当前 BM25 只记录额外召回 ID、模型上下文由规则卡条文构成的集成缺口。方案为向量+BM25、实际原文上下文、独立必查覆盖、版本绑定及对照评估，复用现有工程。
 - 下一步：按 RAG 方案接通索引与上下文；同时细化脱敏校验错误诊断，解决结构化输出失败。图片识别与保险法抽取继续暂缓。
+
+## 文本 RAG 实施与真实复验（本轮）
+
+- 用户要求继续，不等待外部案例收集；图片识别与保险法继续暂缓，未新增外部法规或案例。
+- 完成：vector_index.py、Bailian.embed、CLI build-index；172 条 text-embedding-v4/1024 向量索引真实构建，18 次请求、18,067 token。索引哈希绑定规则快照、模型、维度和检索文本，原子写入，重复运行复用；未来超长条文目前拒绝，未自动实现分款索引。
+- 接通：retrieval.py 分段 BM25/向量双路 Top 8、RRF k=60；service.py 将召回全文加入实际模型上下文、命中规则优先、全 34 规则覆盖；查询向量预算与模型共享，失败无静默降级。meta 保留检索/上下文 trace、索引标识、版本、token 和脱敏校验类别。
+- 修复：worklow.py（实际文件名 workflow.py）中的条件逐字复制失败改为显式 c1/c2 绑定，未知/重复/漏项继续拒绝；Prompt audit-v1.4-rag，错误修复说明包含规则 ID；原文证据及引用校验未放宽。
+- 配置：本地 .env 与 .env.example RETRIEVAL_MODE=hybrid；文本 qwen3.7-plus，关闭思考。SPEC 更新 v1.2，PLAN H-01/H-02 勾选工程实现；docs/rag-operations.md、reports/rag-acceptance.md/json、README 和设计记录已同步。
+- 验证：pytest 75 passed in 10.46s；Ruff 通过；validate-corpus 3 文档/172 条/34 规则，错误及审阅门禁为 0。新增测试覆盖索引篡改/错维度/不匹配版本、向量乱序、长文尾部、原文注入、失败不得降级、API 未就绪和条件 ID。
+- 真实复验：scripts/live_audit_smoke.py violation education review --out reports/text-rag-smoke-v1.4.json。违规 completed/non_compliant 67.406 秒/7 次；教育 completed/needs_review 114.672 秒/10 次；局部 completed/needs_review 62.703 秒/7 次。每例均含 1 次查询向量，未调用视觉；教育发生 3 次批次结构修复。结果所有召回原文进入批次、34 规则台账完整、输出引用与知识库一致。
+- 服务：重启本项目 uvicorn（原 PID 14780），新服务监听 127.0.0.1:8000；真实 HTTP /readyz 返回 200、hybrid、vector_index_ready=true、mock=false。
+- 限制：教育反例应无违规但仍复核，未达到预期 compliant，G1 不通过；不能声称正式效果改善。当前所有规则仍执行，提示上下文较多。新快照发布后 build-index 仍需显式执行，P0 watcher 未自动付费建索引；P3 和案例知识库未完成。
+- 下一步：完善材料商业属性与规则适用性判断，降低教育反例误复核；补全纯文本 API/CLI 三态验收，并以开发集检验检索与 Prompt，保留独立测试集。资料收集不由系统冒充人工标注。

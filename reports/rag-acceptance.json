@@ -1,0 +1,69 @@
+{
+  "ruleset_id": "official-v1-2026-10-11",
+  "retrieval_mode": "hybrid",
+  "embedding_model": "text-embedding-v4",
+  "dimensions": 1024,
+  "prompt_version": "audit-v1.4-rag",
+  "tests_passed": 75,
+  "scope": "synthetic development demonstrations, not formal evaluation",
+  "g1_passed": false,
+  "checks": [
+    "all retrieved originals included in batch context",
+    "all 34 rules accounted for",
+    "citations match local originals and allowed rule IDs",
+    "no vision calls"
+  ],
+  "cases": [
+    {
+      "case": "violation",
+      "status": "completed",
+      "decision": "non_compliant",
+      "expected_demo_decision": "non_compliant",
+      "matches_demo_expectation": true,
+      "latency_ms": 67406,
+      "attempts": 7,
+      "retrieved_articles": 8,
+      "rules_accounted_for": 34,
+      "validation_repairs": 0,
+      "token_usage": {
+        "prompt_tokens": 68419,
+        "completion_tokens": 7192,
+        "total_tokens": 75611
+      }
+    },
+    {
+      "case": "education",
+      "status": "completed",
+      "decision": "needs_review",
+      "expected_demo_decision": "compliant",
+      "matches_demo_expectation": false,
+      "latency_ms": 114672,
+      "attempts": 10,
+      "retrieved_articles": 8,
+      "rules_accounted_for": 34,
+      "validation_repairs": 3,
+      "token_usage": {
+        "prompt_tokens": 102816,
+        "completion_tokens": 11484,
+        "total_tokens": 114300
+      }
+    },
+    {
+      "case": "review",
+      "status": "completed",
+      "decision": "needs_review",
+      "expected_demo_decision": "needs_review",
+      "matches_demo_expectation": true,
+      "latency_ms": 62703,
+      "attempts": 7,
+      "retrieved_articles": 8,
+      "rules_accounted_for": 34,
+      "validation_repairs": 0,
+      "token_usage": {
+        "prompt_tokens": 67895,
+        "completion_tokens": 6812,
+        "total_tokens": 74707
+      }
+    }
+  ]
+}

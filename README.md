@@ -22,13 +22,14 @@ py -3.11 -m venv .venv
 
 ## 当前阻塞
 
-当前目标规则集为用户确认的 `official-v1-2026-10-11`，来源是目录中的三份核心正式文件。DOC/PDF 已可靠提取；实施 agent 已全文核对 172 条文与 34 张规则卡并完成 P0 校验，核对不代表法律专家认证。保险法按用户要求暂缓，不属于本快照。本地密钥与地域配置已就绪，文本与视觉基础探测已通过；文本复验一个违规案例成功，教育反例和局部材料仍有校验失败，详见 [文本冒烟报告](reports/text-smoke.md)。G1/G2 尚未通过，RAG 改造见 [待实施方案](docs/text-rag-plan.md)。
+当前规则集为用户确认的 `official-v1-2026-10-11`，只使用本地三份核心正式文件，含 172 条文、34 张规则卡；实施 agent 的核对不代表法律专家认证，保险法仍暂缓。本地 hybrid RAG 已接通，最新三个文本用例均完成，但教育反例仍过度保守地转为需复核，G1/G2 尚未通过。详见 [RAG 实测报告](reports/rag-acceptance.md)、[运行说明](docs/rag-operations.md)；[文本旧报告](reports/text-smoke.md) 保留历史问题。
 
 ## 纯文本运行
 
 ```powershell
 $env:PYTHONIOENCODING='utf-8'
-.\.venv\Scripts\python.exe -m insurance_audit.cli audit-text --text '保险知识科普：分红属于非保证利益。'
+.\.venv\Scripts\python.exe -m insurance_audit.cli build-index
+.\.venv\Scripts\python.exe -m insurance_audit.cli audit-text '保险知识科普：分红属于非保证利益。'
 .\.venv\Scripts\python.exe -m uvicorn insurance_audit.api:app --host 127.0.0.1 --port 8000
 # 以下使用真实 API，产生调用用量；只运行三个合成文本演示案例，不调用视觉模型。
 .\.venv\Scripts\python.exe scripts/live_audit_smoke.py violation education review
@@ -36,7 +37,9 @@ $env:PYTHONIOENCODING='utf-8'
 
 页面地址为 http://127.0.0.1:8000，当前优先使用文本输入。完整审核结果包含 completed/partial/failed 执行状态及三态业务结论；failed/null 是技术失败，不表示合规。合成案例报告不是正式评估成绩。
 
-本地文本模型为 qwen3.7-plus，使用 `BAILIAN_TEXT_ENABLE_THINKING=false` 控制思考模式；更换模型时按其能力确认该参数，移除参数则使用模型默认行为。依据：[百炼思考模式文档](https://help.aliyun.com/zh/model-studio/deep-thinking)。Embedding 模型和维度已配置，但当前仍使用 BM25，没有向量 API 调用。
+本地文本模型为 qwen3.7-plus，使用 `BAILIAN_TEXT_ENABLE_THINKING=false` 控制思考模式；更换模型时按其能力确认该参数，移除参数则使用模型默认行为。依据：[百炼思考模式文档](https://help.aliyun.com/zh/model-studio/deep-thinking)。本地已启用 RETRIEVAL_MODE=hybrid，使用 text-embedding-v4/1024 维和 BM25，经 RRF 融合召回后将原文送入模型，同时保留全部规则覆盖。查询向量失败不会静默降级。
+
+`build-index` 首次调用真实 Embedding，现有 172 条文每批最多 10 条；重复运行校验并复用同一版本。索引单独保存在 data/indexes/，绑定法规快照哈希、模型、维度和检索文本哈希。新快照发布后需显式重新执行 build-index；不匹配的旧索引不会被使用。当前整条索引限每条检索文本 2000 字符，未来超长条文需实现分款/父条方案，构建器会拒绝而非截断。图片仍暂缓。
 
 ## P0 语料命令与快照
 

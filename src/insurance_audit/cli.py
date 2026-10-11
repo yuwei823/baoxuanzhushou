@@ -42,6 +42,7 @@ def main() -> None:
     args = parser.parse_args()
     if args.command == "build-index":
         import asyncio
+
         from insurance_audit.config import Settings
         from insurance_audit.models.bailian import Bailian
         from insurance_audit.retrieval import Corpus

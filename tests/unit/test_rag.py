@@ -7,10 +7,10 @@ from insurance_audit.config import Settings
 from insurance_audit.models.bailian import Bailian, Budget, ModelFailure
 from insurance_audit.models.mock import MockProvider
 from insurance_audit.retrieval import Corpus
-from insurance_audit.schemas import AuditRequest
+from insurance_audit.schemas import AuditRequest, JudgeOutput
 from insurance_audit.service import AuditService
 from insurance_audit.vector_index import build_index, load_index, normalize
-from insurance_audit.workflow import judge_messages, text_sources
+from insurance_audit.workflow import judge_messages, resolve_condition_ids, text_sources
 
 
 @pytest.fixture
@@ -128,3 +128,28 @@ async def test_hybrid_failure_cannot_silently_fall_back(corpus):
     assert result.status == "failed" and result.decision is None
     assert len(result.coverage.rules) == len(corpus.rules)
     assert all(r.status == "failed" for r in result.coverage.rules)
+
+
+@pytest.mark.asyncio
+async def test_condition_ids_resolve_but_unknown_and_duplicates_fail(corpus):
+    card = corpus.rules["marketing_truthful_and_not_misleading"]
+    request = AuditRequest(text="测试")
+    sources = text_sources(request.text)
+    output = JudgeOutput.model_validate_json(
+        await MockProvider().call(
+            "text", judge_messages(request, sources, [card], {}, True, []), Budget()
+        )
+    )
+    for i, condition in enumerate(output.findings[0].condition_results, 1):
+        condition.condition = f"c{i}"
+    resolve_condition_ids(output, [card], sources)
+    assert [c.condition for c in output.findings[0].condition_results] == card["trigger_conditions"]
+    output.findings[0].condition_results[0].condition = "c999"
+    with pytest.raises(ValueError, match="Condition coverage"):
+        resolve_condition_ids(output, [card], sources)
+    output.findings[0].condition_results[0].condition = "c1"
+    output.findings[0].condition_results.append(
+        output.findings[0].condition_results[0].model_copy()
+    )
+    with pytest.raises(ValueError, match="Condition coverage"):
+        resolve_condition_ids(output, [card], sources)

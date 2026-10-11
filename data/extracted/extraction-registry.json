@@ -1,6 +1,6 @@
 {
   "registry_schema_version": "2.0",
-  "generated_at_utc": "2026-10-11T11:24:43.086366+00:00",
+  "generated_at_utc": "2026-10-11T16:11:35.348959+00:00",
   "generated_by": "insurance_audit.corpus.registry",
   "ruleset_id": "official-v1-2026-10-11",
   "ruleset_status": "published",
@@ -317,11 +317,25 @@
         "first_seen": 1791714084.2622328,
         "present": true,
         "status": "registered_existing"
+      },
+      "法律法规/保险营销违规案例库_100条.md": {
+        "sha256": "bbab31bfd9b939c8c220647f403ec09607033bb8f6f75da744ebbb6cdcd350eb",
+        "first_seen": 1791723800.8919082,
+        "present": true,
+        "status": "failed",
+        "error": "Article numbering missing, duplicated or unordered: []"
       }
     },
-    "versions": {},
+    "versions": {
+      "bbab31bfd9b939c8c220647f403ec09607033bb8f6f75da744ebbb6cdcd350eb": {
+        "status": "failed",
+        "source_path": "法律法规/保险营销违规案例库_100条.md",
+        "error": "Article numbering missing, duplicated or unordered: []",
+        "failed_at": "2026-10-11T13:03:25.984714+00:00"
+      }
+    },
     "candidates": {},
-    "last_run": "2026-10-11T11:24:43.079364+00:00",
+    "last_run": "2026-10-11T16:11:35.341977+00:00",
     "pid": 19704
   }
 }

@@ -113,6 +113,8 @@ def create_app(settings=None, provider=None):
                 "corpus_ready": bool(corpus),
                 "model_configured": settings.configured,
                 "mock": settings.audit_mock,
+                "retrieval_mode": settings.retrieval_mode,
+                "vector_index_ready": bool(corpus and corpus.vectors is not None),
             },
             status_code=200 if success else 503,
         )
@@ -125,6 +127,11 @@ def create_app(settings=None, provider=None):
             "ruleset_id": settings.ruleset_id,
             "ruleset_mode": "official_snapshot",
             "rule_count": len(corpus.rules),
+            "retrieval_mode": settings.retrieval_mode,
+            "embedding_model": settings.embedding_model if corpus.vectors is not None else None,
+            "embedding_dimensions": settings.embedding_dimensions
+            if corpus.vectors is not None
+            else None,
             "article_count": len(corpus.articles),
             "documents": [
                 {"title": d["title"], "document_status": d["document_status"]}
