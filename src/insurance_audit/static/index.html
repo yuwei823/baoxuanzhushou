@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>保宣 · 营销内容审核</title><link rel="stylesheet" href="/static/styles.css"><script src="/static/app.js" defer></script></head>
+<body><header><a href="/" class="brand">保宣<span>合规助手</span></a><span class="tag">本地审核工作台</span><span id="mode">连接中</span></header>
+<main><div class="intro"><div><p class="eyebrow">INSURANCE CONTENT REVIEW</p><h1>让每一条判断，<br>都有据可查。</h1><p>提交营销文案与图片，对照已核对法规，查看证据、条文和需要补充的信息。</p></div><aside><span class="status-dot"></span><b>当前规则集</b><p id="ruleset">正在读取…</p><small id="scope"></small><details><summary>查看法规范围</summary><ul id="documents"></ul></details></aside></div>
+<div id="notice" role="status" hidden></div>
+<div class="workspace"><section class="panel input-panel"><div class="section-title"><h2>提交审核材料</h2><span>01 / INPUT</span></div>
+<label for="text">营销文案 <span id="counter">0 / 10,000</span></label><textarea id="text" rows="9" placeholder="粘贴完整文案，保留收益说明、风险提示与限定条件…"></textarea>
+<label for="images" class="dropzone"><strong>＋ 添加图片</strong><span>JPEG / PNG / WebP · 最多 5 张</span><small>单张 10 MB，总计 25 MB，最大 20 MP</small></label><input id="images" type="file" accept="image/jpeg,image/png,image/webp" multiple><div id="previews" class="previews"></div>
+<details class="context" open><summary>补充上下文 <small>不确定时保留“未知”</small></summary><div class="fields">
+<label>投放渠道<select id="channel"><option value="unknown">未知</option><option value="internet">互联网</option><option value="offline">线下</option></select></label>
+<label>发布主体<select id="publisher_type"><option value="unknown">未知</option><option value="insurance_institution">保险机构</option><option value="insurance_intermediary">保险中介</option><option value="marketing_personnel">营销人员</option><option value="other">其他</option></select></label>
+<label>产品类型<select id="product_type"><option value="unknown">未知</option><option value="insurance">保险产品</option><option value="life_insurance">人身保险</option><option value="property_insurance">财产保险</option><option value="other">其他</option></select></label>
+<label>材料完整性<select id="material_completeness"><option value="unknown">未知</option><option value="complete">已提供完整材料</option><option value="partial">局部截取</option></select></label></div></details>
+<div class="actions"><button id="submit" class="primary">开始审核 <span>↗</span></button><button id="cancel" hidden>取消</button></div><p class="privacy">图片仅在本次请求中处理；原文不会写入运行日志。</p>
+<div class="examples"><span>试用示例</span><button data-example="violation">监管背书</button><button data-example="education">教育反例</button><button data-example="multi">多图补充</button><button data-example="review">局部材料</button></div>
+</section><section class="panel output-panel" aria-live="polite"><div class="section-title"><h2>审核结果</h2><button id="download" disabled>↓ JSON</button></div><div id="empty"><div class="empty-symbol">≋</div><h3>等待提交材料</h3><p>审核完成后，在这里逐项对照营销证据与法规原文。</p><div class="legend"><span>违规项</span><span>待核验事项</span><span>规则覆盖</span></div></div><div id="results" hidden></div></section></div>
+<footer>结论仅限当前规则集及已提交材料范围。模型置信度未经校准；内容检查不替代现实资质核验。</footer></main></body></html>

@@ -1,6 +1,6 @@
 {
   "registry_schema_version": "2.0",
-  "generated_at_utc": "2026-10-11T10:31:08.972418+00:00",
+  "generated_at_utc": "2026-10-11T11:00:29.128894+00:00",
   "generated_by": "insurance_audit.corpus.registry",
   "ruleset_id": "official-v1-2026-10-11",
   "ruleset_status": "published",
@@ -321,7 +321,7 @@
     },
     "versions": {},
     "candidates": {},
-    "last_run": "2026-10-11T10:31:08.964572+00:00",
+    "last_run": "2026-10-11T11:00:29.120895+00:00",
     "pid": 19704
   }
 }

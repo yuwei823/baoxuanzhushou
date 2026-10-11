@@ -1,0 +1,1879 @@
+{
+  "cases": {
+    "violation": {
+      "run_at_utc": "2026-10-11T10:52:03.348238+00:00",
+      "synthetic_demo": true,
+      "response": {
+        "audit_id": "d0aef824-21dc-40d2-a01d-4edc1552f05e",
+        "trace_id": "7d4837cb-05d2-4d96-8b28-8e099b570d21",
+        "status": "failed",
+        "decision": null,
+        "is_compliant": null,
+        "summary": "审核遇到技术故障，未生成业务结论。",
+        "ruleset_id": "official-v1-2026-10-11",
+        "ruleset_mode": "official_snapshot",
+        "violations": [],
+        "review_items": [],
+        "coverage": {
+          "total": 34,
+          "eligible": 34,
+          "checked": 0,
+          "coverage_ratio": 0.0,
+          "resolved_ratio": 0.0,
+          "rules": [
+            {
+              "rule_id": "marketing_truthful_and_not_misleading",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "insurance_benefit_uncertainty_and_risk",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "identify_insurance_product_and_provider",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "disclose_material_policy_terms_and_restrictions",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "no_regulatory_guarantee_or_filing_endorsement",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "public_figure_endorsement_external_review",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "marketing_personnel_authorization_and_channel",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "stop_sale_and_price_change_claims",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "regional_and_third_party_marketing_scope",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "bundled_financial_products_and_default_choice",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "licensed_insurance_and_marketing_subject",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "partner_contract_and_delegation",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "suitability_and_consumer_demand",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "truthful_health_disclosure_prompt",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "policy_confirmation_and_approved_terms",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "premium_payment_and_accounts",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "personal_information_consent_and_use",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "unlawful_surrender_promotion",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "official_platform_mandatory_information",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "offline_service_availability_disclosure",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "voluntary_renewal_and_sales_choices",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "intermediary_industry_name_and_brand",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "multi_product_display_separation",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "marketing_message_optout",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "popup_close_control",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "algorithm_recommendation_controls",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "regulated_account_names_and_trademarks",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "third_party_sales_intervention",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "paid_education_disguised_marketing",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "special_internet_insurance_business_scope",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "nonbank_payment_marketing_options",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "illegal_financial_activity_marketing",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "approved_marketing_content_use",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "internet_platform_operating_conditions",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            }
+          ]
+        },
+        "confidence": null,
+        "confidence_kind": "not_computed",
+        "warnings": [],
+        "errors": [
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "marketing_truthful_and_not_misleading",
+              "insurance_benefit_uncertainty_and_risk",
+              "identify_insurance_product_and_provider",
+              "disclose_material_policy_terms_and_restrictions",
+              "no_regulatory_guarantee_or_filing_endorsement",
+              "public_figure_endorsement_external_review"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "marketing_personnel_authorization_and_channel",
+              "stop_sale_and_price_change_claims",
+              "regional_and_third_party_marketing_scope",
+              "bundled_financial_products_and_default_choice",
+              "licensed_insurance_and_marketing_subject",
+              "partner_contract_and_delegation"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "suitability_and_consumer_demand",
+              "truthful_health_disclosure_prompt",
+              "policy_confirmation_and_approved_terms",
+              "premium_payment_and_accounts",
+              "personal_information_consent_and_use",
+              "unlawful_surrender_promotion"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "official_platform_mandatory_information",
+              "offline_service_availability_disclosure",
+              "voluntary_renewal_and_sales_choices",
+              "intermediary_industry_name_and_brand",
+              "multi_product_display_separation",
+              "marketing_message_optout"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "popup_close_control",
+              "algorithm_recommendation_controls",
+              "regulated_account_names_and_trademarks",
+              "third_party_sales_intervention",
+              "paid_education_disguised_marketing",
+              "special_internet_insurance_business_scope"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "nonbank_payment_marketing_options",
+              "illegal_financial_activity_marketing",
+              "approved_marketing_content_use",
+              "internet_platform_operating_conditions"
+            ],
+            "image_id": null
+          }
+        ],
+        "images": [],
+        "sources": [
+          {
+            "source_id": "text_1",
+            "source_type": "text",
+            "text": "安心保险产品，由监管部门担保收益，购买后稳赚不赔。",
+            "start": 0,
+            "image_id": null,
+            "block_id": null
+          }
+        ],
+        "mock": false,
+        "meta": {
+          "ruleset_hash": "255be926a0ac6c8dadb6c1e033d761c480c91c586f11b8a3c01e75afcc0eb81c",
+          "prompt_version": "audit-v1.0",
+          "workflow_version": "1.0",
+          "model_ids": {
+            "text": "qwen3.7-plus",
+            "vision": "qwen3-vl-plus"
+          },
+          "retrieved_article_ids": [
+            "financial_network_marketing_order_2026_09::art_033",
+            "insurance_sales_behavior_order_2023_02::art_021",
+            "insurance_sales_behavior_order_2023_02::art_028",
+            "insurance_sales_behavior_order_2023_02::art_037",
+            "insurance_sales_behavior_order_2023_02::art_040",
+            "internet_insurance_supervision_order_2020_13::art_008",
+            "internet_insurance_supervision_order_2020_13::art_076",
+            "internet_insurance_supervision_order_2020_13::art_079"
+          ],
+          "attempts": 8,
+          "calls": [
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 45094
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 45125
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 90156
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 90156
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 135203
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 135203
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 103750
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 103828
+            }
+          ],
+          "token_usage": {
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0
+          },
+          "stage_latency": {
+            "extract_ms": 0,
+            "judge_ms": 150000
+          },
+          "latency_ms": 150000
+        }
+      }
+    },
+    "education": {
+      "run_at_utc": "2026-10-11T10:54:33.372556+00:00",
+      "synthetic_demo": true,
+      "response": {
+        "audit_id": "4b9066a0-53bb-4c11-9795-25727e677417",
+        "trace_id": "25319ee7-6546-497f-b8cb-1ce660df8809",
+        "status": "failed",
+        "decision": null,
+        "is_compliant": null,
+        "summary": "审核遇到技术故障，未生成业务结论。",
+        "ruleset_id": "official-v1-2026-10-11",
+        "ruleset_mode": "official_snapshot",
+        "violations": [],
+        "review_items": [],
+        "coverage": {
+          "total": 34,
+          "eligible": 34,
+          "checked": 0,
+          "coverage_ratio": 0.0,
+          "resolved_ratio": 0.0,
+          "rules": [
+            {
+              "rule_id": "marketing_truthful_and_not_misleading",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "insurance_benefit_uncertainty_and_risk",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "identify_insurance_product_and_provider",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "disclose_material_policy_terms_and_restrictions",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "no_regulatory_guarantee_or_filing_endorsement",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "public_figure_endorsement_external_review",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "marketing_personnel_authorization_and_channel",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "stop_sale_and_price_change_claims",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "regional_and_third_party_marketing_scope",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "bundled_financial_products_and_default_choice",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "licensed_insurance_and_marketing_subject",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "partner_contract_and_delegation",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "suitability_and_consumer_demand",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "truthful_health_disclosure_prompt",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "policy_confirmation_and_approved_terms",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "premium_payment_and_accounts",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "personal_information_consent_and_use",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "unlawful_surrender_promotion",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "official_platform_mandatory_information",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "offline_service_availability_disclosure",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "voluntary_renewal_and_sales_choices",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "intermediary_industry_name_and_brand",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "multi_product_display_separation",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "marketing_message_optout",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "popup_close_control",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "algorithm_recommendation_controls",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "regulated_account_names_and_trademarks",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "third_party_sales_intervention",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "paid_education_disguised_marketing",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "special_internet_insurance_business_scope",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "nonbank_payment_marketing_options",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "illegal_financial_activity_marketing",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "approved_marketing_content_use",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "internet_platform_operating_conditions",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            }
+          ]
+        },
+        "confidence": null,
+        "confidence_kind": "not_computed",
+        "warnings": [],
+        "errors": [
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "marketing_truthful_and_not_misleading",
+              "insurance_benefit_uncertainty_and_risk",
+              "identify_insurance_product_and_provider",
+              "disclose_material_policy_terms_and_restrictions",
+              "no_regulatory_guarantee_or_filing_endorsement",
+              "public_figure_endorsement_external_review"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "marketing_personnel_authorization_and_channel",
+              "stop_sale_and_price_change_claims",
+              "regional_and_third_party_marketing_scope",
+              "bundled_financial_products_and_default_choice",
+              "licensed_insurance_and_marketing_subject",
+              "partner_contract_and_delegation"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "suitability_and_consumer_demand",
+              "truthful_health_disclosure_prompt",
+              "policy_confirmation_and_approved_terms",
+              "premium_payment_and_accounts",
+              "personal_information_consent_and_use",
+              "unlawful_surrender_promotion"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "official_platform_mandatory_information",
+              "offline_service_availability_disclosure",
+              "voluntary_renewal_and_sales_choices",
+              "intermediary_industry_name_and_brand",
+              "multi_product_display_separation",
+              "marketing_message_optout"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "popup_close_control",
+              "algorithm_recommendation_controls",
+              "regulated_account_names_and_trademarks",
+              "third_party_sales_intervention",
+              "paid_education_disguised_marketing",
+              "special_internet_insurance_business_scope"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "nonbank_payment_marketing_options",
+              "illegal_financial_activity_marketing",
+              "approved_marketing_content_use",
+              "internet_platform_operating_conditions"
+            ],
+            "image_id": null
+          }
+        ],
+        "images": [],
+        "sources": [
+          {
+            "source_id": "text_1",
+            "source_type": "text",
+            "text": "保险知识科普：任何人都不应宣称‘监管部门担保收益’。分红属于非保证利益，实际收益可能低于演示水平。本文不介绍或销售具体产品。",
+            "start": 0,
+            "image_id": null,
+            "block_id": null
+          }
+        ],
+        "mock": false,
+        "meta": {
+          "ruleset_hash": "255be926a0ac6c8dadb6c1e033d761c480c91c586f11b8a3c01e75afcc0eb81c",
+          "prompt_version": "audit-v1.0",
+          "workflow_version": "1.0",
+          "model_ids": {
+            "text": "qwen3.7-plus",
+            "vision": "qwen3-vl-plus"
+          },
+          "retrieved_article_ids": [
+            "financial_network_marketing_order_2026_09::art_010",
+            "insurance_sales_behavior_order_2023_02::art_006",
+            "insurance_sales_behavior_order_2023_02::art_015",
+            "internet_insurance_supervision_order_2020_13::art_014",
+            "internet_insurance_supervision_order_2020_13::art_015",
+            "internet_insurance_supervision_order_2020_13::art_017",
+            "internet_insurance_supervision_order_2020_13::art_056",
+            "internet_insurance_supervision_order_2020_13::art_079"
+          ],
+          "attempts": 8,
+          "calls": [
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 45063
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 45063
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 90125
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 90125
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 135250
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 135250
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 103781
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 103781
+            }
+          ],
+          "token_usage": {
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0
+          },
+          "stage_latency": {
+            "extract_ms": 0,
+            "judge_ms": 150016
+          },
+          "latency_ms": 150016
+        }
+      }
+    },
+    "multi": {
+      "run_at_utc": "2026-10-11T10:57:03.402276+00:00",
+      "synthetic_demo": true,
+      "response": {
+        "audit_id": "500e40e2-8be7-4f53-9b4a-a0ef2ca0bf13",
+        "trace_id": "251437d0-50db-415e-b09a-4180641b646f",
+        "status": "failed",
+        "decision": null,
+        "is_compliant": null,
+        "summary": "审核遇到技术故障，未生成业务结论。",
+        "ruleset_id": "official-v1-2026-10-11",
+        "ruleset_mode": "official_snapshot",
+        "violations": [],
+        "review_items": [],
+        "coverage": {
+          "total": 34,
+          "eligible": 34,
+          "checked": 0,
+          "coverage_ratio": 0.0,
+          "resolved_ratio": 0.0,
+          "rules": [
+            {
+              "rule_id": "marketing_truthful_and_not_misleading",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "insurance_benefit_uncertainty_and_risk",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "identify_insurance_product_and_provider",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "disclose_material_policy_terms_and_restrictions",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "no_regulatory_guarantee_or_filing_endorsement",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "public_figure_endorsement_external_review",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "marketing_personnel_authorization_and_channel",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "stop_sale_and_price_change_claims",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "regional_and_third_party_marketing_scope",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "bundled_financial_products_and_default_choice",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "licensed_insurance_and_marketing_subject",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "partner_contract_and_delegation",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "suitability_and_consumer_demand",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "truthful_health_disclosure_prompt",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "policy_confirmation_and_approved_terms",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "premium_payment_and_accounts",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "personal_information_consent_and_use",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "unlawful_surrender_promotion",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "official_platform_mandatory_information",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "offline_service_availability_disclosure",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "voluntary_renewal_and_sales_choices",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "intermediary_industry_name_and_brand",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "multi_product_display_separation",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "marketing_message_optout",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "popup_close_control",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "algorithm_recommendation_controls",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "regulated_account_names_and_trademarks",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "third_party_sales_intervention",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "paid_education_disguised_marketing",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "special_internet_insurance_business_scope",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "nonbank_payment_marketing_options",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "illegal_financial_activity_marketing",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "approved_marketing_content_use",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "internet_platform_operating_conditions",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            }
+          ]
+        },
+        "confidence": null,
+        "confidence_kind": "not_computed",
+        "warnings": [],
+        "errors": [
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "marketing_truthful_and_not_misleading",
+              "insurance_benefit_uncertainty_and_risk",
+              "identify_insurance_product_and_provider",
+              "disclose_material_policy_terms_and_restrictions",
+              "no_regulatory_guarantee_or_filing_endorsement",
+              "public_figure_endorsement_external_review"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "marketing_personnel_authorization_and_channel",
+              "stop_sale_and_price_change_claims",
+              "regional_and_third_party_marketing_scope",
+              "bundled_financial_products_and_default_choice",
+              "licensed_insurance_and_marketing_subject",
+              "partner_contract_and_delegation"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "suitability_and_consumer_demand",
+              "truthful_health_disclosure_prompt",
+              "policy_confirmation_and_approved_terms",
+              "premium_payment_and_accounts",
+              "personal_information_consent_and_use",
+              "unlawful_surrender_promotion"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "official_platform_mandatory_information",
+              "offline_service_availability_disclosure",
+              "voluntary_renewal_and_sales_choices",
+              "intermediary_industry_name_and_brand",
+              "multi_product_display_separation",
+              "marketing_message_optout"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "popup_close_control",
+              "algorithm_recommendation_controls",
+              "regulated_account_names_and_trademarks",
+              "third_party_sales_intervention",
+              "paid_education_disguised_marketing",
+              "special_internet_insurance_business_scope"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "nonbank_payment_marketing_options",
+              "illegal_financial_activity_marketing",
+              "approved_marketing_content_use",
+              "internet_platform_operating_conditions"
+            ],
+            "image_id": null
+          }
+        ],
+        "images": [
+          {
+            "text_blocks": [
+              {
+                "text": "保险知识小课堂"
+              },
+              {
+                "text": "分红保险：如何理解演示利益？"
+              },
+              {
+                "text": "请结合下一张图片的风险说明阅读。"
+              },
+              {
+                "text": "仅作教育演示，不推荐具体产品。"
+              }
+            ],
+            "visual_observations": [
+              "浅绿色背景的圆角矩形卡片内含四行深色文字，左对齐排布。",
+              "文字为无衬线字体，字号一致，行间距适中。",
+              "无图标、图片、边框装饰或其他视觉元素。"
+            ],
+            "unreadable_regions": [],
+            "extraction_warnings": [],
+            "image_id": "image_1",
+            "visible_text": "保险知识小课堂\n分红保险：如何理解演示利益？\n请结合下一张图片的风险说明阅读。\n仅作教育演示，不推荐具体产品。",
+            "block_ids": [
+              "image_1:text:1",
+              "image_1:text:2",
+              "image_1:text:3",
+              "image_1:text:4"
+            ],
+            "model_id": "qwen3-vl-plus"
+          },
+          {
+            "text_blocks": [
+              {
+                "text": "风险与限制说明"
+              },
+              {
+                "text": "分红属于非保证利益，实际分红可能为零。"
+              },
+              {
+                "text": "不要把演示收益当作承诺收益。"
+              },
+              {
+                "text": "仅作教育演示，不推荐具体产品。"
+              }
+            ],
+            "visual_observations": [
+              "浅绿色背景的圆角矩形卡片内包含黑色文字",
+              "标题“风险与限制说明”位于顶部，字体加粗",
+              "正文三行文字左对齐，行间距适中"
+            ],
+            "unreadable_regions": [],
+            "extraction_warnings": [],
+            "image_id": "image_2",
+            "visible_text": "风险与限制说明\n分红属于非保证利益，实际分红可能为零。\n不要把演示收益当作承诺收益。\n仅作教育演示，不推荐具体产品。",
+            "block_ids": [
+              "image_2:text:1",
+              "image_2:text:2",
+              "image_2:text:3",
+              "image_2:text:4"
+            ],
+            "model_id": "qwen3-vl-plus"
+          }
+        ],
+        "sources": [
+          {
+            "source_id": "text_1",
+            "source_type": "text",
+            "text": "请结合两张图片审核完整图文材料。",
+            "start": 0,
+            "image_id": null,
+            "block_id": null
+          },
+          {
+            "source_id": "image_1:text:1",
+            "source_type": "image_text",
+            "text": "保险知识小课堂",
+            "start": 0,
+            "image_id": "image_1",
+            "block_id": "image_1:text:1"
+          },
+          {
+            "source_id": "image_1:text:2",
+            "source_type": "image_text",
+            "text": "分红保险：如何理解演示利益？",
+            "start": 0,
+            "image_id": "image_1",
+            "block_id": "image_1:text:2"
+          },
+          {
+            "source_id": "image_1:text:3",
+            "source_type": "image_text",
+            "text": "请结合下一张图片的风险说明阅读。",
+            "start": 0,
+            "image_id": "image_1",
+            "block_id": "image_1:text:3"
+          },
+          {
+            "source_id": "image_1:text:4",
+            "source_type": "image_text",
+            "text": "仅作教育演示，不推荐具体产品。",
+            "start": 0,
+            "image_id": "image_1",
+            "block_id": "image_1:text:4"
+          },
+          {
+            "source_id": "image_1:observation:1",
+            "source_type": "image_observation",
+            "text": "浅绿色背景的圆角矩形卡片内含四行深色文字，左对齐排布。",
+            "start": 0,
+            "image_id": "image_1",
+            "block_id": "image_1:observation:1"
+          },
+          {
+            "source_id": "image_1:observation:2",
+            "source_type": "image_observation",
+            "text": "文字为无衬线字体，字号一致，行间距适中。",
+            "start": 0,
+            "image_id": "image_1",
+            "block_id": "image_1:observation:2"
+          },
+          {
+            "source_id": "image_1:observation:3",
+            "source_type": "image_observation",
+            "text": "无图标、图片、边框装饰或其他视觉元素。",
+            "start": 0,
+            "image_id": "image_1",
+            "block_id": "image_1:observation:3"
+          },
+          {
+            "source_id": "image_2:text:1",
+            "source_type": "image_text",
+            "text": "风险与限制说明",
+            "start": 0,
+            "image_id": "image_2",
+            "block_id": "image_2:text:1"
+          },
+          {
+            "source_id": "image_2:text:2",
+            "source_type": "image_text",
+            "text": "分红属于非保证利益，实际分红可能为零。",
+            "start": 0,
+            "image_id": "image_2",
+            "block_id": "image_2:text:2"
+          },
+          {
+            "source_id": "image_2:text:3",
+            "source_type": "image_text",
+            "text": "不要把演示收益当作承诺收益。",
+            "start": 0,
+            "image_id": "image_2",
+            "block_id": "image_2:text:3"
+          },
+          {
+            "source_id": "image_2:text:4",
+            "source_type": "image_text",
+            "text": "仅作教育演示，不推荐具体产品。",
+            "start": 0,
+            "image_id": "image_2",
+            "block_id": "image_2:text:4"
+          },
+          {
+            "source_id": "image_2:observation:1",
+            "source_type": "image_observation",
+            "text": "浅绿色背景的圆角矩形卡片内包含黑色文字",
+            "start": 0,
+            "image_id": "image_2",
+            "block_id": "image_2:observation:1"
+          },
+          {
+            "source_id": "image_2:observation:2",
+            "source_type": "image_observation",
+            "text": "标题“风险与限制说明”位于顶部，字体加粗",
+            "start": 0,
+            "image_id": "image_2",
+            "block_id": "image_2:observation:2"
+          },
+          {
+            "source_id": "image_2:observation:3",
+            "source_type": "image_observation",
+            "text": "正文三行文字左对齐，行间距适中",
+            "start": 0,
+            "image_id": "image_2",
+            "block_id": "image_2:observation:3"
+          }
+        ],
+        "mock": false,
+        "meta": {
+          "ruleset_hash": "255be926a0ac6c8dadb6c1e033d761c480c91c586f11b8a3c01e75afcc0eb81c",
+          "prompt_version": "audit-v1.0",
+          "workflow_version": "1.0",
+          "model_ids": {
+            "text": "qwen3.7-plus",
+            "vision": "qwen3-vl-plus"
+          },
+          "retrieved_article_ids": [
+            "financial_network_marketing_order_2026_09::art_004",
+            "financial_network_marketing_order_2026_09::art_007",
+            "financial_network_marketing_order_2026_09::art_010",
+            "financial_network_marketing_order_2026_09::art_013",
+            "financial_network_marketing_order_2026_09::art_016",
+            "financial_network_marketing_order_2026_09::art_017",
+            "financial_network_marketing_order_2026_09::art_018",
+            "financial_network_marketing_order_2026_09::art_019",
+            "financial_network_marketing_order_2026_09::art_021",
+            "financial_network_marketing_order_2026_09::art_022",
+            "financial_network_marketing_order_2026_09::art_031",
+            "insurance_sales_behavior_order_2023_02::art_002",
+            "insurance_sales_behavior_order_2023_02::art_003",
+            "insurance_sales_behavior_order_2023_02::art_005",
+            "insurance_sales_behavior_order_2023_02::art_006",
+            "insurance_sales_behavior_order_2023_02::art_008",
+            "insurance_sales_behavior_order_2023_02::art_009",
+            "insurance_sales_behavior_order_2023_02::art_013",
+            "insurance_sales_behavior_order_2023_02::art_014",
+            "insurance_sales_behavior_order_2023_02::art_015",
+            "insurance_sales_behavior_order_2023_02::art_016",
+            "insurance_sales_behavior_order_2023_02::art_017",
+            "insurance_sales_behavior_order_2023_02::art_018",
+            "insurance_sales_behavior_order_2023_02::art_020",
+            "insurance_sales_behavior_order_2023_02::art_021",
+            "insurance_sales_behavior_order_2023_02::art_022",
+            "insurance_sales_behavior_order_2023_02::art_026",
+            "insurance_sales_behavior_order_2023_02::art_028",
+            "insurance_sales_behavior_order_2023_02::art_029",
+            "insurance_sales_behavior_order_2023_02::art_034",
+            "insurance_sales_behavior_order_2023_02::art_037",
+            "insurance_sales_behavior_order_2023_02::art_040",
+            "internet_insurance_supervision_order_2020_13::art_001",
+            "internet_insurance_supervision_order_2020_13::art_002",
+            "internet_insurance_supervision_order_2020_13::art_004",
+            "internet_insurance_supervision_order_2020_13::art_005",
+            "internet_insurance_supervision_order_2020_13::art_007",
+            "internet_insurance_supervision_order_2020_13::art_008",
+            "internet_insurance_supervision_order_2020_13::art_009",
+            "internet_insurance_supervision_order_2020_13::art_011",
+            "internet_insurance_supervision_order_2020_13::art_012",
+            "internet_insurance_supervision_order_2020_13::art_014",
+            "internet_insurance_supervision_order_2020_13::art_015",
+            "internet_insurance_supervision_order_2020_13::art_016",
+            "internet_insurance_supervision_order_2020_13::art_017",
+            "internet_insurance_supervision_order_2020_13::art_020",
+            "internet_insurance_supervision_order_2020_13::art_022",
+            "internet_insurance_supervision_order_2020_13::art_023",
+            "internet_insurance_supervision_order_2020_13::art_024",
+            "internet_insurance_supervision_order_2020_13::art_026",
+            "internet_insurance_supervision_order_2020_13::art_027",
+            "internet_insurance_supervision_order_2020_13::art_029",
+            "internet_insurance_supervision_order_2020_13::art_033",
+            "internet_insurance_supervision_order_2020_13::art_034",
+            "internet_insurance_supervision_order_2020_13::art_036",
+            "internet_insurance_supervision_order_2020_13::art_040",
+            "internet_insurance_supervision_order_2020_13::art_044",
+            "internet_insurance_supervision_order_2020_13::art_048",
+            "internet_insurance_supervision_order_2020_13::art_052",
+            "internet_insurance_supervision_order_2020_13::art_053",
+            "internet_insurance_supervision_order_2020_13::art_054",
+            "internet_insurance_supervision_order_2020_13::art_056",
+            "internet_insurance_supervision_order_2020_13::art_059",
+            "internet_insurance_supervision_order_2020_13::art_062",
+            "internet_insurance_supervision_order_2020_13::art_063",
+            "internet_insurance_supervision_order_2020_13::art_064",
+            "internet_insurance_supervision_order_2020_13::art_066",
+            "internet_insurance_supervision_order_2020_13::art_071",
+            "internet_insurance_supervision_order_2020_13::art_079",
+            "internet_insurance_supervision_order_2020_13::art_081"
+          ],
+          "attempts": 10,
+          "calls": [
+            {
+              "kind": "vision",
+              "model": "qwen3-vl-plus",
+              "latency_ms": 3281,
+              "actual_model": "qwen3-vl-plus"
+            },
+            {
+              "kind": "vision",
+              "model": "qwen3-vl-plus",
+              "latency_ms": 3500,
+              "actual_model": "qwen3-vl-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 45016
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 45016
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 90094
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 90094
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 135141
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 135141
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 100359
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 100328
+            }
+          ],
+          "token_usage": {
+            "prompt_tokens": 1270,
+            "completion_tokens": 285,
+            "total_tokens": 1555
+          },
+          "stage_latency": {
+            "extract_ms": 3500,
+            "judge_ms": 146500
+          },
+          "latency_ms": 150015
+        }
+      }
+    },
+    "review": {
+      "run_at_utc": "2026-10-11T10:59:33.413471+00:00",
+      "synthetic_demo": true,
+      "response": {
+        "audit_id": "e0231114-b739-40ce-bdbe-df39a258600f",
+        "trace_id": "d0e2a27d-e357-4a03-af83-f88d827e1521",
+        "status": "failed",
+        "decision": null,
+        "is_compliant": null,
+        "summary": "审核遇到技术故障，未生成业务结论。",
+        "ruleset_id": "official-v1-2026-10-11",
+        "ruleset_mode": "official_snapshot",
+        "violations": [],
+        "review_items": [],
+        "coverage": {
+          "total": 34,
+          "eligible": 34,
+          "checked": 0,
+          "coverage_ratio": 0.0,
+          "resolved_ratio": 0.0,
+          "rules": [
+            {
+              "rule_id": "marketing_truthful_and_not_misleading",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "insurance_benefit_uncertainty_and_risk",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "identify_insurance_product_and_provider",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "disclose_material_policy_terms_and_restrictions",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "no_regulatory_guarantee_or_filing_endorsement",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "public_figure_endorsement_external_review",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "marketing_personnel_authorization_and_channel",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "stop_sale_and_price_change_claims",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "regional_and_third_party_marketing_scope",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "bundled_financial_products_and_default_choice",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "licensed_insurance_and_marketing_subject",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "partner_contract_and_delegation",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "suitability_and_consumer_demand",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "truthful_health_disclosure_prompt",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "policy_confirmation_and_approved_terms",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "premium_payment_and_accounts",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "personal_information_consent_and_use",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "unlawful_surrender_promotion",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "official_platform_mandatory_information",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "offline_service_availability_disclosure",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "voluntary_renewal_and_sales_choices",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "intermediary_industry_name_and_brand",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "multi_product_display_separation",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "marketing_message_optout",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "popup_close_control",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "algorithm_recommendation_controls",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "regulated_account_names_and_trademarks",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "third_party_sales_intervention",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "paid_education_disguised_marketing",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "special_internet_insurance_business_scope",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "nonbank_payment_marketing_options",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "illegal_financial_activity_marketing",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "approved_marketing_content_use",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "internet_platform_operating_conditions",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            }
+          ]
+        },
+        "confidence": null,
+        "confidence_kind": "not_computed",
+        "warnings": [],
+        "errors": [
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "marketing_truthful_and_not_misleading",
+              "insurance_benefit_uncertainty_and_risk",
+              "identify_insurance_product_and_provider",
+              "disclose_material_policy_terms_and_restrictions",
+              "no_regulatory_guarantee_or_filing_endorsement",
+              "public_figure_endorsement_external_review"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "marketing_personnel_authorization_and_channel",
+              "stop_sale_and_price_change_claims",
+              "regional_and_third_party_marketing_scope",
+              "bundled_financial_products_and_default_choice",
+              "licensed_insurance_and_marketing_subject",
+              "partner_contract_and_delegation"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "suitability_and_consumer_demand",
+              "truthful_health_disclosure_prompt",
+              "policy_confirmation_and_approved_terms",
+              "premium_payment_and_accounts",
+              "personal_information_consent_and_use",
+              "unlawful_surrender_promotion"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "official_platform_mandatory_information",
+              "offline_service_availability_disclosure",
+              "voluntary_renewal_and_sales_choices",
+              "intermediary_industry_name_and_brand",
+              "multi_product_display_separation",
+              "marketing_message_optout"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "popup_close_control",
+              "algorithm_recommendation_controls",
+              "regulated_account_names_and_trademarks",
+              "third_party_sales_intervention",
+              "paid_education_disguised_marketing",
+              "special_internet_insurance_business_scope"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "nonbank_payment_marketing_options",
+              "illegal_financial_activity_marketing",
+              "approved_marketing_content_use",
+              "internet_platform_operating_conditions"
+            ],
+            "image_id": null
+          }
+        ],
+        "images": [],
+        "sources": [
+          {
+            "source_id": "text_1",
+            "source_type": "text",
+            "text": "某年金保险产品，详细说明请见完整宣传页面。（当前仅为局部截取）",
+            "start": 0,
+            "image_id": null,
+            "block_id": null
+          }
+        ],
+        "mock": false,
+        "meta": {
+          "ruleset_hash": "255be926a0ac6c8dadb6c1e033d761c480c91c586f11b8a3c01e75afcc0eb81c",
+          "prompt_version": "audit-v1.0",
+          "workflow_version": "1.0",
+          "model_ids": {
+            "text": "qwen3.7-plus",
+            "vision": "qwen3-vl-plus"
+          },
+          "retrieved_article_ids": [
+            "insurance_sales_behavior_order_2023_02::art_017",
+            "insurance_sales_behavior_order_2023_02::art_025",
+            "internet_insurance_supervision_order_2020_13::art_012",
+            "internet_insurance_supervision_order_2020_13::art_013",
+            "internet_insurance_supervision_order_2020_13::art_014",
+            "internet_insurance_supervision_order_2020_13::art_015",
+            "internet_insurance_supervision_order_2020_13::art_023",
+            "internet_insurance_supervision_order_2020_13::art_070"
+          ],
+          "attempts": 8,
+          "calls": [
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 45062
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 45078
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 90125
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 90125
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 135172
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 135172
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 103922
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "latency_ms": 103750
+            }
+          ],
+          "token_usage": {
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0
+          },
+          "stage_latency": {
+            "extract_ms": 0,
+            "judge_ms": 150016
+          },
+          "latency_ms": 150016
+        }
+      }
+    }
+  }
+}

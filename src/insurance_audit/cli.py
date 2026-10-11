@@ -14,6 +14,11 @@ def main() -> None:
     )
     parser.add_argument("--version", action="version", version=__version__)
     commands = parser.add_subparsers(dest="command")
+    doctor = commands.add_parser("doctor", help="Probe real text/vision models; incurs API usage")
+    doctor.add_argument("--report", type=Path, default=Path("reports/model-doctor.json"))
+    audit = commands.add_parser("audit-text", help="Audit text through the shared service")
+    audit.add_argument("text")
+    audit.add_argument("--context", default="{}")
     pipeline = commands.add_parser("pipeline", help="Run or watch the complete P0 ingestion loop")
     pipeline.add_argument("action", choices=("run", "watch", "start", "stop", "status", "seal"))
     pipeline.add_argument("--root", type=Path, default=Path.cwd())
@@ -34,7 +39,41 @@ def main() -> None:
             )
             command.add_argument("--report", type=Path)
     args = parser.parse_args()
-    if args.command == "pipeline":
+    if args.command == "doctor":
+        import asyncio
+
+        from insurance_audit.config import Settings
+        from insurance_audit.corpus.validate import write_report
+        from insurance_audit.doctor import probe
+
+        print("正在执行真实模型探测，可能产生 API 费用；不会输出密钥。")
+        result = asyncio.run(probe(Settings()))
+        write_report(result, args.report)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+    elif args.command == "audit-text":
+        import asyncio
+
+        from insurance_audit.config import Settings
+        from insurance_audit.models.bailian import Bailian
+        from insurance_audit.models.mock import MockProvider
+        from insurance_audit.retrieval import Corpus
+        from insurance_audit.schemas import AuditContext, AuditRequest
+        from insurance_audit.service import AuditService
+
+        async def run():
+            settings = Settings()
+            provider = MockProvider() if settings.audit_mock else Bailian(settings)
+            try:
+                return await AuditService(settings, Corpus(settings), provider).review(
+                    AuditRequest(
+                        text=args.text, context=AuditContext.model_validate_json(args.context)
+                    )
+                )
+            finally:
+                await provider.close()
+
+        print(asyncio.run(run()).model_dump_json(indent=2))
+    elif args.command == "pipeline":
         from insurance_audit.corpus import pipeline as flow
 
         root = args.root.resolve()

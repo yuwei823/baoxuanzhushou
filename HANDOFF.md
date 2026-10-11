@@ -114,3 +114,15 @@
 新增 corpus/pipeline.py、extract.py、wps_worker.py、registry.py 与 CLI pipeline run/watch/start/stop/status/seal。自动检测稳定文件、按哈希保留独立版本，生成包含已发布基础集的候选和审阅模板；review.json 完成后 seal，后台验证并发布。保险法暂缓与 reference_only 保留，未来生效与未核对来源禁止发布。注册 Windows 当前用户登录任务 InsuranceAudit-P0-FolderWatch，每 5 秒循环，系统锁防重复。集中 registry 升级 2.0，不再依赖旧脚本重建。
 
 pytest 33 passed，包括独立监视进程投递/停止实测与真实 PDF 39 条抽取。原快照严格校验继续通过。删除 6 旧脚本、2 过期报告；旧命令在历史记录中保留但不再是当前入口。递归清理缓存/临时产物/复现环境被自动安全策略阻止，未绕过；清单 reports/cleanup-manifest.json，用户可运行 scripts/cleanup_p0.ps1。详细行为与边界见 docs/p0-pipeline.md 和 reports/p0-pipeline-acceptance.md。
+
+## 2026-10-11 — P1/P2 开发进展补记，转为文本优先
+
+- 用户指示：同步本轮开发进展，随后暂时搁置图片识别，先推进文字审核。保留图片实现，不删除历史产物；后续不再主动执行视觉模型调用或图文验收。
+- P1 已实现：config.py、schemas.py、models/bailian.py、models/mock.py、retrieval.py、workflow.py、service.py、api.py、doctor.py、CLI 的 doctor/audit-text；含规则全集分批、证据和引用校验、确定性状态聚合、调用预算及错误处理。
+- P2 已实现：uploads.py、static/index.html/app.js/styles.css、演示图片及生成脚本；含实际图片格式校验、大小/像素限制、多图来源与顺序、页面和 JSON 导出。未完成完整浏览器及真实图文验收。
+- 测试：tests/unit/test_audit.py、tests/integration/test_api.py 已加入；重新执行 `.venv\Scripts\python.exe -m pytest -q`，63 passed in 9.31s。mock、故障注入与真实模型证据分开记录。
+- 真实模型：reports/model-doctor.json 记录 qwen3.7-plus 文本 JSON 和 qwen3-vl-plus 提取成功；原 qwen-vl-plus 返回模型不存在后已调整本地配置。密钥不输出、不入文档。
+- 失败证据：scripts/live_audit_smoke.py 的 reports/live-audit-smoke.json 当前记录 violation、education、multi 三例 failed/null，均 budget_exhausted，checked=0；不能宣称真实审核链路已通过。
+- 配置：.env/.env.example 与 Settings 增加 EMBEDDING_MODEL=text-embedding-v4、EMBEDDING_DIMENSIONS=1024，读取验证通过；尚未启用向量检索。
+- 状态：G0 通过；G1/G2 未通过，P3 未开始。PLAN 保留完整验收 checkbox 未勾选，并补充编码进度，避免混同实现与验收。
+- 下一步：只运行文本诊断，定位整体 150 秒预算耗尽原因，保留失败报告，修复后重跑三类文本用例并记录真实结果。

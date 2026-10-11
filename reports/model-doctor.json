@@ -1,0 +1,39 @@
+{
+  "mock": false,
+  "configured": true,
+  "text": {
+    "model": "qwen3.7-plus",
+    "json_valid": true
+  },
+  "vision": {
+    "model": "qwen3-vl-plus",
+    "schema_valid": true,
+    "contains_expected_text": true,
+    "extracted_demo_text": [
+      "保险知识小课堂",
+      "分红保险：如何理解演示利益？",
+      "请结合下一张图片的风险说明阅读。",
+      "仅作教育演示，不推荐具体产品。"
+    ]
+  },
+  "attempts": 2,
+  "token_usage": {
+    "prompt_tokens": 662,
+    "completion_tokens": 272,
+    "total_tokens": 934
+  },
+  "calls": [
+    {
+      "kind": "text",
+      "model": "qwen3.7-plus",
+      "latency_ms": 2890,
+      "actual_model": "qwen3.7-plus"
+    },
+    {
+      "kind": "vision",
+      "model": "qwen3-vl-plus",
+      "latency_ms": 3234,
+      "actual_model": "qwen3-vl-plus"
+    }
+  ]
+}
