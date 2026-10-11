@@ -196,6 +196,22 @@ def test_retrieval_uses_tail_and_batch_union_is_complete(corpus):
             assert set(card["article_ids"] + card["supporting_article_ids"]) <= set(articles)
 
 
+def test_compact_prompt_preserves_full_articles_and_rule_conditions(corpus):
+    request = AuditRequest(text="保险知识科普")
+    for cards, articles in corpus.batches(6):
+        payload = json.loads(
+            judge_messages(request, text_sources(request.text), cards, articles, True, [])[1][
+                "content"
+            ]
+        )
+        assert payload["rules"] == cards
+        assert {a["article_id"] for a in payload["articles"]} == set(articles)
+        for article in payload["articles"]:
+            assert article["original_text"] == articles[article["article_id"]]["original_text"]
+            assert "normalized_text" not in article
+            assert "text_sha256" not in article
+
+
 class Client:
     def __init__(self, create):
         self.chat = SimpleNamespace(completions=SimpleNamespace(create=create))
@@ -280,6 +296,31 @@ async def test_queue_wait_counts_toward_overall_deadline():
         assert error.value.code == "budget_exhausted" and budget.attempts == 0
     finally:
         provider.gate.release()
+
+
+@pytest.mark.asyncio
+async def test_text_thinking_override_does_not_change_vision_calls():
+    requests = []
+
+    async def create(**kwargs):
+        requests.append(kwargs)
+        return response()
+
+    provider = Bailian(
+        Settings(_env_file=None, audit_mock=True, bailian_text_enable_thinking=False),
+        Client(create),
+    )
+    budget = Budget()
+    await provider.call("text", [], budget)
+    await provider.call("vision", [], budget)
+    assert requests[0]["extra_body"] == {"enable_thinking": False}
+    assert "extra_body" not in requests[1]
+    assert budget.calls[0]["enable_thinking"] is False
+    assert all(c["actual_model"] == "actual-test-model" for c in budget.calls)
+
+    provider.settings.bailian_text_enable_thinking = None
+    await provider.call("text", [], Budget())
+    assert "extra_body" not in requests[2]
 
 
 @pytest.mark.asyncio

@@ -89,10 +89,20 @@ class AuditService:
                 )
         stages["extract_ms"] = round((time.monotonic() - vision_started) * 1000)
         readable = not errors and not any(r.type == "unreadable_image" for r in reviews)
-        retrieved = self.corpus.retrieve(sources)
+        retrieval_started = time.monotonic()
+        retrieved, retrieval_trace, retrieval_error = [], [], None
+        try:
+            retrieved, retrieval_trace = await self.corpus.search(sources, self.provider, budget)
+        except ModelFailure as error:
+            retrieval_error = error
+        stages["retrieval_ms"] = round((time.monotonic() - retrieval_started) * 1000)
+        context_trace = []
 
         async def judge_batch(cards, articles):
             try:
+                if retrieval_error:
+                    raise retrieval_error
+                articles = self.corpus.context_articles(articles, retrieved)
                 messages = judge_messages(request, sources, cards, articles, readable, retrieved)
                 if (
                     len(json.dumps(messages, ensure_ascii=False))
@@ -115,6 +125,13 @@ class AuditService:
                     raise ModelFailure(
                         "context_budget_exceeded", "完整材料与规则超过单批上下文预算，未截断。"
                     )
+                context_trace.append(
+                    {
+                        "rule_ids": [c["rule_id"] for c in cards],
+                        "article_ids": sorted(articles),
+                        "retrieved_article_ids": list(retrieved),
+                    }
+                )
                 result = await structured(
                     self.provider,
                     "text",
@@ -129,7 +146,7 @@ class AuditService:
                 return [(cards, None, error)]
 
         judge_started = time.monotonic()
-        batches = list(self.corpus.batches(self.settings.batch_rule_count))
+        batches = list(self.corpus.batches(self.settings.batch_rule_count, retrieved))
         batch_results = await asyncio.gather(
             *(judge_batch(cards, articles) for cards, articles in batches)
         )
@@ -207,6 +224,16 @@ class AuditService:
                     "vision": self.settings.bailian_vision_model,
                 },
                 "retrieved_article_ids": retrieved,
+                "retrieval_mode": self.settings.retrieval_mode,
+                "retrieval_trace": retrieval_trace,
+                "context_trace": context_trace,
+                "embedding_model": self.settings.embedding_model
+                if self.settings.retrieval_mode == "hybrid"
+                else None,
+                "embedding_dimensions": self.settings.embedding_dimensions
+                if self.settings.retrieval_mode == "hybrid"
+                else None,
+                "validation_errors": budget.validation_errors,
                 "attempts": budget.attempts,
                 "calls": budget.calls,
                 "token_usage": budget.tokens,

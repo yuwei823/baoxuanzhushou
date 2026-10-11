@@ -6,12 +6,15 @@ from rank_bm25 import BM25Okapi
 
 from insurance_audit.corpus.ingest import confined, sha256
 from insurance_audit.corpus.validate import validate_corpus
+from insurance_audit.models.bailian import ModelFailure
+from insurance_audit.vector_index import load_index, normalize
 
 jieba.setLogLevel(logging.ERROR)
 
 
 class Corpus:
-    def __init__(self, settings):
+    def __init__(self, settings, require_index=True):
+        self.settings = settings
         root, ruleset = settings.project_root.resolve(), settings.ruleset_id
         path = confined(root, "data/corpus/" + ruleset)
         manifest = json.loads((path / "manifest.json").read_text(encoding="utf-8"))
@@ -28,6 +31,61 @@ class Corpus:
         self.index = BM25Okapi(
             [list(jieba.cut(self.articles[aid]["original_text"])) for aid in self.ids]
         )
+        self.vector_manifest, self.vectors = None, None
+        if settings.retrieval_mode == "hybrid" and require_index:
+            self.vector_manifest, self.vectors = load_index(self, settings)
+
+    async def search(self, sources, provider, budget):
+        queries = [
+            (s.source_id, start, s.text[start : start + 512])
+            for s in sources
+            for start in range(0, len(s.text), 512)
+        ]
+        vectors = []
+        if self.settings.retrieval_mode == "hybrid":
+            if self.vectors is None:
+                raise ModelFailure("index_not_ready", "匹配当前规则版本的向量索引未就绪。")
+            try:
+                for start in range(0, len(queries), 10):
+                    rows = await provider.embed([q[2] for q in queries[start : start + 10]], budget)
+                    if len(rows) != len(queries[start : start + 10]):
+                        raise ValueError("向量数量不匹配")
+                    vectors.extend(normalize(v, self.settings.embedding_dimensions) for v in rows)
+            except ValueError as error:
+                raise ModelFailure("invalid_embedding_output", "查询向量未通过校验。") from error
+        found, trace = set(), []
+        for index, (sid, offset, text) in enumerate(queries):
+            budget.remaining()
+            scores = self.index.get_scores(list(jieba.cut(text)))
+            lexical = [
+                i
+                for i in sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)
+                if scores[i] > 0
+            ][:8]
+            semantic = []
+            if vectors:
+                similarities = [sum(a * b for a, b in zip(vectors[index], v)) for v in self.vectors]
+                semantic = sorted(
+                    range(len(similarities)), key=lambda i: similarities[i], reverse=True
+                )[:8]
+            rrf = {}
+            for ranking in (lexical, semantic):
+                for rank, article_index in enumerate(ranking, 1):
+                    rrf[article_index] = rrf.get(article_index, 0) + 1 / (60 + rank)
+            selected = sorted(rrf, key=lambda i: (-rrf[i], self.ids[i]))[:8]
+            ids = [self.ids[i] for i in selected]
+            found.update(ids)
+            trace.append(
+                {
+                    "source_id": sid,
+                    "start": offset,
+                    "end": offset + len(text),
+                    "bm25": [self.ids[i] for i in lexical],
+                    "vector": [self.ids[i] for i in semantic],
+                    "selected": ids,
+                }
+            )
+        return sorted(found), trace
 
     @staticmethod
     def load(path, name, key):
@@ -47,8 +105,12 @@ class Corpus:
                 )
         return sorted(found)
 
-    def batches(self, batch_size):
-        rules = list(self.rules.values())
+    def batches(self, batch_size, retrieved=()):
+        hits = set(retrieved)
+        # Prioritize related rules while retaining the complete mandatory ledger.
+        rules = sorted(
+            self.rules.values(), key=lambda c: not bool(hits.intersection(c["article_ids"]))
+        )
         for offset in range(0, len(rules), batch_size):
             batch = rules[offset : offset + batch_size]
             ids = {
@@ -57,3 +119,6 @@ class Corpus:
                 for aid in card["article_ids"] + card.get("supporting_article_ids", [])
             }
             yield batch, {aid: self.articles[aid] for aid in sorted(ids)}
+
+    def context_articles(self, articles, retrieved):
+        return {**articles, **{aid: self.articles[aid] for aid in retrieved}}

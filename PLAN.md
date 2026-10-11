@@ -15,6 +15,8 @@
 - 配置：EMBEDDING_MODEL=text-embedding-v4、EMBEDDING_DIMENSIONS=1024 已写入并验证读取；检索仍使用 BM25，未启用向量调用。
 - 下一步：先诊断纯文本耗时和校验失败，完成违规/教育反例/局部材料三个真实文本案例；保留图片代码和历史证据，暂停新增视觉调用与验收，等待用户恢复指示。
 - 下方 P1/P2 checkbox 表示完整任务验收，而非编码进度；未完成验收的项目保持未勾选。
+- 用户后续明确要求 RAG，已形成 docs/text-rag-plan.md 待实施方案：召回原文必须进入判定上下文，保留独立必查与版本约束；混合检索的具体配置及实施步骤见该文件。当前未切换为 hybrid，不能按原计划可选项表述忽略真实 RAG 集成。
+- 后续文本复验：关闭思考、精简重复条文字段后，违规用例 completed/non_compliant（97.594 秒）；教育反例与局部材料仍 failed/null（结构/证据校验失败，前者另有超时）。详见 reports/text-smoke.md。新增回归后 65 tests passed，G1 仍未通过。
 
 本计划用于组织实施与验收，不替代 SPEC.md。发生冲突以 SPEC.md 为准，并在执行前记录和修正计划。完成状态以任务 checkbox 和 HANDOFF 验收证据为准。原始 Spec_01.md、Spec_02.md 不作为冲突时的实现依据。
 
@@ -86,12 +88,13 @@
 
 ## 4. P1：纯文本审核闭环
 
-- [ ] **P1-01 固化 Schema 和状态矩阵**
+- [x] **P1-01 固化 Schema 和状态矩阵**
   - 依赖：G0。
   - 工作：定义 AuditRequest/Response、上下文枚举、present/absence 证据、规则台账、review_items、errors、三态结论与 completed/partial/failed。
   - 产物：schemas.py、docs/api-contract.md、docs/decisions.md。
   - 验收：五类聚合场景有契约样例；unknown 默认为未知；顶层 confidence=null；业务未决与技术失败可区分。
   - 实现细化：明确 partial 使用成功响应并带错误明细，failed 按原因映射 502/503/504；只细化 SPEC，不改结论语义。
+  - 验收记录：schemas.py、docs/api-contract.md、docs/decisions.md 已落盘；test_aggregation 的五种情况通过，unknown 默认值及顶层 confidence=null 已实现。整体 G1 尚未通过。
 
 - [ ] **P1-02 实现百炼适配与统一预算**
   - 依赖：P1-01。
@@ -106,6 +109,7 @@
   - 验收：否定／引用／教育语境、未知渠道、局部材料、资质缺证、范围外事项均有针对性用例；计划无遗漏 ID。
 
 - [ ] **P1-04 BM25、覆盖补齐与分批**
+  - 当前缺口：BM25 召回 ID 已记录，但额外召回原文尚未独立补入模型上下文；当前条文上下文由规则卡直接/支持条文构建。需补齐并验证检索到判定的集成，不宣称完整 RAG 已验收。
   - 依赖：P1-03。
   - 工作：按主张／段落／类别构造查询，Top 8 去重并补父条、定义、例外和必查规则；按模型上下文预算分批。
   - 产物：retrieval/bm25.py、retrieval/coverage.py、索引元数据、批次计划。

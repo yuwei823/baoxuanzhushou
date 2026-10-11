@@ -14,6 +14,7 @@ def main() -> None:
     )
     parser.add_argument("--version", action="version", version=__version__)
     commands = parser.add_subparsers(dest="command")
+    commands.add_parser("build-index", help="Build immutable vector index; incurs embedding usage")
     doctor = commands.add_parser("doctor", help="Probe real text/vision models; incurs API usage")
     doctor.add_argument("--report", type=Path, default=Path("reports/model-doctor.json"))
     audit = commands.add_parser("audit-text", help="Audit text through the shared service")
@@ -39,7 +40,24 @@ def main() -> None:
             )
             command.add_argument("--report", type=Path)
     args = parser.parse_args()
-    if args.command == "doctor":
+    if args.command == "build-index":
+        import asyncio
+        from insurance_audit.config import Settings
+        from insurance_audit.models.bailian import Bailian
+        from insurance_audit.retrieval import Corpus
+        from insurance_audit.vector_index import build_index
+
+        async def build():
+            settings = Settings()
+            provider = Bailian(settings)
+            try:
+                return await build_index(Corpus(settings, require_index=False), settings, provider)
+            finally:
+                await provider.close()
+
+        print("构建法规向量索引，可能产生 API 用量；不输出密钥。")
+        print(json.dumps(asyncio.run(build()), ensure_ascii=False, indent=2))
+    elif args.command == "doctor":
         import asyncio
 
         from insurance_audit.config import Settings

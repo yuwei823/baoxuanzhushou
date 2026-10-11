@@ -126,3 +126,12 @@ pytest 33 passed，包括独立监视进程投递/停止实测与真实 PDF 39 �
 - 配置：.env/.env.example 与 Settings 增加 EMBEDDING_MODEL=text-embedding-v4、EMBEDDING_DIMENSIONS=1024，读取验证通过；尚未启用向量检索。
 - 状态：G0 通过；G1/G2 未通过，P3 未开始。PLAN 保留完整验收 checkbox 未勾选，并补充编码进度，避免混同实现与验收。
 - 下一步：只运行文本诊断，定位整体 150 秒预算耗尽原因，保留失败报告，修复后重跑三类文本用例并记录真实结果。
+
+## 2026-10-11 — 文本复验与 RAG 方案
+
+- 同步 PLAN/HANDOFF/README，并新增 docs/api-contract.md、docs/decisions.md；P1-01 状态矩阵任务验收，整体 G1 不通过。
+- 修改 config.py、models/bailian.py、workflow.py、.env.example/.env、scripts/live_audit_smoke.py、tests/unit/test_audit.py：增加仅文本思考模式开关，本地关闭；audit-v1.1 去除重复 normalized_text 和存储元数据，保留全部法规原文及规则条件；调用记录绑定当前对象；默认冒烟只执行文本且另存报告。
+- 实测命令：scripts/live_audit_smoke.py violation education review --out reports/text-audit-smoke-v1.1.json。真实 qwen3.7-plus，规则集 official-v1-2026-10-11；无视觉/Embedding 调用。违规 completed/non_compliant，97.594 秒、6 次调用；教育反例 failed/null，150.016 秒、9 次尝试；局部材料 failed/null，123.265 秒、7 次尝试。后两者仍有 invalid_model_output，教育反例另有 budget_exhausted。不能宣称三态已验收。
+- 验证：pytest 65 passed in 9.26s；本轮修改文件 Ruff 通过。完整结果见 reports/text-smoke.md。原始失败证据保留，未覆盖已发布知识库。
+- 用户要求模型使用 RAG 并先给方案：docs/text-rag-plan.md 已写入，尚未实现 hybrid。已明确当前 BM25 只记录额外召回 ID、模型上下文由规则卡条文构成的集成缺口。方案为向量+BM25、实际原文上下文、独立必查覆盖、版本绑定及对照评估，复用现有工程。
+- 下一步：按 RAG 方案接通索引与上下文；同时细化脱敏校验错误诊断，解决结构化输出失败。图片识别与保险法抽取继续暂缓。

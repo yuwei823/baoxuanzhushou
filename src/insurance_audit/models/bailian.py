@@ -6,6 +6,7 @@ from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 
 from openai import APIConnectionError, APIStatusError, APITimeoutError, AsyncOpenAI
+from pydantic import ValidationError
 
 
 class ModelFailure(Exception):
@@ -19,6 +20,7 @@ class Budget:
         self.clock, self.deadline, self.maximum = clock, clock() + seconds, maximum
         self.attempts = 0
         self.calls = []
+        self.validation_errors = []
         self.tokens = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
 
     def remaining(self):
@@ -58,6 +60,63 @@ class Bailian:
     async def close(self):
         await self.client.close()
 
+    async def embed(self, texts, budget):
+        """Embedding shares the process gate, deadline and attempt budget with judgment."""
+        if not self.settings.configured or self.settings.audit_mock:
+            raise ModelFailure("embedding_not_configured", "向量接口需要真实百炼配置。")
+        if not texts or len(texts) > 10 or any(not t or len(t) > 2000 for t in texts):
+            raise ModelFailure(
+                "embedding_input_invalid", "向量输入须为 1～10 条，每条最多 2000 字符。"
+            )
+        for retry in range(self.settings.model_max_retries + 1):
+            started = time.monotonic()
+            wait = 0
+            try:
+                async with asyncio.timeout(budget.remaining()):
+                    async with self.gate:
+                        budget.consume()
+                        record = {"kind": "embedding", "model": self.settings.embedding_model}
+                        try:
+                            response = await self.client.embeddings.create(
+                                model=self.settings.embedding_model,
+                                input=texts,
+                                dimensions=self.settings.embedding_dimensions,
+                                encoding_format="float",
+                                timeout=min(
+                                    self.settings.model_timeout_seconds, budget.remaining()
+                                ),
+                            )
+                        finally:
+                            record["latency_ms"] = round((time.monotonic() - started) * 1000)
+                            budget.calls.append(record)
+                if response.usage:
+                    for key in budget.tokens:
+                        budget.tokens[key] += getattr(response.usage, key, 0) or 0
+                record["actual_model"] = response.model
+                if sorted(item.index for item in response.data) != list(range(len(texts))):
+                    raise ModelFailure("invalid_embedding_output", "向量响应条目索引不完整。")
+                return [item.embedding for item in sorted(response.data, key=lambda x: x.index)]
+            except (APITimeoutError, APIConnectionError) as error:
+                failure = ModelFailure("embedding_unavailable", "向量调用连接失败或超时。", True)
+                cause = error
+            except TimeoutError as error:
+                raise ModelFailure("budget_exhausted", "审核整体时间预算已耗尽。") from error
+            except APIStatusError as error:
+                cause = error
+                code = error.status_code
+                failure = ModelFailure(
+                    "model_auth_error" if code in (401, 403) else "embedding_http_error",
+                    f"向量服务返回 HTTP {code}。",
+                    code == 429 or code in (500, 502, 503, 504),
+                )
+                wait = retry_after(error.response.headers.get("Retry-After"))
+            if not failure.retryable or retry >= self.settings.model_max_retries:
+                raise failure from cause
+            wait = max(wait, 2**retry + random.uniform(0, 0.2))
+            if wait >= budget.remaining():
+                raise ModelFailure("budget_exhausted", "向量重试将超过剩余预算。")
+            await asyncio.sleep(wait)
+
     async def call(self, kind, messages, budget, max_tokens=8000):
         if not self.settings.configured:
             raise ModelFailure("model_not_configured", "请在后端配置百炼密钥和地域 Base URL。")
@@ -73,6 +132,17 @@ class Bailian:
                 async with asyncio.timeout(budget.remaining()):
                     async with self.gate:
                         budget.consume()
+                        record = {"kind": kind, "model": model}
+                        options = {}
+                        if kind == "text":
+                            options["response_format"] = {"type": "json_object"}
+                            if self.settings.bailian_text_enable_thinking is not None:
+                                options["extra_body"] = {
+                                    "enable_thinking": self.settings.bailian_text_enable_thinking
+                                }
+                                record["enable_thinking"] = (
+                                    self.settings.bailian_text_enable_thinking
+                                )
                         try:
                             response = await self.client.chat.completions.create(
                                 model=model,
@@ -82,24 +152,15 @@ class Bailian:
                                 timeout=min(
                                     self.settings.model_timeout_seconds, budget.remaining()
                                 ),
-                                **(
-                                    {"response_format": {"type": "json_object"}}
-                                    if kind == "text"
-                                    else {}
-                                ),
+                                **options,
                             )
                         finally:
-                            budget.calls.append(
-                                {
-                                    "kind": kind,
-                                    "model": model,
-                                    "latency_ms": round((time.monotonic() - started) * 1000),
-                                }
-                            )
+                            record["latency_ms"] = round((time.monotonic() - started) * 1000)
+                            budget.calls.append(record)
                 if response.usage:
                     for key in budget.tokens:
                         budget.tokens[key] += getattr(response.usage, key, 0) or 0
-                budget.calls[-1]["actual_model"] = response.model
+                record["actual_model"] = response.model
                 if not response.choices or response.choices[0].finish_reason != "stop":
                     raise ModelFailure("invalid_model_output", "模型输出未完整结束。")
                 return response.choices[0].message.content or ""
@@ -141,12 +202,33 @@ async def structured(provider, kind, messages, schema, budget, validate=None, ma
             if error.code != "invalid_model_output":
                 raise
             failure = error
+        if isinstance(failure, ValidationError):
+            detail = sorted(
+                {e["type"] for e in failure.errors(include_input=False, include_url=False)}
+            )
+        elif isinstance(failure, ModelFailure):
+            detail = [failure.code]
+        else:
+            allowed = {
+                "Missing, duplicate or invented rule IDs",
+                "Condition coverage mismatch",
+                "Citation is not a direct rule article",
+                "Evidence does not occur in the specified source",
+                "Invented condition evidence",
+                "Violation lacks citations or evidence",
+            }
+            detail = [str(failure) if str(failure) in allowed else "invalid_json_or_schema"]
+        budget.validation_errors.append(
+            {"kind": kind, "attempt": attempt + 1, "categories": detail}
+        )
         if not attempt:
             messages = [
                 *messages,
                 {
                     "role": "user",
-                    "content": "上次输出未通过结构、覆盖或证据校验。重新检查原始材料，仅输出完整 JSON，覆盖全部 rule_id；不得伪造引用或证据。",
+                    "content": "上次输出未通过校验，错误类别："
+                    + json.dumps(detail)
+                    + "。重新检查原始材料，仅输出完整 JSON，覆盖全部 rule_id 和逐字 trigger_conditions；即使不适用也不能省略条件。不得伪造引用或证据。",
                 },
             ]
     raise ModelFailure(

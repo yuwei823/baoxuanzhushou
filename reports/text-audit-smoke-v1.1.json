@@ -1,0 +1,1682 @@
+{
+  "cases": {
+    "violation": {
+      "run_at_utc": "2026-10-11T11:04:54.148098+00:00",
+      "synthetic_demo": true,
+      "response": {
+        "audit_id": "6b2f018f-460d-4717-a289-9cd563b6995d",
+        "trace_id": "6ae95ea4-625c-4fe8-ae4c-08efecaab5d2",
+        "status": "completed",
+        "decision": "non_compliant",
+        "is_compliant": "no",
+        "summary": "发现有证据支持的违规项。",
+        "ruleset_id": "official-v1-2026-10-11",
+        "ruleset_mode": "official_snapshot",
+        "violations": [
+          {
+            "violation_id": "marketing_truthful_and_not_misleading",
+            "rule_id": "marketing_truthful_and_not_misleading",
+            "type": "misleading_or_exaggerated_claim",
+            "reason": "材料声称'由监管部门担保收益'和'稳赚不赔'，属于虚假、夸大且严重误导的表述。保险产品收益通常非保证（除特定保证利益外），且监管部门不提供商业担保。该表述违反了真实准确、不得虚假夸大的要求。",
+            "evidence": [
+              {
+                "kind": "present",
+                "source_type": "text",
+                "source_id": "text_1",
+                "quote": "安心保险产品，由监管部门担保收益，购买后稳赚不赔。",
+                "start": 0,
+                "end": 25,
+                "image_id": null,
+                "block_id": null
+              }
+            ],
+            "citations": [
+              {
+                "article_id": "insurance_sales_behavior_order_2023_02::art_017",
+                "document_title": "保险销售行为管理办法",
+                "document_status": "effective",
+                "article_label": "第十七条",
+                "original_text": "保险公司、保险中介机构应当建立保险销售宣传管理制度，确保保险销售宣传符合下列要求：\n（一）在形式上和实质上未超出保险公司、保险中介机构合法经营资质所载明的业务许可范围及区域；\n（二）明示所销售宣传的是保险产品；\n（三）不得引用不真实、不准确的数据和资料，不得隐瞒限制条件，不得进行虚假或者夸大表述，不得使用偷换概念、不当类比、隐去假设等不当宣传手段；\n（四）不得以捏造、散布虚假事实等手段恶意诋毁竞争对手，不得通过不当评比、不当排序等方式进行宣传，不得冒用、擅自使用与他人相同或者近似等可能引起混淆的注册商标、字号、宣传册页；\n（五）不得利用监管机构对保险产品的审核或者备案程序，不得使用监管机构为该保险产品提供保证等引人误解的不当表述；\n（六）不得违反法律、行政法规和监管制度规定的其他行为。",
+                "source_locator": {
+                  "kind": "WPS COM paragraph index",
+                  "line_start": 1,
+                  "line_end": 1,
+                  "paragraph_start": 45,
+                  "paragraph_end": 51
+                }
+              },
+              {
+                "article_id": "financial_network_marketing_order_2026_09::art_008",
+                "document_title": "金融产品网络营销管理办法",
+                "document_status": "effective",
+                "article_label": "第八条",
+                "original_text": "网络营销内容应当以金融产品合同为准,涉及产品名称、产品提供者和销售者名称、产品类别、利率费率、风险提示等关键信息的,应当与金融产\n品合同相关条款内容保持一致,并以清晰、醒目的方式进行展示,不得有重大遗漏、刻意隐瞒或误导。\n网络营销内容应当真实准确、通俗易懂,符合社会主义精神文明建设的要求,践行社会主义核心价值观,倡导理性的投资观和健康的消费观。",
+                "source_locator": {
+                  "kind": "PDF page and extracted line",
+                  "line_start": 12,
+                  "line_end": 14,
+                  "page_start": 2,
+                  "page_end": 2
+                }
+              },
+              {
+                "article_id": "financial_network_marketing_order_2026_09::art_010",
+                "document_title": "金融产品网络营销管理办法",
+                "document_status": "effective",
+                "article_label": "第十条",
+                "original_text": "制作网络营销内容不得有以下行为:\n(一)使用虚假或者引人误解的内容;\n(二)引用不真实、不准确或未经核实的数据和资料;\n(三)明示或暗示资产管理产品、投资顾问或者咨询服务保本、承诺收益、限定损失金额或比例,简单依据短期、非常态的业绩比较基准或者过往业绩高低\n对资产管理产品、投资顾问或者咨询服务进行展示排序,预测未来业绩,或者利用模拟业绩、部分客户或者个别有利时段的表现等方式误导投资者;\n(四)夸大保险责任或保险产品收益,将保险产品收益与存款、资产管理产品等金融产品简单类比;\n(五)利用金融管理部门、行业自律组织对金融产品的审核或备案程序,误导金融消费者和投资者认为金融管理部门、行业自律组织对该金融产品提供保\n证;\n(六)涉及分期付款的,通过片面宣传首期费用优惠等方式诱导消费;\n(七)使用“低风险”“低门槛”“秒到账”“高收益”“低利率”“无成本”等诱导性用语;\n(八)法律法规、国家有关规定禁止的其他行为。",
+                "source_locator": {
+                  "kind": "PDF page and extracted line",
+                  "line_start": 21,
+                  "line_end": 31,
+                  "page_start": 2,
+                  "page_end": 2
+                }
+              },
+              {
+                "article_id": "internet_insurance_supervision_order_2020_13::art_015",
+                "document_title": "互联网保险业务监管办法",
+                "document_status": "effective",
+                "article_label": "第十五条",
+                "original_text": "本办法所称互联网保险营销宣传，是指保险机构通过网站、网页、互联网应用程序等互联网媒介，以文字、图片、音频、视频或其他形式，就保险产品或保险服务进行商业宣传推广的活动。保险机构开展互联网保险营销宣传活动应符合《中华人民共和国广告法》、金融营销宣传以及银保监会相关规定。\n保险机构应加强互联网保险营销宣传管理：\n（一）保险机构应建立从业人员互联网保险营销宣传的资质、培训、内容审核和行为管理制度。\n（二）保险机构应从严、精细管控所属从业人员互联网保险营销宣传活动，提高从业人员的诚信和专业水平。保险机构应对从业人员发布的互联网保险营销宣传内容进行监测检查，发现问题及时处置。\n（三）保险机构从业人员应在保险机构授权范围内开展互联网保险营销宣传。从业人员发布的互联网保险营销宣传内容，应由所属保险机构统一制作，并在显著位置标明所属保险机构全称及个人姓名、执业证编号等信息。\n（四）开展互联网保险营销宣传活动应遵循清晰准确、通俗易懂、符合社会公序良俗的原则，不得进行不实陈述或误导性描述，不得片面比较保险产品价格和简单排名，不得与其他非保险产品和服务混淆，不得片面或夸大宣传，不得违规承诺收益或承诺承担损失。\n（五）互联网保险营销宣传内容应与保险合同条款保持一致，不得误导性解读监管政策，不得使用或变相使用监管机构及其工作人员的名义或形象进行商业宣传。\n（六）互联网保险营销宣传页面应明确标识产品为保险产品，标明保险产品全称、承保保险公司全称以及提供销售或经纪服务的保险中介机构全称；应用准确的语言描述产品的主要功能和特点，突出说明容易引发歧义或消费者容易忽视的内容。\n（七）保险机构及其从业人员应慎重向消费者发送互联网保险产品信息。消费者明确表示拒绝接收的，不得向其发送互联网保险产品信息。\n（八）保险机构应对本机构及所属从业人员互联网保险营销宣传承担合规管理的主体责任。",
+                "source_locator": {
+                  "kind": "WPS COM paragraph index",
+                  "line_start": 1,
+                  "line_end": 1,
+                  "paragraph_start": 60,
+                  "paragraph_end": 69
+                }
+              }
+            ],
+            "confidence": 0.95,
+            "confidence_kind": "model_self_report"
+          },
+          {
+            "violation_id": "insurance_benefit_uncertainty_and_risk",
+            "rule_id": "insurance_benefit_uncertainty_and_risk",
+            "type": "guaranteed_or_misrepresented_benefit",
+            "reason": "材料宣称'稳赚不赔'并暗示收益由监管担保，完全抹杀了保险产品的不确定性及风险。无论产品是否为新型人身保险，'稳赚不赔'均属于对保险责任和收益的过度承诺和误导，未提示任何风险或不确定性。",
+            "evidence": [
+              {
+                "kind": "present",
+                "source_type": "text",
+                "source_id": "text_1",
+                "quote": "安心保险产品，由监管部门担保收益，购买后稳赚不赔。",
+                "start": 0,
+                "end": 25,
+                "image_id": null,
+                "block_id": null
+              },
+              {
+                "kind": "absence",
+                "inspected_source_ids": [
+                  "text_1"
+                ],
+                "required_disclosure": "应披露保单利益的不确定性及相关风险提示，特别是对于非保证利益部分。",
+                "material_completeness": "complete",
+                "completeness_source": "user_declaration",
+                "search_scope": "全部已提交且可读的图文；完整性来自用户声明",
+                "reason": "材料宣称'稳赚不赔'并暗示收益由监管担保，完全抹杀了保险产品的不确定性及风险。无论产品是否为新型人身保险，'稳赚不赔'均属于对保险责任和收益的过度承诺和误导，未提示任何风险或不确定性。"
+              }
+            ],
+            "citations": [
+              {
+                "article_id": "insurance_sales_behavior_order_2023_02::art_022",
+                "document_title": "保险销售行为管理办法",
+                "document_status": "effective",
+                "article_label": "第二十二条",
+                "original_text": "保险公司、保险中介机构销售人身保险新型产品的，应当向投保人提示保单利益的不确定性，并准确、全面地提示相关风险；法律、行政法规和监管制度规定要求对投保人进行风险承受能力测评的，应当进行测评，并根据测评结果销售相适应的保险产品。",
+                "source_locator": {
+                  "kind": "WPS COM paragraph index",
+                  "line_start": 1,
+                  "line_end": 1,
+                  "paragraph_start": 63,
+                  "paragraph_end": 63
+                }
+              },
+              {
+                "article_id": "financial_network_marketing_order_2026_09::art_010",
+                "document_title": "金融产品网络营销管理办法",
+                "document_status": "effective",
+                "article_label": "第十条",
+                "original_text": "制作网络营销内容不得有以下行为:\n(一)使用虚假或者引人误解的内容;\n(二)引用不真实、不准确或未经核实的数据和资料;\n(三)明示或暗示资产管理产品、投资顾问或者咨询服务保本、承诺收益、限定损失金额或比例,简单依据短期、非常态的业绩比较基准或者过往业绩高低\n对资产管理产品、投资顾问或者咨询服务进行展示排序,预测未来业绩,或者利用模拟业绩、部分客户或者个别有利时段的表现等方式误导投资者;\n(四)夸大保险责任或保险产品收益,将保险产品收益与存款、资产管理产品等金融产品简单类比;\n(五)利用金融管理部门、行业自律组织对金融产品的审核或备案程序,误导金融消费者和投资者认为金融管理部门、行业自律组织对该金融产品提供保\n证;\n(六)涉及分期付款的,通过片面宣传首期费用优惠等方式诱导消费;\n(七)使用“低风险”“低门槛”“秒到账”“高收益”“低利率”“无成本”等诱导性用语;\n(八)法律法规、国家有关规定禁止的其他行为。",
+                "source_locator": {
+                  "kind": "PDF page and extracted line",
+                  "line_start": 21,
+                  "line_end": 31,
+                  "page_start": 2,
+                  "page_end": 2
+                }
+              },
+              {
+                "article_id": "internet_insurance_supervision_order_2020_13::art_014",
+                "document_title": "互联网保险业务监管办法",
+                "document_status": "effective",
+                "article_label": "第十四条",
+                "original_text": "互联网保险产品的销售或详情展示页面上应包括以下内容：\n（一）保险产品名称（条款名称和宣传名称），审批类产品的批复文号，备案类产品的备案编号或产品注册号，以及报备文件编号或条款编码。\n（二）保险条款和保费（或链接），应突出提示和说明免除保险公司责任的条款，并以适当的方式突出提示理赔条件和流程，以及保险合同中的犹豫期、等待期、费用扣除、退保损失、保单现金价值等重点内容。\n（三）保险产品为投连险、万能险等人身保险新型产品的，应按照银保监会关于新型产品信息披露的相关规定，清晰标明相关信息，用不小于产品名称字号的黑体字标注保单利益具有不确定性。\n（四）投保人的如实告知义务，以及违反义务的后果。\n（五）能否实现全流程线上服务的情况说明，以及因保险机构在消费者或保险标的所在地无分支机构而可能存在的服务不到位等问题的提示。\n（六）保费的支付方式，以及保险单证、保费发票等凭证的送达方式。\n（七）其他直接影响消费者权益和购买决策的事项。",
+                "source_locator": {
+                  "kind": "WPS COM paragraph index",
+                  "line_start": 1,
+                  "line_end": 1,
+                  "paragraph_start": 52,
+                  "paragraph_end": 59
+                }
+              },
+              {
+                "article_id": "internet_insurance_supervision_order_2020_13::art_015",
+                "document_title": "互联网保险业务监管办法",
+                "document_status": "effective",
+                "article_label": "第十五条",
+                "original_text": "本办法所称互联网保险营销宣传，是指保险机构通过网站、网页、互联网应用程序等互联网媒介，以文字、图片、音频、视频或其他形式，就保险产品或保险服务进行商业宣传推广的活动。保险机构开展互联网保险营销宣传活动应符合《中华人民共和国广告法》、金融营销宣传以及银保监会相关规定。\n保险机构应加强互联网保险营销宣传管理：\n（一）保险机构应建立从业人员互联网保险营销宣传的资质、培训、内容审核和行为管理制度。\n（二）保险机构应从严、精细管控所属从业人员互联网保险营销宣传活动，提高从业人员的诚信和专业水平。保险机构应对从业人员发布的互联网保险营销宣传内容进行监测检查，发现问题及时处置。\n（三）保险机构从业人员应在保险机构授权范围内开展互联网保险营销宣传。从业人员发布的互联网保险营销宣传内容，应由所属保险机构统一制作，并在显著位置标明所属保险机构全称及个人姓名、执业证编号等信息。\n（四）开展互联网保险营销宣传活动应遵循清晰准确、通俗易懂、符合社会公序良俗的原则，不得进行不实陈述或误导性描述，不得片面比较保险产品价格和简单排名，不得与其他非保险产品和服务混淆，不得片面或夸大宣传，不得违规承诺收益或承诺承担损失。\n（五）互联网保险营销宣传内容应与保险合同条款保持一致，不得误导性解读监管政策，不得使用或变相使用监管机构及其工作人员的名义或形象进行商业宣传。\n（六）互联网保险营销宣传页面应明确标识产品为保险产品，标明保险产品全称、承保保险公司全称以及提供销售或经纪服务的保险中介机构全称；应用准确的语言描述产品的主要功能和特点，突出说明容易引发歧义或消费者容易忽视的内容。\n（七）保险机构及其从业人员应慎重向消费者发送互联网保险产品信息。消费者明确表示拒绝接收的，不得向其发送互联网保险产品信息。\n（八）保险机构应对本机构及所属从业人员互联网保险营销宣传承担合规管理的主体责任。",
+                "source_locator": {
+                  "kind": "WPS COM paragraph index",
+                  "line_start": 1,
+                  "line_end": 1,
+                  "paragraph_start": 60,
+                  "paragraph_end": 69
+                }
+              }
+            ],
+            "confidence": 0.9,
+            "confidence_kind": "model_self_report"
+          },
+          {
+            "violation_id": "no_regulatory_guarantee_or_filing_endorsement",
+            "rule_id": "no_regulatory_guarantee_or_filing_endorsement",
+            "type": "regulatory_or_public_figure_endorsement",
+            "reason": "材料明确声称'由监管部门担保收益'，直接违反了禁止利用监管机构审核或备案程序误导消费者认为监管机构提供保证的规定，也禁止使用监管机构名义进行商业宣传。",
+            "evidence": [
+              {
+                "kind": "present",
+                "source_type": "text",
+                "source_id": "text_1",
+                "quote": "由监管部门担保收益",
+                "start": 7,
+                "end": 16,
+                "image_id": null,
+                "block_id": null
+              }
+            ],
+            "citations": [
+              {
+                "article_id": "insurance_sales_behavior_order_2023_02::art_017",
+                "document_title": "保险销售行为管理办法",
+                "document_status": "effective",
+                "article_label": "第十七条",
+                "original_text": "保险公司、保险中介机构应当建立保险销售宣传管理制度，确保保险销售宣传符合下列要求：\n（一）在形式上和实质上未超出保险公司、保险中介机构合法经营资质所载明的业务许可范围及区域；\n（二）明示所销售宣传的是保险产品；\n（三）不得引用不真实、不准确的数据和资料，不得隐瞒限制条件，不得进行虚假或者夸大表述，不得使用偷换概念、不当类比、隐去假设等不当宣传手段；\n（四）不得以捏造、散布虚假事实等手段恶意诋毁竞争对手，不得通过不当评比、不当排序等方式进行宣传，不得冒用、擅自使用与他人相同或者近似等可能引起混淆的注册商标、字号、宣传册页；\n（五）不得利用监管机构对保险产品的审核或者备案程序，不得使用监管机构为该保险产品提供保证等引人误解的不当表述；\n（六）不得违反法律、行政法规和监管制度规定的其他行为。",
+                "source_locator": {
+                  "kind": "WPS COM paragraph index",
+                  "line_start": 1,
+                  "line_end": 1,
+                  "paragraph_start": 45,
+                  "paragraph_end": 51
+                }
+              },
+              {
+                "article_id": "financial_network_marketing_order_2026_09::art_010",
+                "document_title": "金融产品网络营销管理办法",
+                "document_status": "effective",
+                "article_label": "第十条",
+                "original_text": "制作网络营销内容不得有以下行为:\n(一)使用虚假或者引人误解的内容;\n(二)引用不真实、不准确或未经核实的数据和资料;\n(三)明示或暗示资产管理产品、投资顾问或者咨询服务保本、承诺收益、限定损失金额或比例,简单依据短期、非常态的业绩比较基准或者过往业绩高低\n对资产管理产品、投资顾问或者咨询服务进行展示排序,预测未来业绩,或者利用模拟业绩、部分客户或者个别有利时段的表现等方式误导投资者;\n(四)夸大保险责任或保险产品收益,将保险产品收益与存款、资产管理产品等金融产品简单类比;\n(五)利用金融管理部门、行业自律组织对金融产品的审核或备案程序,误导金融消费者和投资者认为金融管理部门、行业自律组织对该金融产品提供保\n证;\n(六)涉及分期付款的,通过片面宣传首期费用优惠等方式诱导消费;\n(七)使用“低风险”“低门槛”“秒到账”“高收益”“低利率”“无成本”等诱导性用语;\n(八)法律法规、国家有关规定禁止的其他行为。",
+                "source_locator": {
+                  "kind": "PDF page and extracted line",
+                  "line_start": 21,
+                  "line_end": 31,
+                  "page_start": 2,
+                  "page_end": 2
+                }
+              },
+              {
+                "article_id": "internet_insurance_supervision_order_2020_13::art_015",
+                "document_title": "互联网保险业务监管办法",
+                "document_status": "effective",
+                "article_label": "第十五条",
+                "original_text": "本办法所称互联网保险营销宣传，是指保险机构通过网站、网页、互联网应用程序等互联网媒介，以文字、图片、音频、视频或其他形式，就保险产品或保险服务进行商业宣传推广的活动。保险机构开展互联网保险营销宣传活动应符合《中华人民共和国广告法》、金融营销宣传以及银保监会相关规定。\n保险机构应加强互联网保险营销宣传管理：\n（一）保险机构应建立从业人员互联网保险营销宣传的资质、培训、内容审核和行为管理制度。\n（二）保险机构应从严、精细管控所属从业人员互联网保险营销宣传活动，提高从业人员的诚信和专业水平。保险机构应对从业人员发布的互联网保险营销宣传内容进行监测检查，发现问题及时处置。\n（三）保险机构从业人员应在保险机构授权范围内开展互联网保险营销宣传。从业人员发布的互联网保险营销宣传内容，应由所属保险机构统一制作，并在显著位置标明所属保险机构全称及个人姓名、执业证编号等信息。\n（四）开展互联网保险营销宣传活动应遵循清晰准确、通俗易懂、符合社会公序良俗的原则，不得进行不实陈述或误导性描述，不得片面比较保险产品价格和简单排名，不得与其他非保险产品和服务混淆，不得片面或夸大宣传，不得违规承诺收益或承诺承担损失。\n（五）互联网保险营销宣传内容应与保险合同条款保持一致，不得误导性解读监管政策，不得使用或变相使用监管机构及其工作人员的名义或形象进行商业宣传。\n（六）互联网保险营销宣传页面应明确标识产品为保险产品，标明保险产品全称、承保保险公司全称以及提供销售或经纪服务的保险中介机构全称；应用准确的语言描述产品的主要功能和特点，突出说明容易引发歧义或消费者容易忽视的内容。\n（七）保险机构及其从业人员应慎重向消费者发送互联网保险产品信息。消费者明确表示拒绝接收的，不得向其发送互联网保险产品信息。\n（八）保险机构应对本机构及所属从业人员互联网保险营销宣传承担合规管理的主体责任。",
+                "source_locator": {
+                  "kind": "WPS COM paragraph index",
+                  "line_start": 1,
+                  "line_end": 1,
+                  "paragraph_start": 60,
+                  "paragraph_end": 69
+                }
+              }
+            ],
+            "confidence": 0.98,
+            "confidence_kind": "model_self_report"
+          }
+        ],
+        "review_items": [
+          {
+            "rule_id": "identify_insurance_product_and_provider",
+            "type": "needs_context",
+            "reason": "材料仅包含一句宣传语，未显示保险公司名称、中介机构名称或执业人员信息。虽然规则要求明确标识，但鉴于材料被声明为'complete'且可能仅为广告素材的一部分（需结合落地页判断），单凭此文本无法确定完整页面是否缺失身份信息，故定为不确定。但若此为独立广告，则违规。",
+            "blocking": true,
+            "required_information": [
+              "承保保险公司名称",
+              "销售机构名称",
+              "完整页面展示情况"
+            ]
+          },
+          {
+            "rule_id": "disclose_material_policy_terms_and_restrictions",
+            "type": "needs_context",
+            "reason": "材料为简短宣传语，未展示免责条款、退保损失等关键信息。若此为独立营销页面，则严重缺失；若为引流广告，则需在落地页披露。因无法确认其在销售流程中的具体阶段及完整上下文，判定为不确定。",
+            "blocking": true,
+            "required_information": [
+              "页面类型（广告/详情页）",
+              "免责条款展示情况",
+              "退保及费用扣除说明"
+            ]
+          },
+          {
+            "rule_id": "marketing_personnel_authorization_and_channel",
+            "type": "needs_context",
+            "reason": "材料为互联网渠道发布的保险营销内容，触发渠道规则审查。但材料未展示发布者身份（是否为从业人员）、账号属性（是否自营或授权）及授权记录。依据规则解释，缺失资质信息不能直接认定无资质，需外部核验发布者身份及授权状态，故无法判定违规或合规。",
+            "blocking": true,
+            "required_information": [
+              "publisher identity and role",
+              "authorization record",
+              "account ownership"
+            ]
+          },
+          {
+            "rule_id": "regional_and_third_party_marketing_scope",
+            "type": "needs_context",
+            "reason": "规则要求营销在许可业务范围内进行。材料未披露承保机构的具体许可证范围、服务区域限制或客户地域识别机制。虽然材料提及“监管部门”，但未提供具体的机构资质证明或区域限制提示，无法仅凭现有文本判断是否超范围经营，需外部核验机构牌照及业务边界。",
+            "blocking": true,
+            "required_information": [
+              "institution license and scope",
+              "customer region",
+              "platform role and authorization"
+            ]
+          },
+          {
+            "rule_id": "licensed_insurance_and_marketing_subject",
+            "type": "needs_context",
+            "reason": "规则要求确认销售主体具备相应保险销售或互联网保险业务资质。材料中未显示发布主体的名称、许可证号或执业登记信息。虽然上下文声明发布者为保险机构，但材料本身缺乏可验证的资质标识，且存在违规宣传内容，需结合外部注册信息核实主体资格，不能仅因材料缺失标识即认定违规，也不能认定合规。",
+            "blocking": true,
+            "required_information": [
+              "publisher role",
+              "license and registration evidence"
+            ]
+          },
+          {
+            "rule_id": "partner_contract_and_delegation",
+            "type": "needs_context",
+            "reason": "规则涉及代理或第三方合作的合同与委托关系。材料未展示任何关于合作方、委托协议、转委托安排或第三方平台角色的信息。无法从单一宣传语中判断是否存在违规转委托或未披露的合作关系，需外部核验合作架构。",
+            "blocking": true,
+            "required_information": [
+              "cooperation model",
+              "mandate contract",
+              "partner license"
+            ]
+          },
+          {
+            "rule_id": "suitability_and_consumer_demand",
+            "type": "needs_context",
+            "reason": "Rule requires establishing individual insurance sales process to assess need/risk. Material is a static advertisement text without evidence of specific consumer interaction, needs assessment, or sales flow execution. Cannot determine if suitability obligations were met or violated based solely on ad copy.",
+            "blocking": true,
+            "required_information": [
+              "consumer needs assessment record",
+              "risk and affordability assessment",
+              "existing cover check",
+              "advice record for mismatch cases"
+            ]
+          },
+          {
+            "rule_id": "truthful_health_disclosure_prompt",
+            "type": "needs_context",
+            "reason": "Rule triggers on precontract questionnaire or sales flow. The provided material is a promotional slogan. It does not contain health questions or disclosure prompts, nor does it show the full sales interface where such prompts would legally appear. Cannot verify compliance or violation from this snippet alone.",
+            "blocking": true,
+            "required_information": [
+              "complete health questionnaire content",
+              "exact sales advice regarding disclosure",
+              "material stage in sales flow"
+            ]
+          },
+          {
+            "rule_id": "policy_confirmation_and_approved_terms",
+            "type": "needs_context",
+            "reason": "Rule applies to contract conclusion phase (confirmation of terms, rates, and consumer intent). The material is an advertisement claim. There is no evidence of contract documents, approved clauses, or confirmation records in the provided text.",
+            "blocking": true,
+            "required_information": [
+              "contract document",
+              "approved clauses and rates proof",
+              "consumer confirmation record"
+            ]
+          },
+          {
+            "rule_id": "premium_payment_and_accounts",
+            "type": "needs_context",
+            "reason": "Rule concerns premium collection accounts and handling. The material contains no information about payment methods, account details, or fund handling procedures. Cannot assess compliance.",
+            "blocking": true,
+            "required_information": [
+              "payer and payee details",
+              "account ownership verification",
+              "transaction records"
+            ]
+          },
+          {
+            "rule_id": "personal_information_consent_and_use",
+            "type": "needs_context",
+            "reason": "Rule requires evidence of personal data collection/processing and consent mechanisms. The material is a short promotional text with no data collection interface or privacy policy reference visible. Cannot determine if consent obligations are met or violated.",
+            "blocking": true,
+            "required_information": [
+              "data processing purpose",
+              "consent mechanism",
+              "privacy policy link or notice"
+            ]
+          },
+          {
+            "rule_id": "official_platform_mandatory_information",
+            "type": "needs_context",
+            "reason": "Rule requires establishing an official website or self-operated platform to trigger specific disclosure obligations (product, institution, refund conditions). The provided material is a single text snippet ('安心保险产品...') without evidence of the full page layout, platform type, or pre-contract stage context required to verify compliance with Art 14/40 of Insurance Sales Behavior Order and Art 12/13 of Internet Insurance Supervision Order. While the text contains potential violations of other rules, this specific rule's applicability depends on unverified platform facts.",
+            "blocking": true,
+            "required_information": [
+              "complete page",
+              "platform type",
+              "publisher",
+              "precontract stage"
+            ]
+          },
+          {
+            "rule_id": "offline_service_availability_disclosure",
+            "type": "needs_context",
+            "reason": "Rule triggers on establishing an internet insurance sales or detail page. The input is a text snippet, not a complete sales page. Cannot verify if offline service limitations or online completion capabilities are disclosed as required by Art 14, 17, 26 of Internet Insurance Supervision Order.",
+            "blocking": true,
+            "required_information": [
+              "complete sales page",
+              "offline steps",
+              "actual service capacity"
+            ]
+          },
+          {
+            "rule_id": "voluntary_renewal_and_sales_choices",
+            "type": "needs_context",
+            "reason": "Rule triggers on establishing an internet insurance purchase or renewal flow. The provided text is a marketing claim, not a transactional interface. Cannot verify default selections, auto-debit controls, or consent mechanisms required by Art 17 and 21 of Internet Insurance Supervision Order.",
+            "blocking": true,
+            "required_information": [
+              "complete interaction",
+              "default selection",
+              "auto-debit controls",
+              "consent"
+            ]
+          },
+          {
+            "rule_id": "special_internet_insurance_business_scope",
+            "type": "needs_context",
+            "reason": "Rule applies to internet insurers or special intermediary models regarding business scope, territory, and delegation. While the product is insurance and channel is internet, the specific institution subtype (e.g., internet insurer vs traditional), license details, and territorial compliance are not provided in the material. Cannot determine applicability or violation without external verification of the publisher's specific license and business model.",
+            "blocking": true,
+            "required_information": [
+              "institution subtype",
+              "license",
+              "product",
+              "territory",
+              "delegation",
+              "channel",
+              "current ancillary conditions"
+            ]
+          },
+          {
+            "rule_id": "illegal_financial_activity_marketing",
+            "type": "needs_context",
+            "reason": "The rule prohibits marketing illegal financial activities. While the text claims 'regulatory guarantee', which is factually incorrect for commercial insurance, determining if this constitutes 'illegal financial activity' (as defined by unlicensed operations) versus 'misleading marketing' requires external verification of the product's legal status and the publisher's qualification. The material alone does not prove the activity is an unlicensed illegal operation rather than a compliant product with bad marketing.",
+            "blocking": true,
+            "required_information": [
+              "product approval status",
+              "publisher qualification for illegal activity determination"
+            ]
+          },
+          {
+            "rule_id": "approved_marketing_content_use",
+            "type": "needs_context",
+            "reason": "The rule requires use of institution-reviewed/approved content. The material contains prohibited claims ('regulatory guarantee', 'steady profit'). While this suggests a failure in content review, the rule's trigger is about the authorization process. Without access to the institution's internal review records or authorization logs, it is uncertain whether this specific text was unauthorized or if the review process itself was flawed. However, the content clearly violates substantive marketing rules (Art 15 of Internet Insurance Order), but under this specific rule ID focusing on 'approved content use', we lack evidence of the approval record.",
+            "blocking": true,
+            "required_information": [
+              "review and authorization records",
+              "approved content version"
+            ]
+          },
+          {
+            "rule_id": "internet_platform_operating_conditions",
+            "type": "needs_context",
+            "reason": "The rule requires verification of platform operating conditions (IT security, filing, etc.). Marketing text cannot establish IT/security compliance or filing status. These facts require external verification and are not present in the material.",
+            "blocking": true,
+            "required_information": [
+              "filing",
+              "systems/security certificates",
+              "operating condition",
+              "announcements"
+            ]
+          }
+        ],
+        "coverage": {
+          "total": 34,
+          "eligible": 21,
+          "checked": 3,
+          "coverage_ratio": 0.14285714285714285,
+          "resolved_ratio": 0.14285714285714285,
+          "rules": [
+            {
+              "rule_id": "marketing_truthful_and_not_misleading",
+              "status": "checked",
+              "finding": "violation",
+              "reason": "材料声称'由监管部门担保收益'和'稳赚不赔'，属于虚假、夸大且严重误导的表述。保险产品收益通常非保证（除特定保证利益外），且监管部门不提供商业担保。该表述违反了真实准确、不得虚假夸大的要求。"
+            },
+            {
+              "rule_id": "insurance_benefit_uncertainty_and_risk",
+              "status": "checked",
+              "finding": "violation",
+              "reason": "材料宣称'稳赚不赔'并暗示收益由监管担保，完全抹杀了保险产品的不确定性及风险。无论产品是否为新型人身保险，'稳赚不赔'均属于对保险责任和收益的过度承诺和误导，未提示任何风险或不确定性。"
+            },
+            {
+              "rule_id": "identify_insurance_product_and_provider",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "材料仅包含一句宣传语，未显示保险公司名称、中介机构名称或执业人员信息。虽然规则要求明确标识，但鉴于材料被声明为'complete'且可能仅为广告素材的一部分（需结合落地页判断），单凭此文本无法确定完整页面是否缺失身份信息，故定为不确定。但若此为独立广告，则违规。"
+            },
+            {
+              "rule_id": "disclose_material_policy_terms_and_restrictions",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "材料为简短宣传语，未展示免责条款、退保损失等关键信息。若此为独立营销页面，则严重缺失；若为引流广告，则需在落地页披露。因无法确认其在销售流程中的具体阶段及完整上下文，判定为不确定。"
+            },
+            {
+              "rule_id": "no_regulatory_guarantee_or_filing_endorsement",
+              "status": "checked",
+              "finding": "violation",
+              "reason": "材料明确声称'由监管部门担保收益'，直接违反了禁止利用监管机构审核或备案程序误导消费者认为监管机构提供保证的规定，也禁止使用监管机构名义进行商业宣传。"
+            },
+            {
+              "rule_id": "public_figure_endorsement_external_review",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料中未提及任何学术机构、行业协会、专业人士或社会公众人物（如明星）的名字或形象进行推荐或证明。触发条件不满足。"
+            },
+            {
+              "rule_id": "marketing_personnel_authorization_and_channel",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "材料为互联网渠道发布的保险营销内容，触发渠道规则审查。但材料未展示发布者身份（是否为从业人员）、账号属性（是否自营或授权）及授权记录。依据规则解释，缺失资质信息不能直接认定无资质，需外部核验发布者身份及授权状态，故无法判定违规或合规。"
+            },
+            {
+              "rule_id": "stop_sale_and_price_change_claims",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "规则触发条件为销售人员宣称产品即将停售或价格调整。材料内容仅涉及收益担保和风险提示，未包含任何关于停售或价格变动的表述，故不触发该规则。"
+            },
+            {
+              "rule_id": "regional_and_third_party_marketing_scope",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "规则要求营销在许可业务范围内进行。材料未披露承保机构的具体许可证范围、服务区域限制或客户地域识别机制。虽然材料提及“监管部门”，但未提供具体的机构资质证明或区域限制提示，无法仅凭现有文本判断是否超范围经营，需外部核验机构牌照及业务边界。"
+            },
+            {
+              "rule_id": "bundled_financial_products_and_default_choice",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "规则触发条件为呈现捆绑销售或默认勾选。材料仅为单一句子的宣传语，未展示任何产品组合、购买流程、默认选项或强制搭售行为，故不触发该规则。"
+            },
+            {
+              "rule_id": "licensed_insurance_and_marketing_subject",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "规则要求确认销售主体具备相应保险销售或互联网保险业务资质。材料中未显示发布主体的名称、许可证号或执业登记信息。虽然上下文声明发布者为保险机构，但材料本身缺乏可验证的资质标识，且存在违规宣传内容，需结合外部注册信息核实主体资格，不能仅因材料缺失标识即认定违规，也不能认定合规。"
+            },
+            {
+              "rule_id": "partner_contract_and_delegation",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "规则涉及代理或第三方合作的合同与委托关系。材料未展示任何关于合作方、委托协议、转委托安排或第三方平台角色的信息。无法从单一宣传语中判断是否存在违规转委托或未披露的合作关系，需外部核验合作架构。"
+            },
+            {
+              "rule_id": "suitability_and_consumer_demand",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "Rule requires establishing individual insurance sales process to assess need/risk. Material is a static advertisement text without evidence of specific consumer interaction, needs assessment, or sales flow execution. Cannot determine if suitability obligations were met or violated based solely on ad copy."
+            },
+            {
+              "rule_id": "truthful_health_disclosure_prompt",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "Rule triggers on precontract questionnaire or sales flow. The provided material is a promotional slogan. It does not contain health questions or disclosure prompts, nor does it show the full sales interface where such prompts would legally appear. Cannot verify compliance or violation from this snippet alone."
+            },
+            {
+              "rule_id": "policy_confirmation_and_approved_terms",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "Rule applies to contract conclusion phase (confirmation of terms, rates, and consumer intent). The material is an advertisement claim. There is no evidence of contract documents, approved clauses, or confirmation records in the provided text."
+            },
+            {
+              "rule_id": "premium_payment_and_accounts",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "Rule concerns premium collection accounts and handling. The material contains no information about payment methods, account details, or fund handling procedures. Cannot assess compliance."
+            },
+            {
+              "rule_id": "personal_information_consent_and_use",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "Rule requires evidence of personal data collection/processing and consent mechanisms. The material is a short promotional text with no data collection interface or privacy policy reference visible. Cannot determine if consent obligations are met or violated."
+            },
+            {
+              "rule_id": "unlawful_surrender_promotion",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "The material promotes purchasing insurance ('安心保险产品...购买后稳赚不赔'), not surrendering it. The trigger condition for surrender-related promotion is not met."
+            },
+            {
+              "rule_id": "official_platform_mandatory_information",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "Rule requires establishing an official website or self-operated platform to trigger specific disclosure obligations (product, institution, refund conditions). The provided material is a single text snippet ('安心保险产品...') without evidence of the full page layout, platform type, or pre-contract stage context required to verify compliance with Art 14/40 of Insurance Sales Behavior Order and Art 12/13 of Internet Insurance Supervision Order. While the text contains potential violations of other rules, this specific rule's applicability depends on unverified platform facts."
+            },
+            {
+              "rule_id": "offline_service_availability_disclosure",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "Rule triggers on establishing an internet insurance sales or detail page. The input is a text snippet, not a complete sales page. Cannot verify if offline service limitations or online completion capabilities are disclosed as required by Art 14, 17, 26 of Internet Insurance Supervision Order."
+            },
+            {
+              "rule_id": "voluntary_renewal_and_sales_choices",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "Rule triggers on establishing an internet insurance purchase or renewal flow. The provided text is a marketing claim, not a transactional interface. Cannot verify default selections, auto-debit controls, or consent mechanisms required by Art 17 and 21 of Internet Insurance Supervision Order."
+            },
+            {
+              "rule_id": "intermediary_industry_name_and_brand",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "The rule applies to intermediary or cooperation marketing pages. The context states the publisher_type is 'insurance_institution'. Furthermore, the text does not contain intermediary branding issues; it contains a direct regulatory misrepresentation. The specific trigger for intermediary name/brand confusion is not met based on the publisher type and content nature."
+            },
+            {
+              "rule_id": "multi_product_display_separation",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "The rule triggers on establishing an internet platform with multiple product categories. The provided material is a single text snippet regarding one product. There is no evidence of a multi-category platform layout to evaluate separation requirements under Art 11 of Financial Network Marketing Order or Art 70/79 of Internet Insurance Supervision Order."
+            },
+            {
+              "rule_id": "marketing_message_optout",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "The rule triggers on establishing a direct marketing message or call with an opt-out requirement. The provided text is a static marketing claim, not a transmitted message or call log showing lack of opt-out mechanism. Cannot verify violation of Art 13 of Financial Network Marketing Order or Art 15 of Internet Insurance Supervision Order regarding refusal choices."
+            },
+            {
+              "rule_id": "popup_close_control",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "Rule applies to internet financial marketing popups. The provided material is a text snippet without evidence of being a popup or having interactive elements. Trigger condition for establishing a popup is not met."
+            },
+            {
+              "rule_id": "algorithm_recommendation_controls",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "Rule applies to algorithmic financial product marketing. The material is a static text claim. There is no evidence of algorithmic recommendation technology deployment or personalized marketing behavior. Trigger condition is not met."
+            },
+            {
+              "rule_id": "regulated_account_names_and_trademarks",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "Rule regulates the use of financial terms in website/app account names or trademarks. The material contains product advertising copy ('安心保险产品...'), not an account name or trademark registration. The exception for ordinary product-body wording applies as this is not a name/trademark usage context."
+            },
+            {
+              "rule_id": "third_party_sales_intervention",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "Rule applies to third-party marketing or non-insurance operators intervening in sales. The context states the publisher is an 'insurance_institution'. There is no evidence of a third-party platform or non-insurance entity conducting prohibited activities like contract signing or payment collection in the provided text."
+            },
+            {
+              "rule_id": "paid_education_disguised_marketing",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "Rule prohibits disguising marketing as investor education via paid third-party courses. The material is a direct product advertisement claim, not an educational course or training program. There is no evidence of institutional commissioning of third-party education platforms."
+            },
+            {
+              "rule_id": "special_internet_insurance_business_scope",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "Rule applies to internet insurers or special intermediary models regarding business scope, territory, and delegation. While the product is insurance and channel is internet, the specific institution subtype (e.g., internet insurer vs traditional), license details, and territorial compliance are not provided in the material. Cannot determine applicability or violation without external verification of the publisher's specific license and business model."
+            },
+            {
+              "rule_id": "nonbank_payment_marketing_options",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "Rule applies to nonbank payment provider interfaces listing financial products as payment options. The material is a general insurance advertisement text without evidence of payment interface integration or listing products as payment tools."
+            },
+            {
+              "rule_id": "illegal_financial_activity_marketing",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "The rule prohibits marketing illegal financial activities. While the text claims 'regulatory guarantee', which is factually incorrect for commercial insurance, determining if this constitutes 'illegal financial activity' (as defined by unlicensed operations) versus 'misleading marketing' requires external verification of the product's legal status and the publisher's qualification. The material alone does not prove the activity is an unlicensed illegal operation rather than a compliant product with bad marketing."
+            },
+            {
+              "rule_id": "approved_marketing_content_use",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "The rule requires use of institution-reviewed/approved content. The material contains prohibited claims ('regulatory guarantee', 'steady profit'). While this suggests a failure in content review, the rule's trigger is about the authorization process. Without access to the institution's internal review records or authorization logs, it is uncertain whether this specific text was unauthorized or if the review process itself was flawed. However, the content clearly violates substantive marketing rules (Art 15 of Internet Insurance Order), but under this specific rule ID focusing on 'approved content use', we lack evidence of the approval record."
+            },
+            {
+              "rule_id": "internet_platform_operating_conditions",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "The rule requires verification of platform operating conditions (IT security, filing, etc.). Marketing text cannot establish IT/security compliance or filing status. These facts require external verification and are not present in the material."
+            }
+          ]
+        },
+        "confidence": null,
+        "confidence_kind": "not_computed",
+        "warnings": [],
+        "errors": [],
+        "images": [],
+        "sources": [
+          {
+            "source_id": "text_1",
+            "source_type": "text",
+            "text": "安心保险产品，由监管部门担保收益，购买后稳赚不赔。",
+            "start": 0,
+            "image_id": null,
+            "block_id": null
+          }
+        ],
+        "mock": false,
+        "meta": {
+          "ruleset_hash": "255be926a0ac6c8dadb6c1e033d761c480c91c586f11b8a3c01e75afcc0eb81c",
+          "prompt_version": "audit-v1.1",
+          "workflow_version": "1.0",
+          "model_ids": {
+            "text": "qwen3.7-plus",
+            "vision": "qwen3-vl-plus"
+          },
+          "retrieved_article_ids": [
+            "financial_network_marketing_order_2026_09::art_033",
+            "insurance_sales_behavior_order_2023_02::art_021",
+            "insurance_sales_behavior_order_2023_02::art_028",
+            "insurance_sales_behavior_order_2023_02::art_037",
+            "insurance_sales_behavior_order_2023_02::art_040",
+            "internet_insurance_supervision_order_2020_13::art_008",
+            "internet_insurance_supervision_order_2020_13::art_076",
+            "internet_insurance_supervision_order_2020_13::art_079"
+          ],
+          "attempts": 6,
+          "calls": [
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 37985,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 38843,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 67469,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 74657,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 97469,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 97532,
+              "actual_model": "qwen3.7-plus"
+            }
+          ],
+          "token_usage": {
+            "prompt_tokens": 54049,
+            "completion_tokens": 10906,
+            "total_tokens": 64955
+          },
+          "stage_latency": {
+            "extract_ms": 0,
+            "judge_ms": 97594
+          },
+          "latency_ms": 97594
+        }
+      }
+    },
+    "education": {
+      "run_at_utc": "2026-10-11T11:07:24.167151+00:00",
+      "synthetic_demo": true,
+      "response": {
+        "audit_id": "cb0f9d86-0d3b-4ddc-9b40-8451b661c6dc",
+        "trace_id": "8d380ea8-1b12-4f7f-bb2a-c67e4d652b0d",
+        "status": "failed",
+        "decision": null,
+        "is_compliant": null,
+        "summary": "审核遇到技术故障，未生成业务结论。",
+        "ruleset_id": "official-v1-2026-10-11",
+        "ruleset_mode": "official_snapshot",
+        "violations": [],
+        "review_items": [
+          {
+            "rule_id": "marketing_personnel_authorization_and_channel",
+            "type": "needs_context",
+            "reason": "材料声明为保险机构发布，但未提供具体的发布者身份、账号归属或授权记录等外部可验证事实。虽然内容本身合规，但无法仅凭文本确认是否满足‘经审核授权’及‘特定渠道要求’的程序性事实。",
+            "blocking": true,
+            "required_information": [
+              "publisher identity and role",
+              "authorization record",
+              "account ownership"
+            ]
+          },
+          {
+            "rule_id": "regional_and_third_party_marketing_scope",
+            "type": "needs_context",
+            "reason": "材料未展示具体的销售流向、客户地域限制或第三方平台委托关系。虽然声明为机构发布，但缺乏许可证范围、服务区域及平台角色的具体证据，无法判断是否超出许可范围。",
+            "blocking": true,
+            "required_information": [
+              "institution license and scope",
+              "customer region",
+              "platform role and authorization"
+            ]
+          },
+          {
+            "rule_id": "licensed_insurance_and_marketing_subject",
+            "type": "needs_context",
+            "reason": "规则要求核实从事互联网保险业务或金融营销的主体资质。虽然上下文声明发布者为保险机构，但材料本身未展示许可证或执业登记信息，且规则明确指出‘缺失凭证不等于无资格’，需外部核验实际活动与资质匹配情况。",
+            "blocking": true,
+            "required_information": [
+              "license and registration evidence",
+              "actual activity"
+            ]
+          }
+        ],
+        "coverage": {
+          "total": 34,
+          "eligible": 13,
+          "checked": 0,
+          "coverage_ratio": 0.0,
+          "resolved_ratio": 0.0,
+          "rules": [
+            {
+              "rule_id": "marketing_truthful_and_not_misleading",
+              "status": "failed",
+              "finding": null,
+              "reason": "模型输出经一次修复后仍不符合结构或证据约束。"
+            },
+            {
+              "rule_id": "insurance_benefit_uncertainty_and_risk",
+              "status": "failed",
+              "finding": null,
+              "reason": "模型输出经一次修复后仍不符合结构或证据约束。"
+            },
+            {
+              "rule_id": "identify_insurance_product_and_provider",
+              "status": "failed",
+              "finding": null,
+              "reason": "模型输出经一次修复后仍不符合结构或证据约束。"
+            },
+            {
+              "rule_id": "disclose_material_policy_terms_and_restrictions",
+              "status": "failed",
+              "finding": null,
+              "reason": "模型输出经一次修复后仍不符合结构或证据约束。"
+            },
+            {
+              "rule_id": "no_regulatory_guarantee_or_filing_endorsement",
+              "status": "failed",
+              "finding": null,
+              "reason": "模型输出经一次修复后仍不符合结构或证据约束。"
+            },
+            {
+              "rule_id": "public_figure_endorsement_external_review",
+              "status": "failed",
+              "finding": null,
+              "reason": "模型输出经一次修复后仍不符合结构或证据约束。"
+            },
+            {
+              "rule_id": "marketing_personnel_authorization_and_channel",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "材料声明为保险机构发布，但未提供具体的发布者身份、账号归属或授权记录等外部可验证事实。虽然内容本身合规，但无法仅凭文本确认是否满足‘经审核授权’及‘特定渠道要求’的程序性事实。"
+            },
+            {
+              "rule_id": "stop_sale_and_price_change_claims",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料内容为保险知识科普，明确声明不介绍或销售具体产品，且未包含任何关于产品停售或价格调整的宣称。触发条件不成立。"
+            },
+            {
+              "rule_id": "regional_and_third_party_marketing_scope",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "材料未展示具体的销售流向、客户地域限制或第三方平台委托关系。虽然声明为机构发布，但缺乏许可证范围、服务区域及平台角色的具体证据，无法判断是否超出许可范围。"
+            },
+            {
+              "rule_id": "bundled_financial_products_and_default_choice",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料仅为文字科普，未展示任何产品销售界面、组合销售选项或默认勾选行为。触发条件中关于‘捆绑或默认选择’的事实不存在。"
+            },
+            {
+              "rule_id": "licensed_insurance_and_marketing_subject",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "规则要求核实从事互联网保险业务或金融营销的主体资质。虽然上下文声明发布者为保险机构，但材料本身未展示许可证或执业登记信息，且规则明确指出‘缺失凭证不等于无资格’，需外部核验实际活动与资质匹配情况。"
+            },
+            {
+              "rule_id": "partner_contract_and_delegation",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料未涉及任何代理机构、第三方平台合作或业务转委托的描述。内容明确为‘不介绍或销售具体产品’的科普，因此不涉及代理合作或委托关系的触发条件。"
+            },
+            {
+              "rule_id": "suitability_and_consumer_demand",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料明确声明为保险知识科普且不介绍或销售具体产品，未建立个人保险销售行为，因此不触发针对具体销售过程中的适当性评估义务。"
+            },
+            {
+              "rule_id": "truthful_health_disclosure_prompt",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料仅为通用知识科普，未涉及具体的投保流程、问卷或销售环节，不存在订立保险合同时的如实告知提示义务触发条件。"
+            },
+            {
+              "rule_id": "policy_confirmation_and_approved_terms",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料未展示保险合同订立过程，无合同确认、条款签署或费率备案相关的行为事实，规则触发条件不成立。"
+            },
+            {
+              "rule_id": "premium_payment_and_accounts",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料不涉及保费收取、退保金或保险金支付等资金流转环节，无相关账户信息或支付指令，规则不适用。"
+            },
+            {
+              "rule_id": "personal_information_consent_and_use",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料为公开科普文本，未展示收集、处理或使用个人信息的任何行为或意图，未触发个人信息保护规则的适用条件。"
+            },
+            {
+              "rule_id": "unlawful_surrender_promotion",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料内容仅涉及分红性质和监管背书的科普，未包含任何诱导退保、代理退保或损害投保人利益的宣传内容，不触发该规则。"
+            },
+            {
+              "rule_id": "official_platform_mandatory_information",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "The material is an isolated educational text explicitly stating it does not introduce or sell specific products. It does not constitute an official website or self-operated platform page requiring the full set of product, institution, and precontract disclosures mandated by the cited articles."
+            },
+            {
+              "rule_id": "offline_service_availability_disclosure",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "The trigger condition requires an internet insurance sales or detail page. The provided material is a general knowledge科普 (science popularization) text that explicitly states it does not introduce or sell specific products, thus no sales page exists to trigger the disclosure requirement."
+            },
+            {
+              "rule_id": "voluntary_renewal_and_sales_choices",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "The rule applies to internet insurance purchase or renewal flows. The material is a static educational text with no interactive purchase or renewal functionality, so the conditions for default selection or auto-renewal restrictions are not triggered."
+            },
+            {
+              "rule_id": "intermediary_industry_name_and_brand",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "The rule targets intermediary or cooperation marketing pages. The material is a general educational statement without any intermediary branding, insurer names, or cooperation context that would require industry subcategory identification or brand separation."
+            },
+            {
+              "rule_id": "multi_product_display_separation",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "The rule requires an internet platform displaying multiple financial product categories. The provided material is a single block of educational text, not a platform layout with multiple product categories, so the separation requirement is not triggered."
+            },
+            {
+              "rule_id": "marketing_message_optout",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "The rule applies to direct marketing messages or calls where an opt-out mechanism is required. The material is a static educational text snippet, not a direct marketing message sent to consumers with a history of refusal or need for unsubscribe options."
+            },
+            {
+              "rule_id": "popup_close_control",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料为纯文本科普内容，未展示任何弹窗广告形式，触发条件不满足。"
+            },
+            {
+              "rule_id": "algorithm_recommendation_controls",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料为静态文本，未展示算法推荐技术的使用或相关交互界面，无法确立算法营销触发条件。"
+            },
+            {
+              "rule_id": "regulated_account_names_and_trademarks",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料正文中未出现涉金融属性的机构名称、账号名称或商标，仅包含一般性科普文字，不触发命名规范审查。"
+            },
+            {
+              "rule_id": "third_party_sales_intervention",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料明确声明“不介绍或销售具体产品”，且无第三方平台介入销售流程的证据，不触发第三方干预审查。"
+            },
+            {
+              "rule_id": "paid_education_disguised_marketing",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料为中性保险知识科普，未显示金融机构委托第三方支付费用进行变相营销的事实，不触发该规则。"
+            },
+            {
+              "rule_id": "special_internet_insurance_business_scope",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料未涉及具体保险产品的销售、承保区域或机构资质展示，仅为通用知识科普，不触发互联网保险业务范围审查。"
+            },
+            {
+              "rule_id": "nonbank_payment_marketing_options",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "illegal_financial_activity_marketing",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "approved_marketing_content_use",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            },
+            {
+              "rule_id": "internet_platform_operating_conditions",
+              "status": "failed",
+              "finding": null,
+              "reason": "审核整体时间预算已耗尽。"
+            }
+          ]
+        },
+        "confidence": null,
+        "confidence_kind": "not_computed",
+        "warnings": [],
+        "errors": [
+          {
+            "stage": "judge",
+            "code": "invalid_model_output",
+            "message": "模型输出经一次修复后仍不符合结构或证据约束。",
+            "retryable": false,
+            "rule_ids": [
+              "marketing_truthful_and_not_misleading",
+              "insurance_benefit_uncertainty_and_risk",
+              "identify_insurance_product_and_provider",
+              "disclose_material_policy_terms_and_restrictions",
+              "no_regulatory_guarantee_or_filing_endorsement",
+              "public_figure_endorsement_external_review"
+            ],
+            "image_id": null
+          },
+          {
+            "stage": "judge",
+            "code": "budget_exhausted",
+            "message": "审核整体时间预算已耗尽。",
+            "retryable": false,
+            "rule_ids": [
+              "nonbank_payment_marketing_options",
+              "illegal_financial_activity_marketing",
+              "approved_marketing_content_use",
+              "internet_platform_operating_conditions"
+            ],
+            "image_id": null
+          }
+        ],
+        "images": [],
+        "sources": [
+          {
+            "source_id": "text_1",
+            "source_type": "text",
+            "text": "保险知识科普：任何人都不应宣称‘监管部门担保收益’。分红属于非保证利益，实际收益可能低于演示水平。本文不介绍或销售具体产品。",
+            "start": 0,
+            "image_id": null,
+            "block_id": null
+          }
+        ],
+        "mock": false,
+        "meta": {
+          "ruleset_hash": "255be926a0ac6c8dadb6c1e033d761c480c91c586f11b8a3c01e75afcc0eb81c",
+          "prompt_version": "audit-v1.1",
+          "workflow_version": "1.0",
+          "model_ids": {
+            "text": "qwen3.7-plus",
+            "vision": "qwen3-vl-plus"
+          },
+          "retrieved_article_ids": [
+            "financial_network_marketing_order_2026_09::art_010",
+            "insurance_sales_behavior_order_2023_02::art_006",
+            "insurance_sales_behavior_order_2023_02::art_015",
+            "internet_insurance_supervision_order_2020_13::art_014",
+            "internet_insurance_supervision_order_2020_13::art_015",
+            "internet_insurance_supervision_order_2020_13::art_017",
+            "internet_insurance_supervision_order_2020_13::art_056",
+            "internet_insurance_supervision_order_2020_13::art_079"
+          ],
+          "attempts": 9,
+          "calls": [
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 35407,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 38172,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 65985,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 71906,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 94344,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 96406,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 90656,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 58438,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 55625
+            }
+          ],
+          "token_usage": {
+            "prompt_tokens": 74015,
+            "completion_tokens": 14571,
+            "total_tokens": 88586
+          },
+          "stage_latency": {
+            "extract_ms": 0,
+            "judge_ms": 150016
+          },
+          "latency_ms": 150016
+        }
+      }
+    },
+    "review": {
+      "run_at_utc": "2026-10-11T11:09:27.442826+00:00",
+      "synthetic_demo": true,
+      "response": {
+        "audit_id": "45e916ef-dc6b-4726-a8a4-b9cb3ddfdd3f",
+        "trace_id": "e2a9d71a-3373-4076-b6fa-b2b203fe68ef",
+        "status": "failed",
+        "decision": null,
+        "is_compliant": null,
+        "summary": "审核遇到技术故障，未生成业务结论。",
+        "ruleset_id": "official-v1-2026-10-11",
+        "ruleset_mode": "official_snapshot",
+        "violations": [],
+        "review_items": [
+          {
+            "rule_id": "marketing_truthful_and_not_misleading",
+            "type": "needs_context",
+            "reason": "材料仅包含产品名称及引导语，未展示具体事实性利益承诺或对比声明。由于材料完整性为'partial'且仅为局部截取，无法核实完整页面是否存在虚假或误导性内容，故无法判定违规或合规。",
+            "blocking": true,
+            "required_information": [
+              "完整宣传页面内容",
+              "具体产品利益演示或承诺语句"
+            ]
+          },
+          {
+            "rule_id": "insurance_benefit_uncertainty_and_risk",
+            "type": "needs_context",
+            "reason": "规则触发条件为材料陈述或描绘利益、回报或不确定性。当前材料仅提及'某年金保险产品'，未展示具体收益数值或保证性描述。同时，材料为局部截取，无法确认完整页面是否包含新型人身保险产品的不确定性风险提示（如黑体字标注）。因缺失关键上下文和完整页面视图，无法判定是否违反风险披露义务。",
+            "blocking": true,
+            "required_information": [
+              "完整销售/详情页面",
+              "是否包含具体收益演示",
+              "风险提示的字体字号及位置"
+            ]
+          },
+          {
+            "rule_id": "identify_insurance_product_and_provider",
+            "type": "checked",
+            "reason": "规则要求明确标识保险产品属性及提供者身份。材料中虽提及'某年金保险产品'，暗示了产品属性，但未显示承保保险公司全称或中介机构名称。然而，材料明确说明是'局部截取'并引导查看'完整宣传页面'，根据解释说明，单张截图不能证明完整页面缺失必要身份信息。因此，无法仅凭此片段判定违规，需结合完整页面判断。",
+            "blocking": true,
+            "required_information": [
+              "完整页面中的保险公司名称",
+              "完整页面中的中介机构名称（如有）"
+            ]
+          },
+          {
+            "rule_id": "marketing_personnel_authorization_and_channel",
+            "type": "needs_context",
+            "reason": "材料声明发布者为保险机构，渠道为互联网，但未提供具体的发布者身份（是否为从业人员）、账号归属、授权记录及销售流程。虽然文本提及'某年金保险产品'，但缺乏证明营销人员已获授权或账号合规的具体证据，需外部核验。",
+            "blocking": true,
+            "required_information": [
+              "publisher identity and role",
+              "authorization record",
+              "account ownership",
+              "sales flow and destination"
+            ]
+          },
+          {
+            "rule_id": "regional_and_third_party_marketing_scope",
+            "type": "needs_context",
+            "reason": "材料未显示具体的销售区域限制、客户地域识别机制或第三方平台委托关系。虽声明为保险机构发布，但无法仅凭局部截图确认其业务是否在许可区域内开展，需结合完整销售流程和资质信息判断。",
+            "blocking": true,
+            "required_information": [
+              "institution license and scope",
+              "customer region",
+              "platform role and authorization",
+              "whether the activity constitutes internet insurance business"
+            ]
+          },
+          {
+            "rule_id": "licensed_insurance_and_marketing_subject",
+            "type": "needs_context",
+            "reason": "虽然上下文声明发布者为保险机构，但材料本身未展示许可证号、执业登记信息或明确的机构身份标识。根据规则，缺失创意中的凭证不能直接证明无资质，但也无法确证合规，需外部核验实际活动主体资格。",
+            "blocking": true,
+            "required_information": [
+              "publisher role",
+              "license and registration evidence",
+              "actual activity",
+              "channel"
+            ]
+          },
+          {
+            "rule_id": "partner_contract_and_delegation",
+            "type": "needs_context",
+            "reason": "材料未涉及任何第三方合作、委托代理或转委托的描述。由于无法从局部截图中判断是否存在后台合作关系或数据对接，且规则要求核查书面协议和委托范围，故需外部验证合作模式。",
+            "blocking": true,
+            "required_information": [
+              "cooperation model",
+              "mandate contract",
+              "principal consent",
+              "partner license",
+              "delegation chain"
+            ]
+          },
+          {
+            "rule_id": "suitability_and_consumer_demand",
+            "type": "needs_context",
+            "reason": "材料仅为局部截取的广告文本，未展示具体的销售交互流程、消费者需求评估记录或风险承受能力测评结果。虽然规则要求评估需求与能力，但当前材料缺乏证明该过程已发生或未发生的证据，且无法确认是否处于‘individual_insurance_sales’的具体缔约环节，故无法判定违规或合规。",
+            "blocking": true,
+            "required_information": [
+              "consumer needs assessment record",
+              "risk and affordability assessment record",
+              "existing cover check record",
+              "specific sales interaction context"
+            ]
+          },
+          {
+            "rule_id": "truthful_health_disclosure_prompt",
+            "type": "needs_context",
+            "reason": "规则触发条件为‘precontract_questionnaire_or_sales_flow’。材料仅显示产品名称及指引，未包含投保单、健康告知问卷或具体的销售话术。无法判断是否存在诱导隐瞒或未提示如实告知义务的情形，因关键事实缺失，状态为不确定。",
+            "blocking": true,
+            "required_information": [
+              "health questionnaire content",
+              "disclosure prompt text",
+              "sales advice record regarding health"
+            ]
+          },
+          {
+            "rule_id": "personal_information_consent_and_use",
+            "type": "needs_context",
+            "reason": "规则触发条件为‘Establish marketing_or_insurance_personal_data_use’。虽然材料属于营销性质，但未展示具体的个人信息收集行为、隐私政策链接或授权同意界面。无法判断在实际营销或后续流程中是否合规获取了用户同意，因缺乏具体数据处理行为的证据，状态为不确定。",
+            "blocking": true,
+            "required_information": [
+              "privacy policy link or text",
+              "consent mechanism description",
+              "data collection purpose statement"
+            ]
+          },
+          {
+            "rule_id": "official_platform_mandatory_information",
+            "type": "needs_context",
+            "reason": "材料声明为'局部截取'且仅包含产品简介，无法确认是否属于'官方自营平台'或'完整销售页面'。规则要求评估特定页面的披露义务（如退保流程、机构信息等），但缺失完整页面上下文，无法判断触发条件是否完全满足或例外情形（孤立广告）是否适用。",
+            "blocking": true,
+            "required_information": [
+              "complete page layout",
+              "platform type verification (official vs third-party)",
+              "presence of mandatory disclosures (refund process, institution info)"
+            ]
+          },
+          {
+            "rule_id": "offline_service_availability_disclosure",
+            "type": "needs_context",
+            "reason": "规则触发条件为'互联网保险销售或详情页面'。材料仅为局部截取文本，未展示完整的销售或详情页面，无法核实是否披露了'能否实现全流程线上服务'及'无分支机构的服务提示'。缺失关键事实导致无法判定合规性。",
+            "blocking": true,
+            "required_information": [
+              "full sales/detail page content",
+              "disclosure of online/offline service capability",
+              "branch location list or service limitation prompts"
+            ]
+          },
+          {
+            "rule_id": "popup_close_control",
+            "type": "needs_context",
+            "reason": "材料声明为局部截取，无法确认是否存在弹窗广告形式。规则要求评估完整弹窗的关闭控制，当前证据不足以证明存在或不存在违规。",
+            "blocking": true,
+            "required_information": [
+              "full popup visual",
+              "visible close control status",
+              "one-click closure functionality"
+            ]
+          },
+          {
+            "rule_id": "algorithm_recommendation_controls",
+            "type": "needs_context",
+            "reason": "材料未展示算法推荐技术的使用情况，也未提供非个性化选项或关闭算法推荐的界面证据。无法从静态文本推断算法行为。",
+            "blocking": true,
+            "required_information": [
+              "algorithm usage evidence",
+              "non-personalized option availability",
+              "algorithm shutdown option availability"
+            ]
+          },
+          {
+            "rule_id": "third_party_sales_intervention",
+            "type": "needs_context",
+            "reason": "上下文声明发布者为保险机构，但未提供第三方平台介入销售环节（如合同签订、资金划转、互动咨询）的证据。无法确认是否存在违规介入。",
+            "blocking": true,
+            "required_information": [
+              "platform type and qualification",
+              "actual service flow details",
+              "consultation and payment activity records"
+            ]
+          },
+          {
+            "rule_id": "special_internet_insurance_business_scope",
+            "type": "needs_context",
+            "reason": "材料未披露保险机构的具体 subtype（如互联网保险公司、传统保险公司等）、许可证信息、经营区域及委托关系。无法核实是否符合特定业务范围限制。",
+            "blocking": true,
+            "required_information": [
+              "institution subtype",
+              "license details",
+              "product territory scope",
+              "delegation agreements"
+            ]
+          }
+        ],
+        "coverage": {
+          "total": 34,
+          "eligible": 20,
+          "checked": 1,
+          "coverage_ratio": 0.05,
+          "resolved_ratio": 0.0,
+          "rules": [
+            {
+              "rule_id": "marketing_truthful_and_not_misleading",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "材料仅包含产品名称及引导语，未展示具体事实性利益承诺或对比声明。由于材料完整性为'partial'且仅为局部截取，无法核实完整页面是否存在虚假或误导性内容，故无法判定违规或合规。"
+            },
+            {
+              "rule_id": "insurance_benefit_uncertainty_and_risk",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "规则触发条件为材料陈述或描绘利益、回报或不确定性。当前材料仅提及'某年金保险产品'，未展示具体收益数值或保证性描述。同时，材料为局部截取，无法确认完整页面是否包含新型人身保险产品的不确定性风险提示（如黑体字标注）。因缺失关键上下文和完整页面视图，无法判定是否违反风险披露义务。"
+            },
+            {
+              "rule_id": "identify_insurance_product_and_provider",
+              "status": "checked",
+              "finding": "uncertain",
+              "reason": "规则要求明确标识保险产品属性及提供者身份。材料中虽提及'某年金保险产品'，暗示了产品属性，但未显示承保保险公司全称或中介机构名称。然而，材料明确说明是'局部截取'并引导查看'完整宣传页面'，根据解释说明，单张截图不能证明完整页面缺失必要身份信息。因此，无法仅凭此片段判定违规，需结合完整页面判断。"
+            },
+            {
+              "rule_id": "disclose_material_policy_terms_and_restrictions",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "该规则主要适用于产品解释、销售/详情页面或售前披露阶段，要求展示重要条款和限制。当前材料仅为一个指向完整页面的局部截取片段，本身不包含具体的条款解释或责任免除内容。根据规则解释，不应从部分截图中推断省略。由于材料未处于需要直接披露详细条款的阶段（而是引导至详情页），且未展示任何试图简化或隐瞒条款的行为，故不适用违规判定。"
+            },
+            {
+              "rule_id": "no_regulatory_guarantee_or_filing_endorsement",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "规则触发条件为材料引用监管审核或备案来暗示保证，或使用监管机构名义/形象。当前材料文本中无任何关于监管机构、审核、备案或保证的表述，也未出现相关图像。因此，不满足触发条件。"
+            },
+            {
+              "rule_id": "public_figure_endorsement_external_review",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "规则触发条件为使用学术机构、行业协会、专业人士或公众人物的名义或形象进行推荐或证明。当前材料仅为文字描述，未提及任何第三方背书、名人代言或机构推荐。因此，不满足触发条件。"
+            },
+            {
+              "rule_id": "marketing_personnel_authorization_and_channel",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "材料声明发布者为保险机构，渠道为互联网，但未提供具体的发布者身份（是否为从业人员）、账号归属、授权记录及销售流程。虽然文本提及'某年金保险产品'，但缺乏证明营销人员已获授权或账号合规的具体证据，需外部核验。"
+            },
+            {
+              "rule_id": "stop_sale_and_price_change_claims",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料中未出现产品即将停售或价格调整的宣称，仅提及产品名称和引导查看完整页面，不触发该规则。"
+            },
+            {
+              "rule_id": "regional_and_third_party_marketing_scope",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "材料未显示具体的销售区域限制、客户地域识别机制或第三方平台委托关系。虽声明为保险机构发布，但无法仅凭局部截图确认其业务是否在许可区域内开展，需结合完整销售流程和资质信息判断。"
+            },
+            {
+              "rule_id": "bundled_financial_products_and_default_choice",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料仅为单一产品的文字介绍片段，未展示任何捆绑销售、默认勾选或多产品组合购买的交互界面或描述，不触发捆绑销售审查条件。"
+            },
+            {
+              "rule_id": "licensed_insurance_and_marketing_subject",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "虽然上下文声明发布者为保险机构，但材料本身未展示许可证号、执业登记信息或明确的机构身份标识。根据规则，缺失创意中的凭证不能直接证明无资质，但也无法确证合规，需外部核验实际活动主体资格。"
+            },
+            {
+              "rule_id": "partner_contract_and_delegation",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "材料未涉及任何第三方合作、委托代理或转委托的描述。由于无法从局部截图中判断是否存在后台合作关系或数据对接，且规则要求核查书面协议和委托范围，故需外部验证合作模式。"
+            },
+            {
+              "rule_id": "suitability_and_consumer_demand",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "材料仅为局部截取的广告文本，未展示具体的销售交互流程、消费者需求评估记录或风险承受能力测评结果。虽然规则要求评估需求与能力，但当前材料缺乏证明该过程已发生或未发生的证据，且无法确认是否处于‘individual_insurance_sales’的具体缔约环节，故无法判定违规或合规。"
+            },
+            {
+              "rule_id": "truthful_health_disclosure_prompt",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "规则触发条件为‘precontract_questionnaire_or_sales_flow’。材料仅显示产品名称及指引，未包含投保单、健康告知问卷或具体的销售话术。无法判断是否存在诱导隐瞒或未提示如实告知义务的情形，因关键事实缺失，状态为不确定。"
+            },
+            {
+              "rule_id": "policy_confirmation_and_approved_terms",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "规则触发条件为‘Establish insurance_contract_conclusion’。材料明确声明为‘局部截取’的宣传页面片段，仅介绍产品，未进入合同订立、条款确认或签署环节。因此，关于合同确认和条款使用的规定在此材料阶段不适用，未发现违规。"
+            },
+            {
+              "rule_id": "premium_payment_and_accounts",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "规则触发条件为‘Establish insurance_premium_or_benefit_payment’。材料中未涉及保费支付账户、收款人信息或资金流转安排，仅为产品介绍。因此，关于保费收取和账户管理的规定未被触发，未发现违规。"
+            },
+            {
+              "rule_id": "personal_information_consent_and_use",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "规则触发条件为‘Establish marketing_or_insurance_personal_data_use’。虽然材料属于营销性质，但未展示具体的个人信息收集行为、隐私政策链接或授权同意界面。无法判断在实际营销或后续流程中是否合规获取了用户同意，因缺乏具体数据处理行为的证据，状态为不确定。"
+            },
+            {
+              "rule_id": "unlawful_surrender_promotion",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "规则触发条件为‘Establish surrender_related_promotion’。材料内容仅为年金保险产品的正面介绍，未包含任何关于退保、怂恿退保或代理退保的宣传、咨询或服务信息。因此，该规则不适用，未发现违规。"
+            },
+            {
+              "rule_id": "official_platform_mandatory_information",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "材料声明为'局部截取'且仅包含产品简介，无法确认是否属于'官方自营平台'或'完整销售页面'。规则要求评估特定页面的披露义务（如退保流程、机构信息等），但缺失完整页面上下文，无法判断触发条件是否完全满足或例外情形（孤立广告）是否适用。"
+            },
+            {
+              "rule_id": "offline_service_availability_disclosure",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "规则触发条件为'互联网保险销售或详情页面'。材料仅为局部截取文本，未展示完整的销售或详情页面，无法核实是否披露了'能否实现全流程线上服务'及'无分支机构的服务提示'。缺失关键事实导致无法判定合规性。"
+            },
+            {
+              "rule_id": "voluntary_renewal_and_sales_choices",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "规则触发条件为'互联网保险购买或续保流程'。提供的材料仅为产品介绍文本片段，未包含任何交互流程、勾选框、自动扣费设置或续保操作界面。因此，关于默认勾选或自动续保的禁止性行为触发条件不成立。"
+            },
+            {
+              "rule_id": "intermediary_industry_name_and_brand",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "规则触发条件为'中介或合作营销页面'且涉及主体身份标识。材料未显示发布者具体身份（虽context声明为保险机构，但材料本身未展示中介品牌或混淆性名称），且仅为产品片段，未体现中介行业名称使用或品牌混同情形。缺乏触发该规则审查的具体事实基础。"
+            },
+            {
+              "rule_id": "multi_product_display_separation",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "规则触发条件为'拥有多类产品类别的互联网平台'。材料仅展示单一保险产品片段，无法证明平台整体布局存在多类产品混合展示或未隔离的情形。单点素材不足以触发平台级布局合规审查。"
+            },
+            {
+              "rule_id": "marketing_message_optout",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "规则触发条件为'直接营销信息或电话'。材料为静态宣传文本截图，非推送消息、邮件或电话录音，不涉及退订机制或拒收记录的检查。"
+            },
+            {
+              "rule_id": "popup_close_control",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "材料声明为局部截取，无法确认是否存在弹窗广告形式。规则要求评估完整弹窗的关闭控制，当前证据不足以证明存在或不存在违规。"
+            },
+            {
+              "rule_id": "algorithm_recommendation_controls",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "材料未展示算法推荐技术的使用情况，也未提供非个性化选项或关闭算法推荐的界面证据。无法从静态文本推断算法行为。"
+            },
+            {
+              "rule_id": "regulated_account_names_and_trademarks",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料中仅提及'某年金保险产品'，未展示网站、APP账号名称或商标中使用受限金融字样（如'银行'、'交易所'等）。触发条件未满足。"
+            },
+            {
+              "rule_id": "third_party_sales_intervention",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "上下文声明发布者为保险机构，但未提供第三方平台介入销售环节（如合同签订、资金划转、互动咨询）的证据。无法确认是否存在违规介入。"
+            },
+            {
+              "rule_id": "paid_education_disguised_marketing",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料内容为产品宣传片段，未涉及委托第三方以'投资者教育'或'课程培训'形式变相营销并支付费用的情形。触发条件未满足。"
+            },
+            {
+              "rule_id": "special_internet_insurance_business_scope",
+              "status": "needs_context",
+              "finding": "uncertain",
+              "reason": "材料未披露保险机构的具体 subtype（如互联网保险公司、传统保险公司等）、许可证信息、经营区域及委托关系。无法核实是否符合特定业务范围限制。"
+            },
+            {
+              "rule_id": "nonbank_payment_marketing_options",
+              "status": "failed",
+              "finding": null,
+              "reason": "模型输出经一次修复后仍不符合结构或证据约束。"
+            },
+            {
+              "rule_id": "illegal_financial_activity_marketing",
+              "status": "failed",
+              "finding": null,
+              "reason": "模型输出经一次修复后仍不符合结构或证据约束。"
+            },
+            {
+              "rule_id": "approved_marketing_content_use",
+              "status": "failed",
+              "finding": null,
+              "reason": "模型输出经一次修复后仍不符合结构或证据约束。"
+            },
+            {
+              "rule_id": "internet_platform_operating_conditions",
+              "status": "failed",
+              "finding": null,
+              "reason": "模型输出经一次修复后仍不符合结构或证据约束。"
+            }
+          ]
+        },
+        "confidence": null,
+        "confidence_kind": "not_computed",
+        "warnings": [],
+        "errors": [
+          {
+            "stage": "judge",
+            "code": "invalid_model_output",
+            "message": "模型输出经一次修复后仍不符合结构或证据约束。",
+            "retryable": false,
+            "rule_ids": [
+              "nonbank_payment_marketing_options",
+              "illegal_financial_activity_marketing",
+              "approved_marketing_content_use",
+              "internet_platform_operating_conditions"
+            ],
+            "image_id": null
+          }
+        ],
+        "images": [],
+        "sources": [
+          {
+            "source_id": "text_1",
+            "source_type": "text",
+            "text": "某年金保险产品，详细说明请见完整宣传页面。（当前仅为局部截取）",
+            "start": 0,
+            "image_id": null,
+            "block_id": null
+          }
+        ],
+        "mock": false,
+        "meta": {
+          "ruleset_hash": "255be926a0ac6c8dadb6c1e033d761c480c91c586f11b8a3c01e75afcc0eb81c",
+          "prompt_version": "audit-v1.1",
+          "workflow_version": "1.0",
+          "model_ids": {
+            "text": "qwen3.7-plus",
+            "vision": "qwen3-vl-plus"
+          },
+          "retrieved_article_ids": [
+            "insurance_sales_behavior_order_2023_02::art_017",
+            "insurance_sales_behavior_order_2023_02::art_025",
+            "internet_insurance_supervision_order_2020_13::art_012",
+            "internet_insurance_supervision_order_2020_13::art_013",
+            "internet_insurance_supervision_order_2020_13::art_014",
+            "internet_insurance_supervision_order_2020_13::art_015",
+            "internet_insurance_supervision_order_2020_13::art_023",
+            "internet_insurance_supervision_order_2020_13::art_070"
+          ],
+          "attempts": 7,
+          "calls": [
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 39047,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 39437,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 73469,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 77500,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 99313,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 102438,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 23937,
+              "actual_model": "qwen3.7-plus"
+            }
+          ],
+          "token_usage": {
+            "prompt_tokens": 61189,
+            "completion_tokens": 12667,
+            "total_tokens": 73856
+          },
+          "stage_latency": {
+            "extract_ms": 0,
+            "judge_ms": 123265
+          },
+          "latency_ms": 123265
+        }
+      }
+    }
+  }
+}
