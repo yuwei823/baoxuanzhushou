@@ -1,0 +1,1043 @@
+{
+  "cases": {
+    "education": {
+      "run_at_utc": "2026-10-11T16:14:25.223654+00:00",
+      "synthetic_demo": true,
+      "response": {
+        "audit_id": "9ec0005e-60cd-48b2-afd6-f053ce94d317",
+        "trace_id": "a78bdd5b-2254-4bbc-9cee-1dd00e575230",
+        "status": "completed",
+        "decision": "compliant",
+        "is_compliant": "yes",
+        "summary": "当前规则集及提交材料范围内未发现违规。",
+        "ruleset_id": "official-v1-2026-10-11",
+        "ruleset_mode": "official_snapshot",
+        "violations": [],
+        "review_items": [],
+        "coverage": {
+          "total": 34,
+          "eligible": 0,
+          "checked": 0,
+          "coverage_ratio": null,
+          "resolved_ratio": null,
+          "rules": [
+            {
+              "rule_id": "marketing_truthful_and_not_misleading",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料为保险知识科普，明确声明不介绍或销售具体产品，未做出事实性产品、收益或对比宣传主张，触发条件c1为false。"
+            },
+            {
+              "rule_id": "insurance_benefit_uncertainty_and_risk",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料仅一般性提及分红非保证，未针对特定产品陈述或描绘具体利益、回报或损失，未呈现具体产品销售场景，触发条件c1为false。"
+            },
+            {
+              "rule_id": "identify_insurance_product_and_provider",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料明确声明不介绍或销售具体产品，不属于推广保险产品或服务的行为，触发条件c1为false。"
+            },
+            {
+              "rule_id": "no_regulatory_guarantee_or_filing_endorsement",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料引用监管担保是为了否定该说法（‘任何人都不应宣称’），属于教育性警示，未利用监管背书暗示产品保证，触发条件c1为false。"
+            },
+            {
+              "rule_id": "marketing_personnel_authorization_and_channel",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料为机构发布的科普内容，未显示由个人或平台通过 regulated marketing channel 发布的具体营销行为，且无销售招揽，触发条件c1为false。"
+            },
+            {
+              "rule_id": "suitability_and_consumer_demand",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料为通用知识讲解，未建立个人保险销售关系，未涉及特定消费者需求评估，触发条件c1为false。"
+            },
+            {
+              "rule_id": "truthful_health_disclosure_prompt",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料仅为保险知识科普，明确声明不介绍或销售具体产品，未建立售前问卷或销售流程，触发条件c1为false。"
+            },
+            {
+              "rule_id": "unlawful_surrender_promotion",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料内容为分红风险教育，未涉及退保推介、咨询或代办活动，不存在怂恿退保行为，触发条件c1为false。"
+            },
+            {
+              "rule_id": "offline_service_availability_disclosure",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料为纯文本科普，未呈现互联网保险销售页面或详情页，未展示具体产品销售流程，触发条件c1为false。"
+            },
+            {
+              "rule_id": "voluntary_renewal_and_sales_choices",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料不涉及购买或续保流程，无默认勾选、自动扣费或自动续保等交互设计，触发条件c1为false。"
+            },
+            {
+              "rule_id": "multi_product_display_separation",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料为单篇科普文章，未展示多类别金融产品混合展示的平台页面布局，无法判定专区隔离情况，触发条件c1为false。"
+            },
+            {
+              "rule_id": "marketing_message_optout",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料为静态科普内容，非定向发送的营销信息或电话，未涉及拒收/退订机制及后续发送行为，触发条件c1为false。"
+            },
+            {
+              "rule_id": "illegal_financial_activity_marketing",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料仅为保险知识科普，明确声明不介绍或销售具体产品，未呈现建立自营平台或开展非法金融活动的行为，触发条件为假。"
+            },
+            {
+              "rule_id": "approved_marketing_content_use",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料属于中性知识讲解，非具体产品的营销宣传内容，不涉及销售人员未经授权发布或变更经审核的营销内容的情形。"
+            },
+            {
+              "rule_id": "disclose_material_policy_terms_and_restrictions",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料为通用保险知识科普，非特定产品的解释、销售页或售前披露，未指向具体保险合同条款，故不适用该规则关于产品条款披露的要求。"
+            },
+            {
+              "rule_id": "public_figure_endorsement_external_review",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料中未提及任何学术机构、行业协会、专业人士或公众人物进行推荐或证明，不存在使用名人形象或名义背书的情形。"
+            },
+            {
+              "rule_id": "stop_sale_and_price_change_claims",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料内容为保险知识科普，未包含任何关于产品即将停售或价格调整的宣称，不满足触发条件。"
+            },
+            {
+              "rule_id": "regional_and_third_party_marketing_scope",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料仅为知识科普，未涉及具体保险产品的销售流程、服务区域限制或第三方平台委托关系，不构成受监管的保险销售行为。"
+            },
+            {
+              "rule_id": "bundled_financial_products_and_default_choice",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料仅为保险知识科普，未呈现任何产品组合销售或默认勾选行为，触发条件明确为假。"
+            },
+            {
+              "rule_id": "licensed_insurance_and_marketing_subject",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料声明不进行销售，仅做中性知识讲解，未建立互联网保险业务销售活动，故不适用主体资质核验规则。"
+            },
+            {
+              "rule_id": "partner_contract_and_delegation",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料未涉及任何代理、委托或第三方合作营销活动，无相关事实触发该规则。"
+            },
+            {
+              "rule_id": "policy_confirmation_and_approved_terms",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料不涉及保险合同订立过程，无投保确认或条款审批相关活动，触发条件为假。"
+            },
+            {
+              "rule_id": "premium_payment_and_accounts",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料未涉及保费收取、资金划转或账户管理活动，触发条件明确为假。"
+            },
+            {
+              "rule_id": "personal_information_consent_and_use",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料仅为科普文本，未收集、处理或使用个人营销数据，未触发个人信息保护相关义务。"
+            },
+            {
+              "rule_id": "official_platform_mandatory_information",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料仅为保险知识科普，明确声明不介绍或销售具体产品，未呈现自营平台页面、产品披露或交易引导活动，触发条件不成立。"
+            },
+            {
+              "rule_id": "intermediary_industry_name_and_brand",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料为中性知识讲解，未展示中介机构营销页面、品牌标识或合作推广内容，不涉及中介行业名称规范问题。"
+            },
+            {
+              "rule_id": "popup_close_control",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料为纯文本科普内容，未呈现弹窗广告形式，不存在关闭控制缺失的问题。"
+            },
+            {
+              "rule_id": "algorithm_recommendation_controls",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料为静态文本科普，未涉及算法推荐技术、个性化营销或诱导过度消费行为。"
+            },
+            {
+              "rule_id": "regulated_account_names_and_trademarks",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料未展示网站、APP账号名称或商标，仅包含通用保险术语讲解，不涉及涉金融属性字样的违规使用。"
+            },
+            {
+              "rule_id": "third_party_sales_intervention",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料明确声明不销售产品，未呈现第三方平台介入销售、咨询或支付等环节的活动。"
+            },
+            {
+              "rule_id": "paid_education_disguised_marketing",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料为中性科普，明确声明不销售产品。未呈现委托第三方平台、支付费用或变相营销事实，触发条件c1为false。"
+            },
+            {
+              "rule_id": "special_internet_insurance_business_scope",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料仅为知识讲解，无产品销售、交易引导或具体保险产品推介行为。未呈现互联网保险销售活动，触发条件c1为false。"
+            },
+            {
+              "rule_id": "nonbank_payment_marketing_options",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料未涉及非银行支付机构接口、支付工具选项或相关营销服务。未呈现该规则要求的特定商业活动，触发条件c1为false。"
+            },
+            {
+              "rule_id": "internet_platform_operating_conditions",
+              "status": "not_applicable",
+              "finding": "no_violation",
+              "reason": "材料为文本科普，未展示自营网络平台运营、系统安全证书或停止经营公告等事实。未呈现平台运营活动，触发条件c1为false。"
+            }
+          ]
+        },
+        "confidence": null,
+        "confidence_kind": "not_computed",
+        "warnings": [],
+        "errors": [],
+        "images": [],
+        "sources": [
+          {
+            "source_id": "text_1",
+            "source_type": "text",
+            "text": "保险知识科普：任何人都不应宣称‘监管部门担保收益’。分红属于非保证利益，实际收益可能低于演示水平。本文不介绍或销售具体产品。",
+            "start": 0,
+            "image_id": null,
+            "block_id": null
+          }
+        ],
+        "mock": false,
+        "meta": {
+          "ruleset_hash": "255be926a0ac6c8dadb6c1e033d761c480c91c586f11b8a3c01e75afcc0eb81c",
+          "prompt_version": "audit-v1.5-scope",
+          "workflow_version": "1.1-rag",
+          "retrieval_version": "segment512-rrf60-top8-v1",
+          "index_id": "fbb303b7f731ffdcab143ccad2654ad861a5b8f333a116e63b331569f331d923",
+          "model_ids": {
+            "text": "qwen3.7-plus",
+            "vision": "qwen3-vl-plus"
+          },
+          "retrieved_article_ids": [
+            "financial_network_marketing_order_2026_09::art_010",
+            "insurance_sales_behavior_order_2023_02::art_006",
+            "insurance_sales_behavior_order_2023_02::art_022",
+            "insurance_sales_behavior_order_2023_02::art_039",
+            "internet_insurance_supervision_order_2020_13::art_015",
+            "internet_insurance_supervision_order_2020_13::art_017",
+            "internet_insurance_supervision_order_2020_13::art_029",
+            "internet_insurance_supervision_order_2020_13::art_079"
+          ],
+          "retrieval_mode": "hybrid",
+          "retrieval_trace": [
+            {
+              "source_id": "text_1",
+              "start": 0,
+              "end": 62,
+              "bm25": [
+                "internet_insurance_supervision_order_2020_13::art_079",
+                "internet_insurance_supervision_order_2020_13::art_017",
+                "internet_insurance_supervision_order_2020_13::art_015",
+                "financial_network_marketing_order_2026_09::art_010",
+                "internet_insurance_supervision_order_2020_13::art_056",
+                "insurance_sales_behavior_order_2023_02::art_006",
+                "internet_insurance_supervision_order_2020_13::art_014",
+                "insurance_sales_behavior_order_2023_02::art_015"
+              ],
+              "vector": [
+                "insurance_sales_behavior_order_2023_02::art_022",
+                "insurance_sales_behavior_order_2023_02::art_039",
+                "internet_insurance_supervision_order_2020_13::art_029",
+                "insurance_sales_behavior_order_2023_02::art_006",
+                "internet_insurance_supervision_order_2020_13::art_059",
+                "internet_insurance_supervision_order_2020_13::art_023",
+                "insurance_sales_behavior_order_2023_02::art_037",
+                "internet_insurance_supervision_order_2020_13::art_047"
+              ],
+              "selected": [
+                "insurance_sales_behavior_order_2023_02::art_006",
+                "insurance_sales_behavior_order_2023_02::art_022",
+                "internet_insurance_supervision_order_2020_13::art_079",
+                "insurance_sales_behavior_order_2023_02::art_039",
+                "internet_insurance_supervision_order_2020_13::art_017",
+                "internet_insurance_supervision_order_2020_13::art_015",
+                "internet_insurance_supervision_order_2020_13::art_029",
+                "financial_network_marketing_order_2026_09::art_010"
+              ]
+            }
+          ],
+          "context_trace": [
+            {
+              "rule_ids": [
+                "marketing_truthful_and_not_misleading",
+                "insurance_benefit_uncertainty_and_risk",
+                "identify_insurance_product_and_provider",
+                "no_regulatory_guarantee_or_filing_endorsement",
+                "marketing_personnel_authorization_and_channel",
+                "suitability_and_consumer_demand"
+              ],
+              "article_ids": [
+                "financial_network_marketing_order_2026_09::art_002",
+                "financial_network_marketing_order_2026_09::art_003",
+                "financial_network_marketing_order_2026_09::art_008",
+                "financial_network_marketing_order_2026_09::art_010",
+                "financial_network_marketing_order_2026_09::art_016",
+                "financial_network_marketing_order_2026_09::art_036",
+                "financial_network_marketing_order_2026_09::art_037",
+                "insurance_sales_behavior_order_2023_02::art_002",
+                "insurance_sales_behavior_order_2023_02::art_005",
+                "insurance_sales_behavior_order_2023_02::art_006",
+                "insurance_sales_behavior_order_2023_02::art_017",
+                "insurance_sales_behavior_order_2023_02::art_018",
+                "insurance_sales_behavior_order_2023_02::art_021",
+                "insurance_sales_behavior_order_2023_02::art_022",
+                "insurance_sales_behavior_order_2023_02::art_024",
+                "insurance_sales_behavior_order_2023_02::art_028",
+                "insurance_sales_behavior_order_2023_02::art_039",
+                "insurance_sales_behavior_order_2023_02::art_048",
+                "internet_insurance_supervision_order_2020_13::art_002",
+                "internet_insurance_supervision_order_2020_13::art_005",
+                "internet_insurance_supervision_order_2020_13::art_014",
+                "internet_insurance_supervision_order_2020_13::art_015",
+                "internet_insurance_supervision_order_2020_13::art_016",
+                "internet_insurance_supervision_order_2020_13::art_017",
+                "internet_insurance_supervision_order_2020_13::art_029",
+                "internet_insurance_supervision_order_2020_13::art_044",
+                "internet_insurance_supervision_order_2020_13::art_050",
+                "internet_insurance_supervision_order_2020_13::art_078",
+                "internet_insurance_supervision_order_2020_13::art_079"
+              ],
+              "retrieved_article_ids": [
+                "financial_network_marketing_order_2026_09::art_010",
+                "insurance_sales_behavior_order_2023_02::art_006",
+                "insurance_sales_behavior_order_2023_02::art_022",
+                "insurance_sales_behavior_order_2023_02::art_039",
+                "internet_insurance_supervision_order_2020_13::art_015",
+                "internet_insurance_supervision_order_2020_13::art_017",
+                "internet_insurance_supervision_order_2020_13::art_029",
+                "internet_insurance_supervision_order_2020_13::art_079"
+              ]
+            },
+            {
+              "rule_ids": [
+                "truthful_health_disclosure_prompt",
+                "unlawful_surrender_promotion",
+                "offline_service_availability_disclosure",
+                "voluntary_renewal_and_sales_choices",
+                "multi_product_display_separation",
+                "marketing_message_optout"
+              ],
+              "article_ids": [
+                "financial_network_marketing_order_2026_09::art_002",
+                "financial_network_marketing_order_2026_09::art_003",
+                "financial_network_marketing_order_2026_09::art_010",
+                "financial_network_marketing_order_2026_09::art_011",
+                "financial_network_marketing_order_2026_09::art_013",
+                "financial_network_marketing_order_2026_09::art_036",
+                "financial_network_marketing_order_2026_09::art_037",
+                "insurance_sales_behavior_order_2023_02::art_002",
+                "insurance_sales_behavior_order_2023_02::art_005",
+                "insurance_sales_behavior_order_2023_02::art_006",
+                "insurance_sales_behavior_order_2023_02::art_022",
+                "insurance_sales_behavior_order_2023_02::art_027",
+                "insurance_sales_behavior_order_2023_02::art_037",
+                "insurance_sales_behavior_order_2023_02::art_039",
+                "insurance_sales_behavior_order_2023_02::art_048",
+                "internet_insurance_supervision_order_2020_13::art_002",
+                "internet_insurance_supervision_order_2020_13::art_005",
+                "internet_insurance_supervision_order_2020_13::art_014",
+                "internet_insurance_supervision_order_2020_13::art_015",
+                "internet_insurance_supervision_order_2020_13::art_017",
+                "internet_insurance_supervision_order_2020_13::art_021",
+                "internet_insurance_supervision_order_2020_13::art_026",
+                "internet_insurance_supervision_order_2020_13::art_029",
+                "internet_insurance_supervision_order_2020_13::art_044",
+                "internet_insurance_supervision_order_2020_13::art_050",
+                "internet_insurance_supervision_order_2020_13::art_070",
+                "internet_insurance_supervision_order_2020_13::art_078",
+                "internet_insurance_supervision_order_2020_13::art_079"
+              ],
+              "retrieved_article_ids": [
+                "financial_network_marketing_order_2026_09::art_010",
+                "insurance_sales_behavior_order_2023_02::art_006",
+                "insurance_sales_behavior_order_2023_02::art_022",
+                "insurance_sales_behavior_order_2023_02::art_039",
+                "internet_insurance_supervision_order_2020_13::art_015",
+                "internet_insurance_supervision_order_2020_13::art_017",
+                "internet_insurance_supervision_order_2020_13::art_029",
+                "internet_insurance_supervision_order_2020_13::art_079"
+              ]
+            },
+            {
+              "rule_ids": [
+                "illegal_financial_activity_marketing",
+                "approved_marketing_content_use",
+                "disclose_material_policy_terms_and_restrictions",
+                "public_figure_endorsement_external_review",
+                "stop_sale_and_price_change_claims",
+                "regional_and_third_party_marketing_scope"
+              ],
+              "article_ids": [
+                "financial_network_marketing_order_2026_09::art_002",
+                "financial_network_marketing_order_2026_09::art_003",
+                "financial_network_marketing_order_2026_09::art_005",
+                "financial_network_marketing_order_2026_09::art_006",
+                "financial_network_marketing_order_2026_09::art_007",
+                "financial_network_marketing_order_2026_09::art_008",
+                "financial_network_marketing_order_2026_09::art_010",
+                "financial_network_marketing_order_2026_09::art_017",
+                "financial_network_marketing_order_2026_09::art_036",
+                "financial_network_marketing_order_2026_09::art_037",
+                "insurance_sales_behavior_order_2023_02::art_002",
+                "insurance_sales_behavior_order_2023_02::art_005",
+                "insurance_sales_behavior_order_2023_02::art_006",
+                "insurance_sales_behavior_order_2023_02::art_011",
+                "insurance_sales_behavior_order_2023_02::art_014",
+                "insurance_sales_behavior_order_2023_02::art_017",
+                "insurance_sales_behavior_order_2023_02::art_018",
+                "insurance_sales_behavior_order_2023_02::art_019",
+                "insurance_sales_behavior_order_2023_02::art_022",
+                "insurance_sales_behavior_order_2023_02::art_025",
+                "insurance_sales_behavior_order_2023_02::art_026",
+                "insurance_sales_behavior_order_2023_02::art_039",
+                "insurance_sales_behavior_order_2023_02::art_048",
+                "internet_insurance_supervision_order_2020_13::art_002",
+                "internet_insurance_supervision_order_2020_13::art_003",
+                "internet_insurance_supervision_order_2020_13::art_005",
+                "internet_insurance_supervision_order_2020_13::art_014",
+                "internet_insurance_supervision_order_2020_13::art_015",
+                "internet_insurance_supervision_order_2020_13::art_017",
+                "internet_insurance_supervision_order_2020_13::art_029",
+                "internet_insurance_supervision_order_2020_13::art_044",
+                "internet_insurance_supervision_order_2020_13::art_050",
+                "internet_insurance_supervision_order_2020_13::art_078",
+                "internet_insurance_supervision_order_2020_13::art_079"
+              ],
+              "retrieved_article_ids": [
+                "financial_network_marketing_order_2026_09::art_010",
+                "insurance_sales_behavior_order_2023_02::art_006",
+                "insurance_sales_behavior_order_2023_02::art_022",
+                "insurance_sales_behavior_order_2023_02::art_039",
+                "internet_insurance_supervision_order_2020_13::art_015",
+                "internet_insurance_supervision_order_2020_13::art_017",
+                "internet_insurance_supervision_order_2020_13::art_029",
+                "internet_insurance_supervision_order_2020_13::art_079"
+              ]
+            },
+            {
+              "rule_ids": [
+                "bundled_financial_products_and_default_choice",
+                "licensed_insurance_and_marketing_subject",
+                "partner_contract_and_delegation",
+                "policy_confirmation_and_approved_terms",
+                "premium_payment_and_accounts",
+                "personal_information_consent_and_use"
+              ],
+              "article_ids": [
+                "financial_network_marketing_order_2026_09::art_002",
+                "financial_network_marketing_order_2026_09::art_003",
+                "financial_network_marketing_order_2026_09::art_010",
+                "financial_network_marketing_order_2026_09::art_015",
+                "financial_network_marketing_order_2026_09::art_020",
+                "financial_network_marketing_order_2026_09::art_022",
+                "financial_network_marketing_order_2026_09::art_025",
+                "financial_network_marketing_order_2026_09::art_027",
+                "financial_network_marketing_order_2026_09::art_036",
+                "financial_network_marketing_order_2026_09::art_037",
+                "insurance_sales_behavior_order_2023_02::art_002",
+                "insurance_sales_behavior_order_2023_02::art_003",
+                "insurance_sales_behavior_order_2023_02::art_005",
+                "insurance_sales_behavior_order_2023_02::art_006",
+                "insurance_sales_behavior_order_2023_02::art_007",
+                "insurance_sales_behavior_order_2023_02::art_009",
+                "insurance_sales_behavior_order_2023_02::art_022",
+                "insurance_sales_behavior_order_2023_02::art_023",
+                "insurance_sales_behavior_order_2023_02::art_029",
+                "insurance_sales_behavior_order_2023_02::art_030",
+                "insurance_sales_behavior_order_2023_02::art_032",
+                "insurance_sales_behavior_order_2023_02::art_039",
+                "insurance_sales_behavior_order_2023_02::art_048",
+                "internet_insurance_supervision_order_2020_13::art_002",
+                "internet_insurance_supervision_order_2020_13::art_003",
+                "internet_insurance_supervision_order_2020_13::art_005",
+                "internet_insurance_supervision_order_2020_13::art_015",
+                "internet_insurance_supervision_order_2020_13::art_017",
+                "internet_insurance_supervision_order_2020_13::art_019",
+                "internet_insurance_supervision_order_2020_13::art_023",
+                "internet_insurance_supervision_order_2020_13::art_029",
+                "internet_insurance_supervision_order_2020_13::art_034",
+                "internet_insurance_supervision_order_2020_13::art_035",
+                "internet_insurance_supervision_order_2020_13::art_038",
+                "internet_insurance_supervision_order_2020_13::art_040",
+                "internet_insurance_supervision_order_2020_13::art_044",
+                "internet_insurance_supervision_order_2020_13::art_050",
+                "internet_insurance_supervision_order_2020_13::art_061",
+                "internet_insurance_supervision_order_2020_13::art_064",
+                "internet_insurance_supervision_order_2020_13::art_065",
+                "internet_insurance_supervision_order_2020_13::art_068",
+                "internet_insurance_supervision_order_2020_13::art_078",
+                "internet_insurance_supervision_order_2020_13::art_079"
+              ],
+              "retrieved_article_ids": [
+                "financial_network_marketing_order_2026_09::art_010",
+                "insurance_sales_behavior_order_2023_02::art_006",
+                "insurance_sales_behavior_order_2023_02::art_022",
+                "insurance_sales_behavior_order_2023_02::art_039",
+                "internet_insurance_supervision_order_2020_13::art_015",
+                "internet_insurance_supervision_order_2020_13::art_017",
+                "internet_insurance_supervision_order_2020_13::art_029",
+                "internet_insurance_supervision_order_2020_13::art_079"
+              ]
+            },
+            {
+              "rule_ids": [
+                "official_platform_mandatory_information",
+                "intermediary_industry_name_and_brand",
+                "popup_close_control",
+                "algorithm_recommendation_controls",
+                "regulated_account_names_and_trademarks",
+                "third_party_sales_intervention"
+              ],
+              "article_ids": [
+                "financial_network_marketing_order_2026_09::art_002",
+                "financial_network_marketing_order_2026_09::art_003",
+                "financial_network_marketing_order_2026_09::art_009",
+                "financial_network_marketing_order_2026_09::art_010",
+                "financial_network_marketing_order_2026_09::art_013",
+                "financial_network_marketing_order_2026_09::art_014",
+                "financial_network_marketing_order_2026_09::art_018",
+                "financial_network_marketing_order_2026_09::art_019",
+                "financial_network_marketing_order_2026_09::art_020",
+                "financial_network_marketing_order_2026_09::art_024",
+                "financial_network_marketing_order_2026_09::art_036",
+                "financial_network_marketing_order_2026_09::art_037",
+                "insurance_sales_behavior_order_2023_02::art_002",
+                "insurance_sales_behavior_order_2023_02::art_005",
+                "insurance_sales_behavior_order_2023_02::art_006",
+                "insurance_sales_behavior_order_2023_02::art_014",
+                "insurance_sales_behavior_order_2023_02::art_022",
+                "insurance_sales_behavior_order_2023_02::art_039",
+                "insurance_sales_behavior_order_2023_02::art_040",
+                "insurance_sales_behavior_order_2023_02::art_048",
+                "internet_insurance_supervision_order_2020_13::art_002",
+                "internet_insurance_supervision_order_2020_13::art_005",
+                "internet_insurance_supervision_order_2020_13::art_012",
+                "internet_insurance_supervision_order_2020_13::art_013",
+                "internet_insurance_supervision_order_2020_13::art_015",
+                "internet_insurance_supervision_order_2020_13::art_017",
+                "internet_insurance_supervision_order_2020_13::art_023",
+                "internet_insurance_supervision_order_2020_13::art_029",
+                "internet_insurance_supervision_order_2020_13::art_044",
+                "internet_insurance_supervision_order_2020_13::art_050",
+                "internet_insurance_supervision_order_2020_13::art_059",
+                "internet_insurance_supervision_order_2020_13::art_060",
+                "internet_insurance_supervision_order_2020_13::art_070",
+                "internet_insurance_supervision_order_2020_13::art_075",
+                "internet_insurance_supervision_order_2020_13::art_078",
+                "internet_insurance_supervision_order_2020_13::art_079"
+              ],
+              "retrieved_article_ids": [
+                "financial_network_marketing_order_2026_09::art_010",
+                "insurance_sales_behavior_order_2023_02::art_006",
+                "insurance_sales_behavior_order_2023_02::art_022",
+                "insurance_sales_behavior_order_2023_02::art_039",
+                "internet_insurance_supervision_order_2020_13::art_015",
+                "internet_insurance_supervision_order_2020_13::art_017",
+                "internet_insurance_supervision_order_2020_13::art_029",
+                "internet_insurance_supervision_order_2020_13::art_079"
+              ]
+            },
+            {
+              "rule_ids": [
+                "paid_education_disguised_marketing",
+                "special_internet_insurance_business_scope",
+                "nonbank_payment_marketing_options",
+                "internet_platform_operating_conditions"
+              ],
+              "article_ids": [
+                "financial_network_marketing_order_2026_09::art_002",
+                "financial_network_marketing_order_2026_09::art_003",
+                "financial_network_marketing_order_2026_09::art_010",
+                "financial_network_marketing_order_2026_09::art_012",
+                "financial_network_marketing_order_2026_09::art_021",
+                "financial_network_marketing_order_2026_09::art_036",
+                "financial_network_marketing_order_2026_09::art_037",
+                "insurance_sales_behavior_order_2023_02::art_006",
+                "insurance_sales_behavior_order_2023_02::art_022",
+                "insurance_sales_behavior_order_2023_02::art_039",
+                "internet_insurance_supervision_order_2020_13::art_002",
+                "internet_insurance_supervision_order_2020_13::art_005",
+                "internet_insurance_supervision_order_2020_13::art_007",
+                "internet_insurance_supervision_order_2020_13::art_008",
+                "internet_insurance_supervision_order_2020_13::art_015",
+                "internet_insurance_supervision_order_2020_13::art_017",
+                "internet_insurance_supervision_order_2020_13::art_029",
+                "internet_insurance_supervision_order_2020_13::art_044",
+                "internet_insurance_supervision_order_2020_13::art_047",
+                "internet_insurance_supervision_order_2020_13::art_050",
+                "internet_insurance_supervision_order_2020_13::art_052",
+                "internet_insurance_supervision_order_2020_13::art_058",
+                "internet_insurance_supervision_order_2020_13::art_064",
+                "internet_insurance_supervision_order_2020_13::art_068",
+                "internet_insurance_supervision_order_2020_13::art_078",
+                "internet_insurance_supervision_order_2020_13::art_079"
+              ],
+              "retrieved_article_ids": [
+                "financial_network_marketing_order_2026_09::art_010",
+                "insurance_sales_behavior_order_2023_02::art_006",
+                "insurance_sales_behavior_order_2023_02::art_022",
+                "insurance_sales_behavior_order_2023_02::art_039",
+                "internet_insurance_supervision_order_2020_13::art_015",
+                "internet_insurance_supervision_order_2020_13::art_017",
+                "internet_insurance_supervision_order_2020_13::art_029",
+                "internet_insurance_supervision_order_2020_13::art_079"
+              ]
+            }
+          ],
+          "assessment_trace": [
+            {
+              "rule_id": "marketing_truthful_and_not_misleading",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "insurance_benefit_uncertainty_and_risk",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "identify_insurance_product_and_provider",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "no_regulatory_guarantee_or_filing_endorsement",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "marketing_personnel_authorization_and_channel",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "suitability_and_consumer_demand",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "truthful_health_disclosure_prompt",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "unlawful_surrender_promotion",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "offline_service_availability_disclosure",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "voluntary_renewal_and_sales_choices",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "multi_product_display_separation",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "marketing_message_optout",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "illegal_financial_activity_marketing",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "approved_marketing_content_use",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "disclose_material_policy_terms_and_restrictions",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "public_figure_endorsement_external_review",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "stop_sale_and_price_change_claims",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "regional_and_third_party_marketing_scope",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "bundled_financial_products_and_default_choice",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "licensed_insurance_and_marketing_subject",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "partner_contract_and_delegation",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "policy_confirmation_and_approved_terms",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "premium_payment_and_accounts",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "personal_information_consent_and_use",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "official_platform_mandatory_information",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "intermediary_industry_name_and_brand",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "popup_close_control",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "algorithm_recommendation_controls",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "regulated_account_names_and_trademarks",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "third_party_sales_intervention",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "paid_education_disguised_marketing",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "special_internet_insurance_business_scope",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "nonbank_payment_marketing_options",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            },
+            {
+              "rule_id": "internet_platform_operating_conditions",
+              "model_applicability": "not_applicable",
+              "model_finding": "no_violation",
+              "condition_values": [
+                false
+              ],
+              "verified_status": "not_applicable",
+              "verified_finding": "no_violation"
+            }
+          ],
+          "embedding_model": "text-embedding-v4",
+          "embedding_dimensions": 1024,
+          "validation_errors": [],
+          "attempts": 7,
+          "calls": [
+            {
+              "kind": "embedding",
+              "model": "text-embedding-v4",
+              "latency_ms": 406,
+              "actual_model": "text-embedding-v4"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 21453,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 23734,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 42594,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 45156,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 60016,
+              "actual_model": "qwen3.7-plus"
+            },
+            {
+              "kind": "text",
+              "model": "qwen3.7-plus",
+              "enable_thinking": false,
+              "latency_ms": 62328,
+              "actual_model": "qwen3.7-plus"
+            }
+          ],
+          "token_usage": {
+            "prompt_tokens": 69970,
+            "completion_tokens": 6758,
+            "total_tokens": 76728
+          },
+          "stage_latency": {
+            "extract_ms": 0,
+            "retrieval_ms": 422,
+            "judge_ms": 62359
+          },
+          "latency_ms": 62781
+        }
+      }
+    }
+  }
+}

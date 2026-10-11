@@ -5,6 +5,7 @@ import time
 from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 
+import httpx
 from openai import APIConnectionError, APIStatusError, APITimeoutError, AsyncOpenAI
 from pydantic import ValidationError
 
@@ -60,6 +61,15 @@ class Bailian:
     async def close(self):
         await self.client.close()
 
+    async def request(self, method, budget, **kwargs):
+        # SDK read timeouts alone are not a wall-clock cap on a slowly arriving body.
+        limit = min(self.settings.model_timeout_seconds, budget.remaining())
+        try:
+            async with asyncio.timeout(limit):
+                return await method(timeout=limit, **kwargs)
+        except TimeoutError as error:
+            raise APITimeoutError(request=httpx.Request("POST", "https://model.invalid")) from error
+
     async def embed(self, texts, budget):
         """Embedding shares the process gate, deadline and attempt budget with judgment."""
         if not self.settings.configured or self.settings.audit_mock:
@@ -77,14 +87,13 @@ class Bailian:
                         budget.consume()
                         record = {"kind": "embedding", "model": self.settings.embedding_model}
                         try:
-                            response = await self.client.embeddings.create(
+                            response = await self.request(
+                                self.client.embeddings.create,
+                                budget,
                                 model=self.settings.embedding_model,
                                 input=texts,
                                 dimensions=self.settings.embedding_dimensions,
                                 encoding_format="float",
-                                timeout=min(
-                                    self.settings.model_timeout_seconds, budget.remaining()
-                                ),
                             )
                         finally:
                             record["latency_ms"] = round((time.monotonic() - started) * 1000)
@@ -144,14 +153,13 @@ class Bailian:
                                     self.settings.bailian_text_enable_thinking
                                 )
                         try:
-                            response = await self.client.chat.completions.create(
+                            response = await self.request(
+                                self.client.chat.completions.create,
+                                budget,
                                 model=model,
                                 messages=messages,
                                 temperature=0,
                                 max_tokens=max_tokens,
-                                timeout=min(
-                                    self.settings.model_timeout_seconds, budget.remaining()
-                                ),
                                 **options,
                             )
                         finally:

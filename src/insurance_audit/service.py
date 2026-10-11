@@ -44,6 +44,7 @@ class AuditService:
         budget = Budget(self.settings.audit_timeout_seconds, self.settings.audit_max_model_attempts)
         sources = text_sources(request.text)
         extracted, errors, reviews, violations, ledger = [], [], [], [], []
+        assessment_trace = []
         warnings = (
             ["模拟演示结果：未调用真实模型，不可作为合规判断或评估成绩。"]
             if self.settings.audit_mock
@@ -174,6 +175,16 @@ class AuditService:
                         finding, by_id[finding.rule_id], sources, self.corpus, request, readable
                     )
                     ledger.append(record)
+                    assessment_trace.append(
+                        {
+                            "rule_id": finding.rule_id,
+                            "model_applicability": finding.applicability,
+                            "model_finding": finding.finding,
+                            "condition_values": [c.met for c in finding.condition_results],
+                            "verified_status": record.status,
+                            "verified_finding": record.finding,
+                        }
+                    )
                     if review:
                         reviews.append(review)
                     if violation:
@@ -232,6 +243,7 @@ class AuditService:
                 "retrieval_mode": self.settings.retrieval_mode,
                 "retrieval_trace": retrieval_trace,
                 "context_trace": context_trace,
+                "assessment_trace": assessment_trace,
                 "embedding_model": self.settings.embedding_model
                 if self.settings.retrieval_mode == "hybrid"
                 else None,

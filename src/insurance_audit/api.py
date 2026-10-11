@@ -21,6 +21,9 @@ from insurance_audit.service import AuditService
 from insurance_audit.uploads import MAX_TOTAL, InputError, read_uploads
 
 LOGGER = logging.getLogger("insurance_audit.metadata")
+LOGGER.setLevel(logging.INFO)
+if not LOGGER.handlers:
+    LOGGER.addHandler(logging.StreamHandler())
 STATIC = Path(__file__).with_name("static")
 
 
