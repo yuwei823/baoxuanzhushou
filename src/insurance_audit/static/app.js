@@ -29,8 +29,44 @@ function render(result) {
     if (result.images?.length) { const d = details('逐图提取记录与可读性'); for (const image of result.images) { const original = resultPictures[Number(image.image_id.split('_')[1]) - 1]; if (original) { const preview = elem('img'); preview.src = original.url; preview.alt = `提交原图 ${image.image_id}`; preview.className = 'result-image'; d.append(preview); } d.append(elem('h4', image.image_id), elem('p', image.visible_text || '没有可靠文字', 'source-text')); for (const line of image.unreadable_regions) d.append(elem('p', `不可读：${line}`, 'warning')); for (const line of image.visual_observations) d.append(elem('p', `画面观察：${line}`)); } host.append(d); }
     for (const w of result.warnings || []) host.append(elem('p', w, 'warning')); if (result.meta) host.append(elem('p', `耗时 ${(result.meta.latency_ms / 1000).toFixed(1)} 秒 · 模型尝试 ${result.meta.attempts} 次 · 追踪 ${result.trace_id}`, 'privacy'));
 }
-function busy(on) { document.body.classList.toggle('busy', on); $('submit').disabled = on; $('cancel').hidden = !on; for (const e of document.querySelectorAll('textarea,select,input,[data-example],.toggle-option')) e.disabled = on; setText('empty-title', on ? '审核中' : '等待提交材料'); setText('empty-hint', on ? '正在比对营销证据与法规原文，请稍候。' : '审核完成后，在这里逐项对照营销证据与法规原文。'); redraw(); }
-$('submit').onclick = async () => { if (controller) return; const text = $('text').value; if (!text.trim() && !pictures.length) return notice('请输入文本或上传图片。'); if (Array.from(text).length > 10000) return notice('文本最多 10,000 个 Unicode 字符。'); exampleGeneration++; const submitted = pictures.map(p => ({ file: p.file, url: URL.createObjectURL(p.file) })); let rendered = false; const form = new FormData(); form.append('text', text); const context = {}; for (const id of ['channel', 'publisher_type', 'product_type', 'material_completeness']) context[id] = $(id).value; form.append('context', JSON.stringify(context)); form.append('depth', $('depth').value); pictures.forEach(p => form.append('images', p.file)); controller = new AbortController(); busy(true); notice(''); const start = Date.now(); $('submit').textContent = '审核中 · 0 秒'; timer = setInterval(() => $('submit').textContent = `审核中 · ${Math.floor((Date.now() - start) / 1000)} 秒`, 1000); try { const r = await fetch('/api/v1/audits', { method: 'POST', body: form, signal: controller.signal }); const value = await r.json(); releasePictures(resultPictures); resultPictures = submitted; rendered = true; render(value); if (r.status === 429) notice('服务器审核任务已满，请稍后重试。'); else if (!r.ok) notice('本次审核未完成，输入已保留。'); } catch (e) { notice(e.name === 'AbortError' ? '已取消，输入已保留。' : '连接失败，输入已保留，请检查本地服务。'); } finally { if (!rendered) releasePictures(submitted); clearInterval(timer); controller = null; busy(false); $('submit').textContent = '开始审核 ↗'; } };
+function busy(on) { document.body.classList.toggle('busy', on); $('submit').disabled = on; $('cancel').hidden = !on; for (const e of document.querySelectorAll('textarea,select,input,[data-example],.toggle-option')) e.disabled = on; setText('empty-title', on ? '审核中' : '等待提交材料'); setText('empty-hint', on ? '正在比对营销证据与法规原文，请稍候。' : '审核完成后，在这里逐项对照营销证据与法规原文。'); const bar = $('progress'); if (bar) bar.hidden = !on; if (!on) setProgress(null); redraw(); }
+// Progress is advisory: it reflects completed rule batches, never a verdict.
+function setProgress(event) {
+    const host = $('progress'); if (!host) return;
+    if (!event) { host.replaceChildren(); return; }
+    const done = event.completed_rules ?? 0, total = event.total_rules ?? 0;
+    const ratio = total ? Math.min(1, done / total) : 0;
+    const label = event.stage === 'extract' ? '正在识别图片文字…' : event.stage === 'retrieve' ? '正在检索相关法规…' : event.stage === 'done' ? '正在汇总结论…' : `已比对 ${done} / ${total} 条规则`;
+    const track = elem('div', undefined, 'progress-track'); const fill = elem('div', undefined, 'progress-fill'); fill.style.width = `${Math.round(ratio * 100)}%`; track.append(fill);
+    host.replaceChildren(elem('p', label, 'progress-label'), track);
+}
+$('submit').onclick = async () => {
+    if (controller) return; const text = $('text').value; if (!text.trim() && !pictures.length) return notice('请输入文本或上传图片。'); if (Array.from(text).length > 10000) return notice('文本最多 10,000 个 Unicode 字符。');
+    exampleGeneration++; const submitted = pictures.map(p => ({ file: p.file, url: URL.createObjectURL(p.file) })); let rendered = false;
+    const form = new FormData(); form.append('text', text); const context = {}; for (const id of ['channel', 'publisher_type', 'product_type', 'material_completeness']) context[id] = $(id).value; form.append('context', JSON.stringify(context)); form.append('depth', $('depth').value); pictures.forEach(p => form.append('images', p.file));
+    controller = new AbortController(); busy(true); notice(''); const start = Date.now(); $('submit').textContent = '审核中 · 0 秒'; timer = setInterval(() => $('submit').textContent = `审核中 · ${Math.floor((Date.now() - start) / 1000)} 秒`, 1000);
+    try {
+        const r = await fetch('/api/v1/audits/stream', { method: 'POST', body: form, signal: controller.signal });
+        if (r.status === 429) { notice('服务器审核任务已满，请稍后重试。'); return; }
+        if (!r.ok || !r.body) { notice('本次审核未完成，输入已保留。'); return; }
+        // Parse the SSE frames by hand: the payload is JSON we already understand,
+        // and EventSource cannot issue a POST with a FormData body.
+        const reader = r.body.getReader(); const decoder = new TextDecoder(); let buffer = '';
+        for (;;) {
+            const { value, done } = await reader.read(); if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const frames = buffer.split('\n\n'); buffer = frames.pop();
+            for (const frame of frames) {
+                const name = frame.match(/^event: (.+)$/m)?.[1]; const data = frame.match(/^data: (.+)$/m)?.[1];
+                if (!name || !data) continue;
+                if (name === 'progress') { setProgress(JSON.parse(data)); continue; }
+                if (name === 'result') { const payload = JSON.parse(data); releasePictures(resultPictures); resultPictures = submitted; rendered = true; render(payload); continue; }
+                if (name === 'error') { notice('本次审核未完成，输入已保留。'); continue; }
+            }
+        }
+    } catch (e) { notice(e.name === 'AbortError' ? '已取消，输入已保留。' : '连接失败，输入已保留，请检查本地服务。'); }
+    finally { if (!rendered) releasePictures(submitted); clearInterval(timer); controller = null; busy(false); $('submit').textContent = '开始审核 ↗'; }
+};
 $('cancel').onclick = () => controller?.abort();
 $('download').onclick = () => { if (!lastResult) return; const url = URL.createObjectURL(new Blob([JSON.stringify(lastResult, null, 2)], { type: 'application/json' })); const a = elem('a'); a.href = url; a.download = `audit-${lastResult.audit_id || 'error'}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); };
 const examples = { violation: '稳赚不赔！本产品年化收益8%，保本保息，收益写进合同。限时抢购，错过不再有。联系张经理13800008888立即投保。', education: '保险知识科普：任何人都不应宣称“监管部门担保收益”。分红属于非保证利益，实际收益可能低于演示水平。本文不介绍或销售具体产品。', multi: '请结合两张图片审核完整图文材料。'};

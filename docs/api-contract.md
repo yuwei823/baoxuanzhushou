@@ -10,6 +10,18 @@ depth 默认 concise：只返回阻断性 review_items，隐藏提示性待核�
 
 接口默认开放，不校验访问口令。如需限制访问请在反向代理层实现。
 
+## 进度流：POST /api/v1/audits/stream
+
+与 /api/v1/audits 接受完全相同的 multipart 请求体与校验，但以 Server-Sent Events 返回，便于前端在审核过程中显示真实进度。事件类型：
+
+| 事件 | 时机 | data 字段 |
+|---|---|---|
+| progress | 各阶段开始与每个裁决批次完成 | stage（start/extract/retrieve/judge/done）、total_rules、planned_rules、total_batches、completed_rules、completed_batches |
+| result | 审核结束 | 与阻塞接口完全相同的响应体 |
+| error | 流内异常 | message（异常类型名） |
+
+进度是**尽力而为的遥测**：投递失败不会使审核失败；`completed_rules` 在 done 事件时等于 `total_rules`。规则按共享条文聚类打包，因此 `total_batches` 小于规则数（当前 46 条规则 → 25 个批次）。空行注释帧 `: keep-alive` 每 15 秒发送一次，防止代理超时断开。
+
 ## 确定性状态矩阵
 
 | 情况 | status | decision | is_compliant |

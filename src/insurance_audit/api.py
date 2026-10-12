@@ -6,7 +6,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from fastapi import FastAPI, Request
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
 from starlette.datastructures import UploadFile
@@ -158,14 +158,8 @@ def create_app(settings=None, provider=None):
             return error_response("未找到当前规则集条文。", 404)
         return corpus.articles[article_id]
 
-    @application.post("/api/v1/audits")
-    async def audit(request: Request):
-        if not service or not settings.configured:
-            return error_response(
-                application.state.startup_error or "请配置百炼密钥与地域 Base URL。",
-                503,
-                "not_ready",
-            )
+    async def parse_audit_form(request):
+        """Parse and validate the multipart audit payload shared by both endpoints."""
         content_type = request.headers.get("content-type", "")
         if not content_type.startswith("multipart/form-data"):
             raise InputError("请使用 multipart/form-data 上传图文。", 415)
@@ -198,6 +192,43 @@ def create_app(settings=None, provider=None):
             if isinstance(error, InputError):
                 raise
             raise InputError("参数无效：检查上下文枚举与文本长度（最多 10,000 字）。") from error
+        return audit_request, images
+
+    def audit_status_code(result):
+        if result.status != "failed":
+            return 200
+        codes = {e.code for e in result.errors}
+        return (
+            504 if "budget_exhausted" in codes else 502 if "invalid_model_output" in codes else 503
+        )
+
+    def log_audit(result):
+        LOGGER.info(
+            json.dumps(
+                {
+                    "trace_id": result.trace_id,
+                    "ruleset_id": result.ruleset_id,
+                    "status": result.status,
+                    "error_codes": [e.code for e in result.errors],
+                    "coverage": {
+                        "total": result.coverage.total,
+                        "checked": result.coverage.checked,
+                    },
+                    **result.meta,
+                },
+                ensure_ascii=False,
+            )
+        )
+
+    @application.post("/api/v1/audits")
+    async def audit(request: Request):
+        if not service or not settings.configured:
+            return error_response(
+                application.state.startup_error or "请配置百炼密钥与地域 Base URL。",
+                503,
+                "not_ready",
+            )
+        audit_request, images = await parse_audit_form(request)
 
         if audit_slots.locked():
             return error_response("审核并发已满，请稍后重试。", 429, "busy")
@@ -230,36 +261,80 @@ def create_app(settings=None, provider=None):
                     task.cancel()
                 await asyncio.gather(task, return_exceptions=True)
                 images.clear()
-            LOGGER.info(
-                json.dumps(
-                    {
-                        "trace_id": result.trace_id,
-                        "ruleset_id": result.ruleset_id,
-                        "status": result.status,
-                        "error_codes": [e.code for e in result.errors],
-                        "coverage": {
-                            "total": result.coverage.total,
-                            "checked": result.coverage.checked,
-                        },
-                        **result.meta,
-                    },
-                    ensure_ascii=False,
-                )
+            log_audit(result)
+            return JSONResponse(
+                result.model_dump(mode="json"), status_code=audit_status_code(result)
             )
-            status_code = 200
-            if result.status == "failed":
-                codes = {e.code for e in result.errors}
-                status_code = (
-                    504
-                    if "budget_exhausted" in codes
-                    else 502
-                    if "invalid_model_output" in codes
-                    else 503
-                )
-            return JSONResponse(result.model_dump(mode="json"), status_code=status_code)
 
         async with audit_slots:
             return await perform(audit_request, images)
+
+    @application.post("/api/v1/audits/stream")
+    async def audit_stream(request: Request):
+        """Same audit as /api/v1/audits, streamed as Server-Sent Events.
+
+        Emits `progress` events while rules are being judged, then one `result`
+        event carrying the identical payload the blocking endpoint returns.
+        Progress is advisory: a failure to deliver it never fails the audit.
+        """
+        if not service or not settings.configured:
+            return error_response(
+                application.state.startup_error or "请配置百炼密钥与地域 Base URL。",
+                503,
+                "not_ready",
+            )
+        audit_request, images = await parse_audit_form(request)
+
+        if audit_slots.locked():
+            return error_response("审核并发已满，请稍后重试。", 429, "busy")
+
+        queue: asyncio.Queue = asyncio.Queue()
+
+        async def on_progress(event):
+            await queue.put(("progress", event))
+
+        async def run_audit():
+            try:
+                result = await service.review(audit_request, images, on_progress=on_progress)
+                log_audit(result)
+                await queue.put(("result", result.model_dump(mode="json")))
+            except asyncio.CancelledError:
+                raise
+            except Exception as error:
+                LOGGER.exception("audit stream failed")
+                await queue.put(("error", {"message": type(error).__name__}))
+            finally:
+                images.clear()
+                await queue.put(("end", None))
+
+        async def events():
+            async with audit_slots:
+                task = asyncio.create_task(run_audit())
+                try:
+                    while True:
+                        try:
+                            kind, payload = await asyncio.wait_for(queue.get(), timeout=15)
+                        except TimeoutError:
+                            # Comment frame keeps proxies and browsers from idling out.
+                            yield ": keep-alive\n\n"
+                            continue
+                        if kind == "end":
+                            break
+                        yield f"event: {kind}\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
+                finally:
+                    if not task.done():
+                        task.cancel()
+                    await asyncio.gather(task, return_exceptions=True)
+
+        return StreamingResponse(
+            events(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-store",
+                "X-Accel-Buffering": "no",
+                "Connection": "keep-alive",
+            },
+        )
 
     @application.get("/")
     async def index():

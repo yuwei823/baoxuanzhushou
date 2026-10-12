@@ -122,6 +122,48 @@ def test_unknown_depth_is_rejected(client):
     assert response.status_code == 422
 
 
+def test_stream_emits_progress_then_the_same_result_as_the_blocking_endpoint(client):
+    blocking = post(client, "监管部门担保收益").json()
+
+    with client.stream(
+        "POST", "/api/v1/audits/stream", files={"text": (None, "监管部门担保收益")}
+    ) as response:
+        assert response.status_code == 200
+        assert response.headers["content-type"].startswith("text/event-stream")
+        body = "".join(response.iter_text())
+
+    frames = [f for f in body.split("\n\n") if f.strip()]
+    events = {}
+    for frame in frames:
+        name = frame.split("\n", 1)[0].removeprefix("event: ")
+        events.setdefault(name, []).append(frame.split("data: ", 1)[1])
+
+    # Progress is reported before the verdict, and converges on the rule total.
+    assert events["progress"], "stream must report progress"
+    first = json.loads(events["progress"][0])
+    last = json.loads(events["progress"][-1])
+    assert first["completed_rules"] == 0
+    assert last["completed_rules"] == last["total_rules"] == len(client.app.state.corpus.rules)
+    assert last["completed_batches"] == last["total_batches"] > 0
+
+    # Exactly one result frame, carrying the same payload the blocking call returns.
+    assert len(events["result"]) == 1
+    streamed = json.loads(events["result"][0])
+    assert streamed["status"] == blocking["status"]
+    assert streamed["decision"] == blocking["decision"]
+    assert len(streamed["violations"]) == len(blocking["violations"])
+    assert streamed["coverage"]["total"] == blocking["coverage"]["total"]
+
+
+def test_stream_rejects_a_non_multipart_body(client):
+    response = client.post(
+        "/api/v1/audits/stream",
+        content="text=测试",
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
+    assert response.status_code == 415
+
+
 @pytest.mark.asyncio
 async def test_audit_concurrency_cap_rejects_while_busy():
     started, release = asyncio.Event(), asyncio.Event()

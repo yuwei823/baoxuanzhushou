@@ -652,6 +652,32 @@ select {
     margin: 15px auto
 }
 
+#progress {
+    max-width: 280px;
+    margin: 0 auto
+}
+
+.progress-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 0 0 8px
+}
+
+.progress-track {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--line);
+    overflow: hidden
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 2px;
+    background: #4a7c59;
+    transition: width .3s ease
+}
+
 .legend {
     display: flex;
     justify-content: center;

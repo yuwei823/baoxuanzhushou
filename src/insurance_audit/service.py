@@ -1,5 +1,6 @@
 import asyncio
 import json
+import logging
 import time
 from collections import Counter
 from uuid import uuid4
@@ -26,6 +27,8 @@ from insurance_audit.workflow import (
     vision_messages,
 )
 
+LOGGER = logging.getLogger("insurance_audit.service")
+
 
 def aggregate(violations, reviews, errors):
     if violations:
@@ -41,12 +44,36 @@ class AuditService:
     def __init__(self, settings, corpus, provider):
         self.settings, self.corpus, self.provider = settings, corpus, provider
 
-    async def review(self, request, images=()):
+    async def review(self, request, images=(), on_progress=None):
+        """Run one audit.
+
+        ``on_progress`` is an optional async callable receiving a small dict
+        describing completed work. It lets a streaming transport report real
+        progress; it must never raise, since a progress failure must not fail
+        an audit.
+        """
+
+        async def progress(**event):
+            if on_progress is None:
+                return
+            try:
+                await on_progress(event)
+            except Exception:
+                LOGGER.warning("progress callback failed", exc_info=True)
+
         started = time.monotonic()
         budget = Budget(self.settings.audit_timeout_seconds, self.settings.audit_max_model_attempts)
         sources = text_sources(request.text)
         extracted, errors, reviews, violations, ledger = [], [], [], [], []
         assessment_trace = []
+        await progress(
+            stage="start",
+            total_rules=len(self.corpus.rules),
+            planned_rules=len(self.corpus.rules),
+            total_batches=0,
+            completed_rules=0,
+            completed_batches=0,
+        )
         warnings = (
             ["模拟演示结果：未调用真实模型，不可作为合规判断或评估成绩。"]
             if self.settings.audit_mock
@@ -64,6 +91,15 @@ class AuditService:
                 return image, None, error
 
         vision_started = time.monotonic()
+        await progress(
+            stage="extract",
+            total_rules=len(self.corpus.rules),
+            planned_rules=len(self.corpus.rules),
+            total_batches=0,
+            completed_rules=0,
+            completed_batches=0,
+            total_images=len(images),
+        )
         results = await asyncio.gather(*(extract_one(image) for image in images))
         for image, value, error in results:
             if error:
@@ -94,6 +130,14 @@ class AuditService:
         stages["extract_ms"] = round((time.monotonic() - vision_started) * 1000)
         readable = not errors and not any(r.type == "unreadable_image" for r in reviews)
         retrieval_started = time.monotonic()
+        await progress(
+            stage="retrieve",
+            total_rules=len(self.corpus.rules),
+            planned_rules=len(self.corpus.rules),
+            total_batches=0,
+            completed_rules=0,
+            completed_batches=0,
+        )
         retrieved, retrieval_trace, retrieval_error = [], [], None
         try:
             retrieved, retrieval_trace = await self.corpus.search(sources, self.provider, budget)
@@ -102,7 +146,22 @@ class AuditService:
         stages["retrieval_ms"] = round((time.monotonic() - retrieval_started) * 1000)
         context_trace = []
 
+        judge_started = time.monotonic()
+        batches = list(self.corpus.batches(self.settings.batch_rule_count, retrieved))
+        await progress(
+            stage="judge",
+            total_rules=len(self.corpus.rules),
+            planned_rules=sum(len(cards) for cards, _ in batches),
+            total_batches=len(batches),
+            completed_rules=0,
+            completed_batches=0,
+        )
+        done_rules = 0
+        done_batches = 0
+        progress_lock = asyncio.Lock()
+
         async def judge_batch(cards, articles):
+            nonlocal done_rules, done_batches
             try:
                 if retrieval_error:
                     raise retrieval_error
@@ -149,9 +208,22 @@ class AuditService:
                 return [(cards, result, None)]
             except ModelFailure as error:
                 return [(cards, None, error)]
+            finally:
+                # Count the batch as finished whether it succeeded or failed, so
+                # the reported total always converges on the planned rule count.
+                async with progress_lock:
+                    done_batches += 1
+                    done_rules += len(cards)
+                    await progress(
+                        stage="judge",
+                        total_rules=len(self.corpus.rules),
+                        planned_rules=sum(len(cards) for cards, _ in batches),
+                        total_batches=len(batches),
+                        completed_rules=min(done_rules, len(self.corpus.rules)),
+                        completed_batches=done_batches,
+                        rule_ids=[c["rule_id"] for c in cards],
+                    )
 
-        judge_started = time.monotonic()
-        batches = list(self.corpus.batches(self.settings.batch_rule_count, retrieved))
         batch_results = await asyncio.gather(
             *(judge_batch(cards, articles) for cards, articles in batches)
         )
@@ -193,6 +265,14 @@ class AuditService:
                     if violation:
                         violations.append(violation)
         stages["judge_ms"] = round((time.monotonic() - judge_started) * 1000)
+        await progress(
+            stage="done",
+            total_rules=len(self.corpus.rules),
+            planned_rules=len(self.corpus.rules),
+            total_batches=len(batches),
+            completed_rules=len(self.corpus.rules),
+            completed_batches=len(batches),
+        )
         eligible = sum(r.status not in ("not_applicable", "out_of_scope") for r in ledger)
         checked = sum(r.status == "checked" for r in ledger)
         resolved = sum(r.status == "checked" and r.finding != "uncertain" for r in ledger)
