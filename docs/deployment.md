@@ -18,12 +18,10 @@
 curl -fsSL https://get.docker.com | sudo sh
 sudo usermod -aG docker $USER   # 重新登录后生效
 
-# 项目目录
-sudo mkdir -p /opt/baoxuan && sudo chown $USER /opt/baoxuan
-cd /opt/baoxuan
-
-# 拉取代码（私有仓库：先在 GitHub 配置 Deploy Key，再 git clone git@github.com:<你>/<仓库>.git .）
-git clone git@github.com:<你>/<仓库>.git .
+# 项目目录（root 用户直接在家目录下）
+cd /root
+git clone git@github.com:yuwei823/baoxuanzhushou.git
+cd /root/baoxuanzhushou
 
 # 服务端配置（密钥只在这台机器上，不入库）
 cp .env.example .env
@@ -47,7 +45,7 @@ AUDIT_MAX_CONCURRENCY=2
 ## 2. 首次启动
 
 ```bash
-cd /opt/baoxuan
+cd /root/baoxuanzhushou
 docker compose up -d --build
 docker compose ps                # audit 应显示 healthy
 curl -fsS http://127.0.0.1:8000/readyz
@@ -89,7 +87,7 @@ cat ~/.ssh/deploy_ci.pub   # 如果 CI 用同一把密钥登录，还需要仓�
 
 > 也可复用你自己的登录密钥：把对应私钥放入 `SSH_KEY`，并确认 ECS `authorized_keys` 里有对应公钥。私有仓库的 `git pull` 需要 ECS 配置好 Deploy Key（`~/.ssh/config` 中 `github.com` 使用 `deploy_ci` 私钥）。
 
-日常更新流程：本地 push → GitHub Actions 自动部署（约 2–3 分钟）→ 域名即新版本。也可以手动在 ECS 执行 `cd /opt/baoxuan && git pull && docker compose up -d --build`。
+日常更新流程：本地 push → GitHub Actions 自动部署（约 2–3 分钟）→ 域名即新版本。也可以手动在 ECS 执行 `cd /root/baoxuanzhushou && git pull && docker compose up -d --build`。
 
 ## 4. 常见运维
 

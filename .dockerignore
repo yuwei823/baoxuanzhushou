@@ -21,7 +21,6 @@ Spec_02.md
 Requirement.md
 requirements-build.lock
 requirements-dev.lock
-requirements-runtime.in
 data/pipeline
 data/runtime
 data/eval

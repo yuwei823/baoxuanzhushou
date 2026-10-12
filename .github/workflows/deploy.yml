@@ -31,7 +31,7 @@ jobs:
           script_stop: true
           script: |
             set -e
-            cd /opt/baoxuan
+            cd /root/baoxuanzhushou
             git pull --ff-only
             docker compose up -d --build
             sleep 10
