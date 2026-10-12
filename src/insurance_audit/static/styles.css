@@ -509,15 +509,15 @@ body.busy #button-group #cancel {
     border-radius: 9px;
     overflow: hidden;
     background: #fafcf9;
-    height: 49px
+    height: 48px;
 }
 
 .toggle-option {
     border: 0;
     border-radius: 0;
     background: transparent;
-    padding: 0 18px;
-    font-size: 13px;
+    font-size: 14px;
+    height: 48px;
     color: var(--muted);
     cursor: pointer;
     display: inline-flex;
@@ -571,20 +571,20 @@ select {
     flex: 1 1 auto;
     width: auto;
     border: 0;
-    font-size: 15px;
-    padding: 13px;
+    font-size: 14px;
+    height: 48px;
     white-space: nowrap
 }
 
 /* Busy: submit keeps most of the row; cancel takes about a third of submit's width. */
 .depth-row #cancel {
-    padding: 12px 22px;
+    /* padding: 12px 22px; */
     flex: 0 0 auto;
     color: white;
     border: 0;
     border-radius: 7px;
-    font-size: 15px;
-    line-height: 1.65;
+    font-size: 14px;
+    height: 48px;
     white-space: nowrap
 }
 
