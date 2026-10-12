@@ -577,7 +577,6 @@ select {
 
 /* Busy: submit keeps most of the row; cancel takes about a third of submit's width. */
 .depth-row #cancel {
-    /* padding: 12px 22px; */
     flex: 0 0 auto;
     color: white;
     border: 0;
@@ -587,11 +586,21 @@ select {
     white-space: nowrap
 }
 
+/* A live cancel action must not read as disabled: solid tone, clear hover. */
 .depth-row #cancel:not([hidden]) {
-    background-color: #ccc;
+    background-color: #5b6b66;
     display: inline-flex;
     align-items: center;
-    justify-content: center
+    justify-content: center;
+    cursor: pointer
+}
+
+.depth-row #cancel:not([hidden]):hover {
+    background-color: #3f4c48
+}
+
+.depth-row #cancel:not([hidden]):active {
+    background-color: #2f3a37
 }
 
 .primary:hover {
