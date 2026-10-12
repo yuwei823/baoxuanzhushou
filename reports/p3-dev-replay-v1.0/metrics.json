@@ -1,0 +1,124 @@
+{
+  "metadata": {
+    "started_at_utc": "2026-10-11T23:54:17.266244+00:00",
+    "mode": "replay",
+    "split": "dev",
+    "requested_variant": "hybrid",
+    "dataset_sha256": "fff9b70f744b4b64a072a93134591a83ff74ca46ad0693061c62790def4cbe7f",
+    "replay_sha256": "ada66ec0b727d9d7ec56bfba8b52d964c7c10e38ee7f4424cdc29920aaf4fb92",
+    "citation_verification_ruleset": "official-v1-2026-10-11",
+    "formal_acceptance": false,
+    "run_complete": true,
+    "evaluation_code_sha256": "a93fae720061897298f8fb9983b3b8e83da90cf0bbeceec9b296b8cb0e133feb"
+  },
+  "metrics": {
+    "samples": 5,
+    "confusion_matrix": {
+      "compliant": {
+        "compliant": 1,
+        "non_compliant": 0,
+        "needs_review": 1,
+        "technical_failure": 0
+      },
+      "non_compliant": {
+        "compliant": 0,
+        "non_compliant": 2,
+        "needs_review": 0,
+        "technical_failure": 0
+      },
+      "needs_review": {
+        "compliant": 0,
+        "non_compliant": 0,
+        "needs_review": 1,
+        "technical_failure": 0
+      }
+    },
+    "class_f1": {
+      "compliant": {
+        "numerator": 2,
+        "denominator": 3,
+        "value": 0.6666666666666666
+      },
+      "non_compliant": {
+        "numerator": 4,
+        "denominator": 4,
+        "value": 1.0
+      },
+      "needs_review": {
+        "numerator": 2,
+        "denominator": 3,
+        "value": 0.6666666666666666
+      }
+    },
+    "macro_f1": 0.7777777777777777,
+    "violation_recall": {
+      "numerator": 2,
+      "denominator": 2,
+      "value": 1.0
+    },
+    "valid_violation_detection_recall_including_partial": {
+      "numerator": 2,
+      "denominator": 2,
+      "value": 1.0
+    },
+    "non_compliant_false_positive_rate": {
+      "numerator": 0,
+      "denominator": 2,
+      "value": 0.0
+    },
+    "automatic_coverage": {
+      "numerator": 3,
+      "denominator": 5,
+      "value": 0.6
+    },
+    "automatic_accuracy": {
+      "numerator": 3,
+      "denominator": 3,
+      "value": 1.0
+    },
+    "technical_failure_rate_including_partial": {
+      "numerator": 0,
+      "denominator": 5,
+      "value": 0.0
+    },
+    "type_micro_f1": {
+      "numerator": 0,
+      "denominator": 0,
+      "value": null
+    },
+    "type_labeled_samples": 0,
+    "article_precision": {
+      "numerator": 0,
+      "denominator": 0,
+      "value": null
+    },
+    "article_recall": {
+      "numerator": 0,
+      "denominator": 0,
+      "value": null
+    },
+    "article_labeled_samples": 0,
+    "citation_original_match": {
+      "numerator": 24,
+      "denominator": 24,
+      "value": 1.0
+    },
+    "citation_count": 24,
+    "unknown_articles": 0,
+    "latency_ms": {
+      "p50": 61109.0,
+      "p95": 67797.2,
+      "observed": 5
+    },
+    "token_usage": {
+      "prompt_tokens": 348922,
+      "completion_tokens": 33195,
+      "total_tokens": 382117
+    },
+    "error_buckets": {},
+    "label_status_counts": {
+      "provisional": 5
+    },
+    "mock_samples": 0
+  }
+}

@@ -192,9 +192,13 @@ def create_app(settings=None, provider=None):
 
         task = asyncio.create_task(service.review(audit_request, images))
 
+        client_disconnected = False
+
         async def disconnected():
+            nonlocal client_disconnected
             while not task.done():
                 if await request.is_disconnected():
+                    client_disconnected = True
                     task.cancel()
                     return
                 await asyncio.sleep(0.2)
@@ -202,11 +206,16 @@ def create_app(settings=None, provider=None):
         monitor = asyncio.create_task(disconnected())
         try:
             result = await task
+        except asyncio.CancelledError:
+            if client_disconnected:
+                return JSONResponse({"status": "cancelled", "decision": None}, status_code=499)
+            raise
         finally:
             monitor.cancel()
             await asyncio.gather(monitor, return_exceptions=True)
             if not task.done():
                 task.cancel()
+            await asyncio.gather(task, return_exceptions=True)
             images.clear()
         LOGGER.info(
             json.dumps(

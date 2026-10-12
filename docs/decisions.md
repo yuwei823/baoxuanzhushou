@@ -20,3 +20,9 @@ audit-v1.0 包含完整 Schema、适用条件、例外、否定/教育反例、�
 
 
 audit-v1.4-rag 增加显式条件 ID：模型返回 c1/c2 等，程序仅按该规则的固定绑定回填原文，再执行完整条件覆盖校验；未知 ID、重复或缺失条件继续拒绝。避免要求模型逐字复制英文触发条件造成无意义失败。原始模型响应和用户内容不进入校验错误日志。
+
+## 逐规则引用与触发要点（audit-v1.6-citation-guidance，2026-10-12）
+
+- 逐规则引用白名单：judge payload 增加 `allowed_citations`（每条规则可引用的直接条文 ID 与条号）与每条文 `direct_for_rule_ids` 标注，禁止把条文跨规则借用；引用错误整批失败，白名单未放宽。修复提示携带各规则可引用条文（条号+开头原文），单次修复在 Unicode/HTML 压力案例中实际成功，结果由 partial 转为 completed。
+- 触发要点指导：`trigger_guidance` 仅针对 `approved_marketing_content_use`、`internet_platform_operating_conditions` 说明触发条件以“材料是否呈现某项活动”为核心，中性教育材料判 false；规则卡本身未改，已发布快照保持不可变。该指导是 Prompt 层解释，不属于新效果证据。
+- 工程验收：G1 五例真实调用 5/5（reports/g1-next-live-v2.json），G2 压力案例 completed/non_compliant；仍是合成开发案例，正式效果评估待 P3 已核对数据集。

@@ -195,8 +195,14 @@ class Bailian:
             await asyncio.sleep(wait)
 
 
-async def structured(provider, kind, messages, schema, budget, validate=None, max_tokens=8000):
-    """One structure repair per batch; semantic checks also consume that repair allowance."""
+async def structured(
+    provider, kind, messages, schema, budget, validate=None, max_tokens=8000, repair_context=None
+):
+    """One structure repair per batch; semantic checks also consume that repair allowance.
+
+    repair_context is optional extra guidance (e.g. per-rule citation allowlists) appended
+    to the repair message so the single retry has the facts it needs to fix the failure.
+    """
     for attempt in range(2):
         try:
             raw = await provider.call(kind, messages, budget, max_tokens=max_tokens)
@@ -235,6 +241,12 @@ async def structured(provider, kind, messages, schema, budget, validate=None, ma
             }
         )
         if not attempt:
+            extra = ""
+            if repair_context:
+                extra = (
+                    "。本批各规则唯一可引用的条文 ID 如下，article_ids 只能使用对应规则列表内的 ID："
+                    + json.dumps(repair_context, ensure_ascii=False)
+                )
             messages = [
                 *messages,
                 {
@@ -243,7 +255,8 @@ async def structured(provider, kind, messages, schema, budget, validate=None, ma
                     + json.dumps(detail)
                     + "，失败规则："
                     + (getattr(failure, "rule_id", None) or "见本批 Schema")
-                    + "。重新检查原始材料，仅输出完整 JSON，覆盖全部 rule_id 及 condition_bindings 中 c1/c2 等条件 ID；即使不适用也不能省略条件。不得伪造引用或证据。",
+                    + "。重新检查原始材料，仅输出完整 JSON，覆盖全部 rule_id 及 condition_bindings 中 c1/c2 等条件 ID；即使不适用也不能省略条件。不得伪造引用或证据。"
+                    + extra,
                 },
             ]
     raise ModelFailure(

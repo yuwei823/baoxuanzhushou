@@ -16,6 +16,7 @@ from insurance_audit.schemas import (
 from insurance_audit.vector_index import digest
 from insurance_audit.workflow import (
     PROMPT_VERSION,
+    citation_repair_context,
     image_sources,
     judge_messages,
     resolve_condition_ids,
@@ -142,6 +143,7 @@ class AuditService:
                     budget,
                     validate=lambda value: resolve_condition_ids(value, cards, sources),
                     max_tokens=12000,
+                    repair_context=citation_repair_context(cards, articles),
                 )
                 return [(cards, result, None)]
             except ModelFailure as error:

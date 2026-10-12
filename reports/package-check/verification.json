@@ -1,0 +1,11 @@
+{
+  "static_assets": [
+    "insurance_audit/static/app.js",
+    "insurance_audit/static/demo-1.png",
+    "insurance_audit/static/demo-2.png",
+    "insurance_audit/static/demo-images.json",
+    "insurance_audit/static/index.html",
+    "insurance_audit/static/styles.css"
+  ],
+  "verified": true
+}

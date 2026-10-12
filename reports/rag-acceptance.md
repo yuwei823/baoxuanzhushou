@@ -28,4 +28,4 @@
 
 R1/R2/R3 基本工程链路已实现；全量规则覆盖仍占用较多上下文，当前并非经过优化的最小候选集。G1 仍未通过：需解决教育反例的适用性误复核、降低结构修复依赖并补齐完整真实 API/CLI 三态验收。P3 数据集及 B/C 对照尚未开展。后续案例资料由用户另行收集，不以合成样本冒充人工 gold。
 
-详细证据：vector-index-build.json、text-rag-smoke-v1.4.json、rag-acceptance.json。失败历史 text-rag-smoke.json、text-rag-smoke-v1.3.json 保留。
+详细证据：vector-index-build.json、text-rag-smoke-v1.4.json、rag-acceptance.json。更早的中间运行报告已随 2026-10-12 清理删除，历史记录见 HANDOFF.md。

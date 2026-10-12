@@ -21,7 +21,14 @@ from insurance_audit.schemas import (
 )
 from insurance_audit.service import AuditService, aggregate
 from insurance_audit.uploads import InputError, validate_image
-from insurance_audit.workflow import judge_messages, text_sources, validate_findings, verify
+from insurance_audit.workflow import (
+    citation_repair_context,
+    judge_messages,
+    resolve_condition_ids,
+    text_sources,
+    validate_findings,
+    verify,
+)
 
 
 @pytest.fixture(scope="module")
@@ -210,6 +217,101 @@ def test_compact_prompt_preserves_full_articles_and_rule_conditions(corpus):
             assert article["original_text"] == articles[article["article_id"]]["original_text"]
             assert "normalized_text" not in article
             assert "text_sha256" not in article
+
+
+def test_prompt_lists_per_rule_citation_allowlist_and_trigger_guidance(corpus):
+    request = AuditRequest(text="保险知识科普")
+    sources = text_sources(request.text)
+    for cards, articles in corpus.batches(6):
+        payload = json.loads(
+            judge_messages(request, sources, cards, articles, True, [])[1]["content"]
+        )
+        assert set(payload["allowed_citations"]) == {c["rule_id"] for c in cards}
+        for card in cards:
+            assert payload["allowed_citations"][card["rule_id"]] == {
+                aid: articles[aid]["article_label"] for aid in card["article_ids"]
+            }
+        supplied = {a["article_id"]: a for a in payload["articles"]}
+        for card in cards:
+            for aid in card["article_ids"]:
+                assert card["rule_id"] in supplied[aid]["direct_for_rule_ids"]
+        for aid in articles:
+            assert supplied[aid]["direct_for_rule_ids"] == [
+                c["rule_id"] for c in cards if aid in c["article_ids"]
+            ]
+    payload = json.loads(
+        judge_messages(
+            AuditRequest(text="教育问答"),
+            text_sources("教育问答"),
+            list(corpus.rules.values()),
+            corpus.articles,
+            True,
+            [],
+        )[1]["content"]
+    )
+    assert set(payload["trigger_guidance"]) == {
+        "approved_marketing_content_use",
+        "internet_platform_operating_conditions",
+    }
+    assert all(guidance for guidance in payload["trigger_guidance"].values())
+
+
+@pytest.mark.asyncio
+async def test_repair_attempt_receives_per_rule_citation_allowlist(corpus):
+    class CiteWrongThenRight:
+        def __init__(self):
+            self.calls = []
+
+        async def call(self, kind, messages, budget, **kwargs):
+            budget.consume()
+            self.calls.append(messages)
+            payload = json.loads(messages[1]["content"])
+            cards = payload["rules"]
+            bad = len(self.calls) == 1
+            findings = []
+            for card in cards:
+                findings.append(
+                    {
+                        "rule_id": card["rule_id"],
+                        "applicability": "not_applicable",
+                        "finding": "no_violation",
+                        "reason": "测试逐规则引用白名单。",
+                        "condition_results": [
+                            {"condition": cond, "met": False, "evidence_ids": []}
+                            for cond in card["trigger_conditions"]
+                        ],
+                        "evidence": [],
+                        "article_ids": ["wrong::article"] if bad else [],
+                        "absence_disclosure": None,
+                        "missing_facts": [],
+                        "model_confidence": None,
+                    }
+                )
+            return json.dumps({"findings": findings}, ensure_ascii=False)
+
+    cards, articles = next(corpus.batches(6))
+    sources = text_sources("中性教育材料")
+    messages = judge_messages(
+        AuditRequest(text=sources[0].text), sources, cards, articles, True, []
+    )
+    provider = CiteWrongThenRight()
+    value = await structured(
+        provider,
+        "text",
+        messages,
+        JudgeOutput,
+        Budget(),
+        validate=lambda v: resolve_condition_ids(v, cards, sources),
+        repair_context=citation_repair_context(cards, articles),
+    )
+    assert len(provider.calls) == 2
+    repair = provider.calls[1][-1]["content"]
+    assert "wrong::article" not in repair
+    for card in cards:
+        assert card["rule_id"] in repair
+        for aid in card["article_ids"]:
+            assert aid in repair
+    assert value.findings and all(not f.article_ids for f in value.findings)
 
 
 class Client:

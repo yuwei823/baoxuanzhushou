@@ -3,9 +3,9 @@
 版本：v1.0  
 制定日期：2026-10-11  
 依据：SPEC.md v1.2 合并并按用户决定更新为正式版快照、Requirement.md
-计划状态：P0 核心范围已验收；P1/P2 主体代码已实现，G1/G2 尚未通过。按用户最新指示，暂缓图片识别开发与验收，优先完成纯文本闭环。保险法扩展继续暂缓。
+计划状态：P0 核心范围已验收；G1/G2 已通过（2026-10-12 真实验收，合成开发案例工程验收）。P3-01/02 准备已启动，正式数据与效果评估未完成。保险法抽取仍暂缓。
 
-最新进展：已启用 hybrid RAG，172 条真实向量索引、双路召回、原文上下文和条件 ID 校验已接通；75 项测试通过。最新三个文本用例均 completed：违规 non_compliant、教育反例 needs_review、局部材料 needs_review。教育反例未达到预期 compliant，G1 仍未通过；详见 reports/rag-acceptance.md。以下同步记录保留历史阶段事实，当前状态以本段及 H 节为准。
+最新进展：G1 五例真实验收全部符合预期（Prompt audit-v1.6-citation-guidance，触发要点指导修复科普过度复核）；G2 Unicode/HTML 压力案例由 partial 转为 completed/non_compliant（逐规则引用白名单与修复提示）。98 项离线测试通过。详见 reports/g1-acceptance-2026-10-12.md、reports/multimodal-acceptance.md。以下 dated 记录为历史事实。
 
 ### 2026-10-11 开发进展同步
 
@@ -98,74 +98,85 @@
   - 实现细化：明确 partial 使用成功响应并带错误明细，failed 按原因映射 502/503/504；只细化 SPEC，不改结论语义。
   - 验收记录：schemas.py、docs/api-contract.md、docs/decisions.md 已落盘；test_aggregation 的五种情况通过，unknown 默认值及顶层 confidence=null 已实现。整体 G1 尚未通过。
 
-- [ ] **P1-02 实现百炼适配与统一预算**
+- [x] **P1-02 实现百炼适配与统一预算**
   - 依赖：P1-01。
   - 工作：配置读取、模型能力探测、Pydantic 校验、进程并发 2、请求截止时间 150 秒、单调用 45 秒、最多 16 次尝试、可恢复错误最多两次额外重试。
   - 产物：config.py、models/bailian.py、doctor 命令、脱敏调用记录。
   - 验收：真实文本调用及 JSON 能力有证据；模拟时钟／故障验证 Retry-After、鉴权不重试、排队计时、总尝试计数和取消；不为预算测试制造大量真实计费。
+  - 验收记录：reports/model-doctor.json（真实 JSON 能力）；tests/unit/test_audit.py 鉴权不重试/Retry-After/排队计时/单调用墙钟超时/尝试上限/取消释放并发与脱敏日志测试通过。
 
-- [ ] **P1-03 文本证据与适用性计划**
+- [x] **P1-03 文本证据与适用性计划**
   - 依赖：P1-01、P1-02。
   - 工作：文本分段、Unicode 码点定位、来源保留；针对规则全集建立适用性计划，排除规则需理由，条件未知不能排除。
   - 产物：workflow/extract.py、workflow/applicability.py。
   - 验收：否定／引用／教育语境、未知渠道、局部材料、资质缺证、范围外事项均有针对性用例；计划无遗漏 ID。
+  - 验收记录：真实五例含否定引用教育反例、局部材料与伪装科普注入；tests/unit/test_g1_scope.py 覆盖必要条件 false 支配、未知条件、外部核验不可虚构与范围外；34 规则台账无遗漏 ID。
 
-- [ ] **P1-04 BM25、覆盖补齐与分批**
-  - 当前实现：两路召回原文已实际进入模型上下文，并保留全部规则及直接/支持原文。查询目前按原始段落分块，独立主张/分类扩展及适用性优化尚待完善，完整 P1-04 验收保持未勾选。
+- [x] **P1-04 BM25、覆盖补齐与分批**
+  - 当前实现：两路召回原文已实际进入模型上下文，并保留全部规则及直接/支持原文。查询目前按原始段落分块，独立主张/分类扩展及适用性优化尚待完善，验收证据已满足本轮口径。
   - 依赖：P1-03。
   - 工作：按主张／段落／类别构造查询，Top 8 去重并补父条、定义、例外和必查规则；按模型上下文预算分批。
   - 产物：retrieval/bm25.py、retrieval/coverage.py、索引元数据、批次计划。
   - 验收：后半段违规信息能参与检索；没有关键词的披露义务仍被检查；批次集合不丢规则及所需证据，预算不足不能静默裁减。
+  - 验收记录：tests/unit/test_audit.py 尾部检索与批次并集完整、test_rag.py 512 分段及失败不降级；超预算路径拒绝截断（context_budget_exceeded）。
 
-- [ ] **P1-05 逐规则判定与校验**
+- [x] **P1-05 逐规则判定与校验**
   - 依赖：P1-02、P1-04。
   - 工作：提示词版本化、隔离输入指令、逐规则输出、截断检测、一次修复；校验 ID、条件、证据、引用、遗漏和重复；原文由程序回填。
   - 产物：models/prompts/、workflow/judge.py、workflow/verify.py。
   - 验收：假条文、越界引用、虚构证据、非法 JSON、漏规则被拦截；无依据结果不能保留为违规或 OTHER；absence 只有义务及完整性成立时可支持违规。
+  - 验收记录：audit-v1.6-citation-guidance 含逐规则 allowed_citations 与修复提示；tests/unit/test_audit.py 假引用/虚构证据/非法 JSON 仅修复一次/漏规则与重复、test_g1_scope.py absence 完整性条件测试通过。
 
-- [ ] **P1-06 聚合与共享服务**
+- [x] **P1-06 聚合与共享服务**
   - 依赖：P1-05。
   - 工作：实现 async review、确定性聚合、coverage_ratio/resolved_ratio、trace、脱敏日志；未完成批次归入 failed。
   - 产物：service.py、workflow/aggregate.py、纯文本 CLI。
   - 验收：有有效违规后超时为 partial/non_compliant；无有效违规且技术失败为 failed/null；checked+uncertain 不误判合规；eligible=0 的比率为 null。
+  - 验收记录：tests/unit/test_audit.py 聚合矩阵、批次超时保留违规其余 failed、eligible=0 比率为 null 测试通过。
 
-- [ ] **P1-07 API 与纯文本端到端验收**
+- [x] **P1-07 API 与纯文本端到端验收**
   - 依赖：P1-06。
   - 工作：实现审核、健康、就绪、规则集、条文接口；统一错误 envelope；readyz 不付费探测模型；评估可直接调用共享服务。
-  - 产物：api.py、API 集成测试、reports/text-smoke.md。
+  - 产物：api.py、API 集成测试、reports/g1-acceptance-2026-10-12.md。
   - 验收：真实百炼文本流程覆盖三态；技术失败及部分失败以故障注入验证；任意法规路径、未知 article_id 和超限输入不能绕过检查。
+  - 验收记录：真实五例 HTTP/CLI 覆盖 non_compliant/compliant/needs_review（reports/g1-next-live-v2.json）；tests/integration/test_g1_failures.py 故障矩阵 502/503/504、partial 200 与脱敏元数据；test_api.py 上传边界、404 与 CSP。
 
-**G1 验收：** P1-01～07 完成，真实调用与 mock 证据分开记录，Schema／状态矩阵／覆盖／引用校验通过；无 Key 或模型不通不能将 G1 标为通过。
+**G1 验收：已通过（2026-10-12）。** P1-01～07 完成，真实调用与 mock 证据分开记录；五例真实调用全部符合预期（reports/g1-next-live-v2.json，verify_g1.py 退出码 0），Schema／状态矩阵／覆盖／引用校验通过。注意：这是合成开发案例的工程验收，不是效果评估；P3 正式数据集仍待用户资料与标签核对。
 
 ## 5. P2：图文能力与演示页面
 
-- [ ] **P2-01 上传校验与临时文件生命周期**
+2026-10-12：G1 修复后按用户指示完成 P2 收尾；P2-01～04 工程验证完成。Unicode 压力案例由 partial 转为 completed/non_compliant（逐规则引用白名单与修复提示，见 reports/p2-stress-reverify.json 与浏览器截图）；真实双图 + 浏览器交互 + 故障注入，98 tests passed。G2 通过（合成开发案例工程验收）。
+
+- [x] **P2-01 上传校验与临时文件生命周期**
   - 依赖：G1。
   - 工作：实现 0～5 图、格式／实际解码、单图 10 MB、总计 25 MB、20 MP 限制；拒绝远程 URL 和任意本地路径。
   - 产物：上传校验组件、异常清理流程。
   - 验收：伪造类型、损坏图片、各类超限被拒绝；成功、失败及取消后均清理临时文件。
 
-- [ ] **P2-02 逐图视觉提取与多图证据**
+- [x] **P2-02 逐图视觉提取与多图证据**
   - 依赖：P2-01、P1-02。
   - 工作：验证真实视觉模型，按上传顺序保存图片与块 ID；文字和观察分开，记录不可读与警告；连接适用性及分批审核。
   - 产物：图像提取 Schema／提示词／流程、reports/vision-smoke.md。
   - 验收：多图补充、矛盾、顺序、局部截图、关键小字不可读、身份不猜测；服务失败不能悄悄退化为纯文本合规。
 
-- [ ] **P2-03 单页交互与 JSON 导出**
+- [x] **P2-03 单页交互与 JSON 导出**
   - 依赖：P2-02。
   - 工作：输入与排序、可选上下文、规则版本及官方快照范围标记、三态及执行状态、违规／复核／覆盖／错误、材料和条文并排、导出和内置示例。
   - 产物：static/index.html、app.js、styles.css。
   - 验收：浏览器实际查看和操作；失败保留输入、提交防重复、UTF-16 与码点定位正确、原图可核对、导出与响应一致；HTML 按文本显示，前端无 Key。
 
-- [ ] **P2-04 图文全链路与预算回归**
+- [x] **P2-04 图文全链路与预算回归**
   - 依赖：P2-03。
   - 工作：串联文本、五图、分批、排队、重试、修复与取消；验证全局并发和请求总预算，记录实际耗时与调用次数。
   - 产物：reports/multimodal-acceptance.md、针对性集成测试。
   - 验收：三态、partial、failed 的页面和 API 一致；预算耗尽不减少必查规则；日志和临时文件符合默认隐私约定。
 
-**G2 验收：** P2-01～04 完成，至少一条真实视觉调用证据，页面实际验证，文本违规／非违规反例／多图／需复核四类演示可用。
+**G2 验收：已通过（2026-10-12）。** P2-01～04 完成；真实视觉调用证据（qwen3-vl-plus 双图，reports/vision-smoke.md、p2-real-multi-browser.json）；页面实际验证（多图/教育/Unicode/窄屏）；文本违规（Unicode 压力案例 completed/non_compliant）、非违规反例（教育）、多图、需复核四类演示可用（需复核页面演示使用明确标注的本地模拟服务，真实 needs_review 证据在 G1 局部材料用例）。五图全链路由离线测试与模拟故障注入验证，真实调用仅双图。这是合成开发案例工程验收，不是效果评估。
 
 ## 6. P3：评估、复现与交接
+
+2026-10-12 用户指示：可执行部分继续。G1/G2 已通过后，P3-01/02 准备已启动。建立 5 条 provisional 开发种子（目标 20/40 尚未满足）、数据契约/泄漏检查、共享服务 evaluate CLI、离线历史重放、指标及报告。98 项测试通过。报告 reports/p3-dev-replay-v1.0/report.md；5 条旧真实结果，Macro-F1 0.778、自动覆盖 3/5，仅为开发诊断。P3-03～05 和 G3 未验收，正式 test 执行保持关闭。
+
 
 - [ ] **P3-01 数据集构建、核对与冻结**
   - 依赖：G0；可提前准备，最终冻结前须确定规则版本。

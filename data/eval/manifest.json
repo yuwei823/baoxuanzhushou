@@ -1,0 +1,18 @@
+{
+  "status": "development_seed_only",
+  "counts": {
+    "dev": 5,
+    "test": 0
+  },
+  "required": {
+    "dev": 20,
+    "test": 40,
+    "image_test_minimum": 12
+  },
+  "files": {
+    "dev.jsonl": "fff9b70f744b4b64a072a93134591a83ff74ca46ad0693061c62790def4cbe7f"
+  },
+  "test_frozen": false,
+  "label_status": "provisional",
+  "note": "Do not treat exposed G1 cases as independent test data."
+}

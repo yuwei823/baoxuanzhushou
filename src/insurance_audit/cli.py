@@ -20,6 +20,16 @@ def main() -> None:
     audit = commands.add_parser("audit-text", help="Audit text through the shared service")
     audit.add_argument("text")
     audit.add_argument("--context", default="{}")
+    evaluate = commands.add_parser(
+        "evaluate", help="Run development evaluation or replay saved responses"
+    )
+    evaluate.add_argument("--split", choices=("dev", "test"), default="dev")
+    evaluate.add_argument("--samples", type=Path)
+    evaluate.add_argument("--variant", choices=("bm25", "hybrid"), default="hybrid")
+    evaluate.add_argument("--out", type=Path, required=True)
+    modes = evaluate.add_mutually_exclusive_group()
+    modes.add_argument("--replay", type=Path)
+    modes.add_argument("--mock", action="store_true")
     pipeline = commands.add_parser("pipeline", help="Run or watch the complete P0 ingestion loop")
     pipeline.add_argument("action", choices=("run", "watch", "start", "stop", "status", "seal"))
     pipeline.add_argument("--root", type=Path, default=Path.cwd())
@@ -40,7 +50,16 @@ def main() -> None:
             )
             command.add_argument("--report", type=Path)
     args = parser.parse_args()
-    if args.command == "build-index":
+    if args.command == "evaluate":
+        import asyncio
+
+        from insurance_audit.evaluation.runner import run
+
+        if not args.replay and not args.mock:
+            print("运行真实开发评估，产生 API 用量；报告包含样本文本，请使用脱敏材料。")
+        result = asyncio.run(run(args))
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+    elif args.command == "build-index":
         import asyncio
 
         from insurance_audit.config import Settings

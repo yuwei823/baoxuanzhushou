@@ -1,5 +1,72 @@
 # 实施交接记录
 
+## 当前交接摘要（2026-10-12 更新）
+
+接手时先读本节，再查下方历史记录。历史中的“尚未配置 Key”“尚未启用向量”“图片暂缓”“P3 未开始”只代表当时状态，不代表当前进度。
+
+| 阶段 | 当前状态 | 证据 |
+|---|---|---|
+| P0 / G0 | 三份核心本地法规已验收并发布；保险法抽取继续暂缓 | reports/p0-acceptance.md；data/extracted/extraction-registry.json |
+| P1 / G1 | **G1 已通过（工程验收）**：五例真实调用全部符合预期，科普改写不再过度复核；逐规则引用修复已纳入 Prompt 与修复提示 | reports/g1-next-live-v2.json；reports/g1-acceptance-2026-10-12.md |
+| P2 | P2-01～04 完成，**G2 已通过**：Unicode/HTML 压力案例由 partial 转为 completed/non_compliant，引用修复成功 | reports/multimodal-acceptance.md；reports/p2-stress-reverify.json |
+| P3 | P3-01/02 准备和评估工具已启动，完整任务未验收；P3-03～05 / G3 未通过 | reports/p3-dev-replay-v1.0/report.md；docs/evaluation-labeling.md |
+
+### 已实现与实际版本
+
+- 规则快照 `official-v1-2026-10-11`：3 份用户本地来源、172 条文、34 规则；已发布快照不可原位覆盖。保险法未纳入，核对者为实施 agent，不是法律专家。
+- 真实 hybrid RAG：BM25 + `text-embedding-v4`（1024 维），172 条向量索引；召回原文进入模型上下文，同时保留全部必查规则。新法规发布后仍需显式构建对应索引，目录监控不会自动付费建索引。
+- 最新真实记录：文本 `qwen3.7-plus`，视觉 `qwen3-vl-plus`，Prompt `audit-v1.6-citation-guidance`。密钥配置仅在后端本地 `.env`；本次未重新读取密钥，未确认除本轮重启服务以外的其它进程。
+- G1 修复：trigger_guidance 针对 `approved_marketing_content_use`、`internet_platform_operating_conditions` 说明触发要点，中性教育材料触发条件判 false；五例真实复验 5/5 通过（violation/education/partial_material/disguised_sale_injection/education_paraphrase），标签未修改。
+- G2 修复：judge payload 增加逐规则 allowed_citations 与条文 direct_for_rule_ids 标注，防止跨规则借条文；修复提示携带各规则可引用条文（条号+开头原文），单次修复在压力案例中实际成功。真实 Unicode/HTML 案例 completed/non_compliant，4 违规、0 错误，页面与 API 证据一致。
+- P3 新增 `src/insurance_audit/evaluation/{metrics,runner}.py`、CLI `evaluate`、`tests/unit/test_evaluation.py`；支持真实共享服务、mock、历史结果重放和逐样本报告。已有 5 条 provisional 开发种子，不是新的独立测试集；20 开发 / 40 测试及至少 12 图文测试目标尚未满足。
+
+### 最近验证与结果边界
+
+- 最近代码验证：`python -m pytest -q` 为 **98 passed**（新增逐规则引用白名单、trigger_guidance、修复提示断言），`python -m ruff check src tests scripts` 通过。
+- 本轮真实调用：G1 五例复验 `reports/g1-next-live-v2.json`（5/5 通过，verify_g1.py 退出码 0）；压力案例 API 复验 `reports/p2-stress-reverify.json` 与浏览器复验截图 `reports/p2-stress-reverify-browser.png`（completed/non_compliant，4 违规、0 错误、8 次尝试）。meta 中 attempt=1 的引用校验错误是“修复已成功”的轨迹，不是失败。
+- `reports/p3-dev-replay-v1.0/metrics.json`：历史真实记录重放已完成，5 条 provisional 案例；Macro-F1 0.7778、自动判定覆盖率 3/5、原文一致率 24/24。无已核对的类型/条文 gold，相关指标为 null；不能声称当前模型复验或正式效果达标。
+- `reports/p3-mock-runner-v1.0/` 仅验证运行器，不能计入真实效果。`reports/p3-g1-replay/` 为较早开发报告，当前入口使用上述 v1.0 目录。
+- `evaluate --split test` 当前明确拒绝执行；全文基线、共享图片提取 A/B、正式测试及新环境交付复现尚未实现/完成。现有报告目录拒绝覆盖，应使用新目录保存复验。
+
+### 下一轮执行顺序
+
+1. 继续 P3 数据准备：保持开发/测试来源和模板分组隔离；用户另行收集资料，未收到前不虚构真实案例或人工 gold。已在开发中暴露的五例不转入固定测试集。
+2. 数据核对与冻结后，实现全文基线（A）与工作流 hybrid（B）的可比 A/B 及共享图片提取，再放行正式测试；分别报告工程完成与效果达标状态。H-03 消融随 A/B 一并实施。
+3. G1/G2 已通过但属合成开发案例工程验收；正式效果验收仍依赖 P3 已核对数据集，不提前宣称准确率。
+4. 保险法抽取仍暂缓；恢复前不得把新文件自动纳入已发布快照。
+
+### 复现入口
+
+在项目根目录 `D:\保宣合规助手` 执行：
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\python.exe -m ruff check src tests scripts
+# 不调用外部模型；out 必须是新的空目录
+.\.venv\Scripts\python.exe -m insurance_audit.cli evaluate --split dev --variant hybrid --replay reports/g1-next-live-v2.json --out reports/p3-next-replay
+# 真实 G1 复验，产生百炼 API 用量；需先启动本项目 HTTP 服务
+.\.venv\Scripts\python.exe scripts/verify_g1.py --out reports/g1-next-live.json
+# 真实 G2 压力案例复验（Unicode/HTML 输入），同样需先启动 HTTP 服务
+.\.venv\Scripts\python.exe scripts/verify_stress.py --out reports/p2-stress-reverify.json
+```
+
+本次更新范围：HANDOFF.md、PLAN.md、README.md、docs/decisions.md、reports/g1-acceptance-2026-10-12.md、reports/multimodal-acceptance.md；代码 workflow.py、service.py、models/bailian.py、scripts/verify_stress.py、tests/unit/test_audit.py。已核对 PLAN、P3 metrics/manifest 和当前评估入口，补充当前摘要与接手顺序，保留全部历史记录。
+
+---
+
+## 2026-10-12 — G1/G2 修复与真实验收（本轮）
+
+- 任务：修复 G1 科普改写过度复核与 G2 逐规则引用失败，按 PLAN 顺序复验。
+- G1 修复：`workflow.py` 新增 `TRIGGER_GUIDANCE`，为 `approved_marketing_content_use`、`internet_platform_operating_conditions` 提供触发要点（只关注材料是否呈现营销宣传/平台运营活动，中性教育材料判 false）；judge payload 注入 `trigger_guidance`，JUDGE_PROMPT 增加使用说明。Prompt 版本升级为 `audit-v1.6-citation-guidance`。
+- G2 修复：judge payload 新增逐规则 `allowed_citations`（rule_id→{条文 ID: 条号}）与每条文 `direct_for_rule_ids` 标注，禁止跨规则借条文；`structured()` 新增 `repair_context`，修复提示携带各规则可引用条文（条号+开头原文，`citation_repair_context`），单次修复即可纠正引用。
+- 真实 G1 复验（本轮第二次，第一次暴露出 `illegal_financial_activity_marketing` 跨规则借条文，修复 direct_for_rule_ids 标注后通过）：`scripts/verify_g1.py --out reports/g1-next-live-v2.json` 退出码 0，五例全过——violation non_compliant、education compliant、partial_material needs_review、disguised_sale_injection non_compliant、education_paraphrase compliant。标签未修改。报告 g1-next-live.json 是中间失败轮证据，保留。
+- 真实 G2 压力复验：`scripts/verify_stress.py`（新增，API 入口）→ completed/non_compliant、4 违规、0 错误、8 次尝试；首轮 attempt=1 引用校验错误被修复提示纠正，attempt=2 无最终失败。浏览器对同一输入重放：页面显示“发现违规”、HTML 字符串按文本显示、4 违规项，截图 reports/p2-stress-reverify-browser.png；下载 JSON 受浏览器工具限制未落盘，API 报告 p2-stress-reverify.json 为完整响应证据。
+- 离线验证：pytest 98 passed（新增 allowed_citations/direct_for_rule_ids/trigger_guidance 断言与修复提示测试）；ruff check src tests scripts 通过。
+- 版本：qwen3.7-plus / qwen3-vl-plus / text-embedding-v4 1024 维；official-v1-2026-10-11；audit-v1.6-citation-guidance；服务已用 `.venv` 重启于 127.0.0.1:8000。
+- 边界：G1/G2 为合成开发案例工程验收，不是效果评估；P3 数据与正式测试仍待用户资料与标签核对。meta.validation_errors 中 attempt=1 的记录是成功修复轨迹，不算失败。
+- 下一步：P3 数据准备与冻结、全文基线 A/B、正式测试与交付复现；保险法抽取保持暂缓。
+
+
 ## 2026-10-11 — P0-03 来源与抽取验收；P0-04 已启动
 
 - 规则范围：按用户指示采用本地现有三份正式版来源，单独建立 `official-v1-2026-10-11`；不得与题目征求意见稿 `assignment-v1` 合并。
@@ -148,3 +215,41 @@ pytest 33 passed，包括独立监视进程投递/停止实测与真实 PDF 39 �
 - 服务：重启本项目 uvicorn（原 PID 14780），新服务监听 127.0.0.1:8000；真实 HTTP /readyz 返回 200、hybrid、vector_index_ready=true、mock=false。
 - 限制：教育反例应无违规但仍复核，未达到预期 compliant，G1 不通过；不能声称正式效果改善。当前所有规则仍执行，提示上下文较多。新快照发布后 build-index 仍需显式执行，P0 watcher 未自动付费建索引；P3 和案例知识库未完成。
 - 下一步：完善材料商业属性与规则适用性判断，降低教育反例误复核；补全纯文本 API/CLI 三态验收，并以开发集检验检索与 Prompt，保留独立测试集。资料收集不由系统冒充人工标注。
+
+## 2026-10-12 — G1 进度落盘，恢复 P2
+
+状态：未通过。用户要求保存当前进度并恢复 P2，允许 P2 工程工作与 G1 未决项并行推进。
+
+已完成：audit-v1.5-scope 明确材料范围、必要条件与教育语境；校验器处理必要条件为假和范围外规则；增加脱敏 assessment_trace、单次调用墙钟超时及元数据日志。
+
+真实验收：reports/g1-live-acceptance-v1.5.json，五个合成开发案例中四个符合预期：明确违规、原教育反例、局部材料、伪装科普的销售注入。科普改写仍 needs_review（预期 compliant），涉及 approved_marketing_content_use 和 internet_platform_operating_conditions，把内部审批及平台资质要求误用于教育材料。没有修改预期标签。五例均 completed，采用真实 hybrid RAG；并非正式测试集或专家 gold。
+
+离线验证：89 passed；新增 tests/unit/test_g1_scope.py、tests/integration/test_g1_failures.py。真实验收入口 scripts/verify_g1.py（退出码 1 如实表示仍有失败）。
+
+版本：qwen3.7-plus / text-embedding-v4，1024 维；official-v1-2026-10-11，34 规则、172 条文；audit-v1.5-scope。视觉配置 qwen3-vl-plus，本次 G1 不涉及视觉。
+
+下一步：P2 上传、多图证据、网页与真实视觉验收；保留 G1 科普适用性问题及保险法抽取暂缓状态。
+
+修改文件：workflow.py、service.py、models/bailian.py、api.py、上述测试与验收脚本、PLAN.md、README.md、本交接及进度报告。命令：pytest -q（89 passed）；scripts/verify_g1.py --out reports/g1-live-acceptance-v1.5.json（exit 1，4/5 预期匹配）。
+
+## 2026-10-12 — P2 恢复及页面/多图验证
+
+修改 api.py 断连响应及取消任务收尾、static/app.js 提交图片快照及异步示例竞争、styles.css 原图样式、pyproject.toml 静态资源打包；新增 tests/integration/test_p2_multimodal.py、scripts/serve_p2_fixture.py、docs/demo-script.md 和 P2 报告。
+
+真实多图浏览器提交 completed/compliant，73.1 秒，10 次尝试；下载 JSON 落盘。真实 Unicode/HTML 压力输入 partial/non_compliant，78.1 秒，3 违规，直接引用白名单两次失败，原报告保留。页面原图、图序、导出、高亮、文本安全、取消、partial/failed/needs_review、窄屏均检查；后几类故障使用明显标注的本地模拟服务器。
+
+命令：pytest -q（91 passed）；Ruff 全库通过；pip wheel --no-deps --no-build-isolation . -w reports/package-check（成功，static 文件清单核对通过）。具体证据 reports/vision-smoke.md、multimodal-acceptance.md、p2-real-*-browser.json 和截图。
+
+P2-01～03 完成，P2-04/G2 不通过；下一步修复 disclose_material_policy_terms_and_restrictions 的逐规则直接条文引用与修复提示，并复验压力案例，保留 G1 科普改写过度复核。未开始 P3，不修改已发布规则库及测试预期。
+
+补充：真实教育反例浏览器验收 completed/compliant，84.2 秒；下载报告 p2-real-education-browser.json。桌面 1280px 双栏（494/659px）无横向溢出，截图 p2-education-browser.png；viewport 已恢复默认。
+
+## 2026-10-12 — P3 准备与评估工具
+
+用户询问能否进入 P3 并要求可行则继续。按依赖仅推进 P3-01/02；G1/G2 未放行，未跑正式测试或宣称效果验收。新增 evaluation/metrics.py、runner.py、CLI evaluate、tests/unit/test_evaluation.py；data/eval/dev.jsonl/manifest.json 和 docs/evaluation-labeling.md。五条已暴露 G1 案例作为 provisional 开发种子，未编造专家标签、条文 gold 或测试集。
+
+功能：共享 AuditService，bm25/hybrid、mock、历史 JSON 重放；响应逐样本留存，模型/规则/Prompt 元数据和数据/代码哈希；分母含失败/partial、三分类矩阵/F1、双口径违规召回、误报、自动覆盖/准确率、类型 Micro-F1、条文 P/R、原文一致率、失败桶、P50/P95/token。gold 未知用 null，报告不产生伪分数。检测同组/相同文本跨 split；拒绝覆盖非空报告；固定 test 暂不放行。
+
+验证：pytest -q 96 passed in 14.47s；Ruff 全库通过。CLI 历史真实重放 reports/p3-dev-replay-v1.0（5 例，Macro-F1 0.7778、自动覆盖 3/5、24/24 引用原文一致、0 虚构 ID；无类型/条文 gold，相关指标 null），没有新付费调用。另有 p3-mock-runner-v1.0，仅验证批量流程不计入真实效果；较早 p3-g1-replay 是初次开发报告，最终入口指向 v1.0。
+
+待完成：扩展并人工核对 20/40 数据和图文标注，真实案例资料由用户另行收集；修复 G1 科普过度复核及 G2 引用失败；全文基线/共享图片提取 A/B、数据冻结、正式测试及新环境复现。P3-01/02 仍按完整验收要求保留未勾选。

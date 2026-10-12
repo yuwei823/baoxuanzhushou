@@ -1,0 +1,9 @@
+# 本地页面演示
+
+启动 `.venv\Scripts\python.exe -m uvicorn insurance_audit.api:app --host 127.0.0.1 --port 8000`，打开 http://127.0.0.1:8000。页面显示真实百炼 API 模式、official-v1-2026-10-11、3 份法规/172 条文/34 规则；保险法暂缓。
+
+依次选择“监管背书”“教育反例”“多图补充”“局部材料”，每次点击开始审核。多图可调整顺序，审核期间禁止修改；结果显示违规、复核、逐规则覆盖、原文与证据、逐图原图和识别内容。JSON 下载保存完整响应。真实调用产生 API 用量。
+
+不要把覆盖率当准确率或把 needs_review 当合规；partial 保留已核实违规但检查未完成，failed 没有业务结论。当前文本适用性与个别批次引用修复仍未完全稳定，详见 reports/multimodal-acceptance.md。
+
+故障演示只在单独终端运行 `python scripts/serve_p2_fixture.py`，浏览 http://127.0.0.1:8001（明显显示模拟模式）。输入 `P2_PARTIAL 监管部门担保收益` 验证部分失败；`P2_FAILED 保留输入` 验证失败；`P2_CANCEL 保留输入` 后立即取消验证恢复。这些结果不可作为真实 API 或效果证据。
