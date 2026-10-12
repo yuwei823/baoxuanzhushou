@@ -13,7 +13,6 @@
     <main>
         <div class="intro">
             <div>
-                <p class="eyebrow">INSURANCE CONTENT REVIEW</p>
                 <h1>保险营销内容智能审核</h1>
                 <p class="lead">把文案或图片贴进下面的方框，即可对照已核对法规，得到违规结论、证据与条文原文。</p>
                 <ol class="steps">
@@ -43,10 +42,13 @@
                 <div class="examples"><span>试用示例</span>
                     <button data-example="violation">监管背书</button>
                     <button data-example="education">教育案例</button>
-                    <button data-example="multi">多图补充</button>
+                    <button data-example="multi">图片审核</button>
                 </div>
-                <div class="composer"><label for="text" class="composer-label">营销文案 / 图片 <span id="counter">0 /
-                            10,000</span></label><textarea id="text" rows="3"
+                <div class="composer">
+                    <div class="composer-label"><label for="text">营销文案 / 图片</label>
+                        <div class="composer-actions"><span id="counter">0 / 10,000</span><button type="button" id="clear"
+                                class="clear-input">清空</button></div>
+                    </div><textarea id="text" rows="3"
                         placeholder="把文案粘贴到这里，或把图片拖进来（也可点下方「＋ 添加图片」）…"></textarea>
                     <div id="previews" class="previews"></div>
                     <div class="composer-bar"><label for="images" class="attach"><strong>＋ 添加图片</strong><span>JPEG / PNG
@@ -109,7 +111,6 @@
                     <p id="empty-hint">审核完成后，在这里逐项对照营销证据与法规原文。</p>
                     <div id="progress" hidden></div>
                     <div id="observations" class="observations" hidden></div>
-                    <div class="legend"><span>违规项</span><span>待核验事项</span><span>规则覆盖</span></div>
                 </div>
                 <div id="results" hidden></div>
             </section>
