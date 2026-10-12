@@ -63,10 +63,10 @@ main {
 }
 
 .intro {
-    display: flex;
-    justify-content: space-between;
-    gap: 32px;
-    align-items: center;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
     margin-bottom: 32px
 }
 
@@ -125,7 +125,6 @@ p {
 }
 
 .intro aside {
-    width: 420px;
     padding: 22px;
     border-left: 3px solid #91b99d;
     background: #eaf1e8;
@@ -875,6 +874,10 @@ body.busy .primary {
 
 @media(max-width:950px) {
     .workspace {
+        grid-template-columns: 1fr
+    }
+
+    .intro {
         grid-template-columns: 1fr
     }
 

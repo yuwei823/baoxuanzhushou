@@ -33,12 +33,25 @@ jobs:
             set -e
             cd /root/baoxuanzhushou
             git pull --ff-only
-            # .env is gitignored, so a stale copy silently pins an old ruleset.
-            # Fail loudly instead of deploying the wrong corpus.
-            expected=$(grep -E '^RULESET_ID=' .env.example | cut -d= -f2)
-            actual=$(grep -E '^RULESET_ID=' .env | cut -d= -f2)
-            if [ "$expected" != "$actual" ]; then
-              echo "::error::.env RULESET_ID=$actual does not match .env.example RULESET_ID=$expected"
+            # .env is gitignored, so it drifts silently: a key added to
+            # .env.example later never reaches the server, and the app falls
+            # back to code defaults. Compare every key that has a non-empty
+            # value in .env.example, and fail loudly on any mismatch.
+            missing=0
+            while IFS= read -r line; do
+              key=${line%%=*}
+              want=${line#*=}
+              have=$(grep -E "^${key}=" .env | head -1 | cut -d= -f2-)
+              if [ -z "$have" ]; then
+                echo "::error::.env is missing ${key} (expected ${want}); the app would use a code default"
+                missing=1
+              elif [ "$have" != "$want" ]; then
+                echo "::error::.env ${key}=${have} does not match .env.example ${key}=${want}"
+                missing=1
+              fi
+            done < <(grep -E '^[A-Z_]+=.+' .env.example)
+            if [ "$missing" != "0" ]; then
+              echo "::error::.env is out of sync with .env.example; refusing to deploy"
               exit 1
             fi
             docker compose up -d --build

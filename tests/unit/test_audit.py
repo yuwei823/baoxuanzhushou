@@ -361,9 +361,14 @@ async def test_process_concurrency_and_cancel_release_slots():
         finally:
             active -= 1
 
-    provider = Bailian(Settings(_env_file=None, audit_mock=True), Client(create))
-    await asyncio.gather(*(provider.call("text", [], Budget()) for _ in range(5)))
-    assert peak == 2 and active == 0
+    settings = Settings(_env_file=None, audit_mock=True)
+    provider = Bailian(settings, Client(create))
+    # Launch more calls than the cap so the semaphore is actually saturated.
+    calls = settings.model_concurrency + 3
+    await asyncio.gather(*(provider.call("text", [], Budget()) for _ in range(calls)))
+    # The cap is the configured concurrency, not a hardcoded number, and every
+    # slot must be released once the calls finish.
+    assert peak == settings.model_concurrency and active == 0
     task = asyncio.create_task(provider.call("text", [], Budget()))
     await asyncio.sleep(0.001)
     task.cancel()
