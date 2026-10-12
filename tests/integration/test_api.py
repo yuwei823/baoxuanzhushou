@@ -155,6 +155,32 @@ def test_stream_emits_progress_then_the_same_result_as_the_blocking_endpoint(cli
     assert streamed["coverage"]["total"] == blocking["coverage"]["total"]
 
 
+def test_stream_reports_image_observations_before_the_result(client):
+    with client.stream(
+        "POST",
+        "/api/v1/audits/stream",
+        files=[("text", (None, "请结合图片审核。")), ("images", ("a.png", png(), "image/png"))],
+    ) as response:
+        assert response.status_code == 200
+        body = "".join(response.iter_text())
+
+    frames = [f for f in body.split("\n\n") if f.strip()]
+    events = {}
+    for frame in frames:
+        name = frame.split("\n", 1)[0].removeprefix("event: ")
+        events.setdefault(name, []).append(frame.split("data: ", 1)[1])
+
+    observations = [json.loads(p) for p in events["progress"] if '"observation"' in p]
+    assert observations, "an image audit must stream what the model saw"
+    first = observations[0]
+    assert first["image_id"]
+    assert isinstance(first["observations"], list)
+    assert "visible_text" in first and "unreadable_regions" in first
+
+    # Observations must arrive before the verdict, so the UI can show them live.
+    assert body.index('"observation"') < body.index("event: result")
+
+
 def test_stream_rejects_a_non_multipart_body(client):
     response = client.post(
         "/api/v1/audits/stream",

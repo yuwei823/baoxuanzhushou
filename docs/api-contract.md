@@ -16,11 +16,14 @@ depth 默认 concise：只返回阻断性 review_items，隐藏提示性待核�
 
 | 事件 | 时机 | data 字段 |
 |---|---|---|
-| progress | 各阶段开始与每个裁决批次完成 | stage（start/extract/retrieve/judge/done）、total_rules、planned_rules、total_batches、completed_rules、completed_batches |
+| progress | 各阶段开始与每个裁决批次完成 | stage（start/extract/observation/retrieve/judge/done）、total_rules、planned_rules、total_batches、completed_rules、completed_batches |
+| progress（stage=observation） | 每张图片识别完成后 | image_id、total_images、observations、visible_text、unreadable_regions |
 | result | 审核结束 | 与阻塞接口完全相同的响应体 |
 | error | 流内异常 | message（异常类型名） |
 
 进度是**尽力而为的遥测**：投递失败不会使审核失败；`completed_rules` 在 done 事件时等于 `total_rules`。规则按共享条文聚类打包，因此 `total_batches` 小于规则数（当前 46 条规则 → 25 个批次）。空行注释帧 `: keep-alive` 每 15 秒发送一次，防止代理超时断开。
+
+`observation` 事件让前端在裁决进行期间展示模型读图所见。图片并发识别，因此多个 observation 事件会在 extract 阶段集中到达，而不是逐张实时到达。
 
 ## 确定性状态矩阵
 

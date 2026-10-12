@@ -34,7 +34,7 @@ function render(result) {
     if (result.images?.length) { const d = details('逐图提取记录与可读性'); for (const image of result.images) { const original = resultPictures[Number(image.image_id.split('_')[1]) - 1]; if (original) { const preview = elem('img'); preview.src = original.url; preview.alt = `提交原图 ${image.image_id}`; preview.className = 'result-image'; d.append(preview); } d.append(elem('h4', image.image_id), elem('p', image.visible_text || '没有可靠文字', 'source-text')); for (const line of image.unreadable_regions) d.append(elem('p', `不可读：${line}`, 'warning')); for (const line of image.visual_observations) d.append(elem('p', `画面观察：${line}`)); } host.append(d); }
     for (const w of result.warnings || []) host.append(elem('p', w, 'warning')); if (result.meta) host.append(elem('p', `耗时 ${(result.meta.latency_ms / 1000).toFixed(1)} 秒 · 模型尝试 ${result.meta.attempts} 次 · 追踪 ${result.trace_id}`, 'privacy'));
 }
-function busy(on) { document.body.classList.toggle('busy', on); $('submit').disabled = on; $('cancel').hidden = !on; for (const e of document.querySelectorAll('textarea,select,input,[data-example],.toggle-option')) e.disabled = on; setText('empty-title', on ? '审核中' : '等待提交材料'); setText('empty-hint', on ? '正在比对营销证据与法规原文，请稍候。' : '审核完成后，在这里逐项对照营销证据与法规原文。'); const bar = $('progress'); if (bar) bar.hidden = !on; if (!on) setProgress(null); redraw(); }
+function busy(on) { document.body.classList.toggle('busy', on); $('submit').disabled = on; $('cancel').hidden = !on; for (const e of document.querySelectorAll('textarea,select,input,[data-example],.toggle-option')) e.disabled = on; setText('empty-title', on ? '审核中' : '等待提交材料'); setText('empty-hint', on ? '正在比对营销证据与法规原文，请稍候。' : '审核完成后，在这里逐项对照营销证据与法规原文。'); const bar = $('progress'); if (bar) bar.hidden = !on; if (!on) setProgress(null); if (on) clearObservations(); redraw(); }
 // Progress is advisory: it reflects completed rule batches, never a verdict.
 function setProgress(event) {
     const host = $('progress'); if (!host) return;
@@ -45,6 +45,20 @@ function setProgress(event) {
     const track = elem('div', undefined, 'progress-track'); const fill = elem('div', undefined, 'progress-fill'); fill.style.width = `${Math.round(ratio * 100)}%`; track.append(fill);
     host.replaceChildren(elem('p', label, 'progress-label'), track);
 }
+// Append what the vision model reported for each image while the audit runs.
+function pushObservations(event) {
+    const host = $('observations'); if (!host) return;
+    host.hidden = false;
+    const lines = [];
+    if (event.visible_text) lines.push({ text: event.visible_text, cls: 'observation-text' });
+    for (const o of event.observations || []) lines.push({ text: o, cls: 'observation-line' });
+    for (const u of event.unreadable_regions || []) lines.push({ text: `不可读：${u}`, cls: 'observation-warn' });
+    if (!lines.length) return;
+    host.append(elem('p', `${event.image_id} · 模型读图观察`, 'observation-title'));
+    for (const l of lines) host.append(elem('p', l.text, l.cls));
+    host.scrollTop = host.scrollHeight;
+}
+function clearObservations() { const host = $('observations'); if (host) { host.replaceChildren(); host.hidden = true; } }
 $('submit').onclick = async () => {
     if (controller) return; const text = $('text').value; if (!text.trim() && !pictures.length) return notice('请输入文本或上传图片。'); if (Array.from(text).length > 10000) return notice('文本最多 10,000 个 Unicode 字符。');
     exampleGeneration++; const submitted = pictures.map(p => ({ file: p.file, url: URL.createObjectURL(p.file) })); let rendered = false;
@@ -64,7 +78,7 @@ $('submit').onclick = async () => {
             for (const frame of frames) {
                 const name = frame.match(/^event: (.+)$/m)?.[1]; const data = frame.match(/^data: (.+)$/m)?.[1];
                 if (!name || !data) continue;
-                if (name === 'progress') { setProgress(JSON.parse(data)); continue; }
+                if (name === 'progress') { const p = JSON.parse(data); if (p.stage === 'observation') pushObservations(p); else setProgress(p); continue; }
                 if (name === 'result') { const payload = JSON.parse(data); releasePictures(resultPictures); resultPictures = submitted; rendered = true; render(payload); continue; }
                 if (name === 'error') { notice('本次审核未完成，输入已保留。'); continue; }
             }

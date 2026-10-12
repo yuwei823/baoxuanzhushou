@@ -677,6 +677,42 @@ select {
     transition: width .3s ease
 }
 
+.observations {
+    max-width: 320px;
+    margin: 16px auto 0;
+    max-height: 190px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    text-align: left;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: #fbfdfa
+}
+
+.observations p {
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 0 0 6px;
+    max-width: none
+}
+
+.observations .observation-title {
+    font-size: 11px;
+    letter-spacing: .5px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 6px
+}
+
+.observations .observation-text {
+    color: var(--ink)
+}
+
+.observations .observation-warn {
+    color: var(--amber)
+}
+
 .legend {
     display: flex;
     justify-content: center;

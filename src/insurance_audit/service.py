@@ -119,6 +119,15 @@ class AuditService:
             sources.extend(new_sources)
             extracted.append(image_result)
             warnings.extend(value.extraction_warnings)
+            # Stream what the model saw so the UI can show it while judging runs.
+            await progress(
+                stage="observation",
+                image_id=image.image_id,
+                total_images=len(images),
+                observations=list(value.visual_observations),
+                visible_text=(image_result.visible_text or "").strip(),
+                unreadable_regions=list(value.unreadable_regions),
+            )
             if value.unreadable_regions or not (value.text_blocks or value.visual_observations):
                 reviews.append(
                     ReviewItem(
