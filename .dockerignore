@@ -25,7 +25,6 @@ data/pipeline
 data/runtime
 data/eval
 data/extracted
-data/sources
 法律法规
 .env
 .env.example

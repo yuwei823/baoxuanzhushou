@@ -32,5 +32,6 @@ RUN pip install --no-cache-dir setuptools==84.0.0 wheel==0.48.0 \
  && pip install --no-build-isolation --no-deps .
 COPY data/corpus ./data/corpus
 COPY data/indexes ./data/indexes
+COPY data/sources ./data/sources
 EXPOSE 8000
 CMD ["python", "-m", "uvicorn", "insurance_audit.api:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -12,19 +12,19 @@
   "documents": {
     "insurance_sales_behavior_order_2023_02": {
       "source_sha256": "e929839e427ed300853ed7417bdc7c1688c955e62df47cfe3f27f9231681b52a",
-      "extraction_sha256": "b3c2b176162b64eaf5d6d3c05d55415b2fd1cd572088b100517bd242cc1b4954",
+      "extraction_sha256": "ee0f6fea1adbcd243c9a728a3184c6773c690540cc135de9139a5dcb83d8cedc",
       "status": "reviewed_local_extraction",
       "official_check": "metadata_and_sample_only"
     },
     "financial_network_marketing_order_2026_09": {
       "source_sha256": "7bc3f991244609af7a171c302282ab03bdc8d6540a86bd20cc5cbeb5b9e8f001",
-      "extraction_sha256": "1b3772d5645418fe05c34a9901fa26ee5697e1c7a3ea1041f07b2a0950852eef",
+      "extraction_sha256": "75b96d6f412046fee87da515656010d11dc3afe9ee91ff7b018e03261ad45197",
       "status": "reviewed_local_extraction",
       "official_check": "metadata_and_sample_only"
     },
     "internet_insurance_supervision_order_2020_13": {
       "source_sha256": "70222ac5d0ab7819bfdc7eabbaf6c8eeb8414b2d038e16b99ca8de09a90efd9a",
-      "extraction_sha256": "9b2023d26273ccc12dde84d6b8c4e2aedd78733f0b7a9dcd1ab25b6703ebca2e",
+      "extraction_sha256": "aff3b0af04f165690e8d698a4424c11aa5d40f2f949f5b0234cccbd149496721",
       "status": "reviewed_local_extraction",
       "official_check": "metadata_and_sample_only"
     }

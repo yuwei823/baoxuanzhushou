@@ -20,7 +20,7 @@
       "source_path": "法律法规/保险销售行为管理办法.doc",
       "source_sha256": "e929839e427ed300853ed7417bdc7c1688c955e62df47cfe3f27f9231681b52a",
       "snapshot_source_path": "data/corpus/official-v1-2026-10-11/source-files/保险销售行为管理办法.doc",
-      "extraction_sha256": "b3c2b176162b64eaf5d6d3c05d55415b2fd1cd572088b100517bd242cc1b4954",
+      "extraction_sha256": "ee0f6fea1adbcd243c9a728a3184c6773c690540cc135de9139a5dcb83d8cedc",
       "snapshot_extraction_path": "data/corpus/official-v1-2026-10-11/extracted-files/保险销售行为管理办法.paragraphs.json",
       "document_status": "effective"
     },
@@ -29,7 +29,7 @@
       "source_path": "法律法规/金融产品网络营销管理办法.pdf",
       "source_sha256": "7bc3f991244609af7a171c302282ab03bdc8d6540a86bd20cc5cbeb5b9e8f001",
       "snapshot_source_path": "data/corpus/official-v1-2026-10-11/source-files/金融产品网络营销管理办法.pdf",
-      "extraction_sha256": "1b3772d5645418fe05c34a9901fa26ee5697e1c7a3ea1041f07b2a0950852eef",
+      "extraction_sha256": "75b96d6f412046fee87da515656010d11dc3afe9ee91ff7b018e03261ad45197",
       "snapshot_extraction_path": "data/corpus/official-v1-2026-10-11/extracted-files/金融产品网络营销管理办法.pages.json",
       "document_status": "effective"
     },
@@ -38,18 +38,18 @@
       "source_path": "法律法规/互联网保险业务监管办法.doc",
       "source_sha256": "70222ac5d0ab7819bfdc7eabbaf6c8eeb8414b2d038e16b99ca8de09a90efd9a",
       "snapshot_source_path": "data/corpus/official-v1-2026-10-11/source-files/互联网保险业务监管办法.doc",
-      "extraction_sha256": "9b2023d26273ccc12dde84d6b8c4e2aedd78733f0b7a9dcd1ab25b6703ebca2e",
+      "extraction_sha256": "aff3b0af04f165690e8d698a4424c11aa5d40f2f949f5b0234cccbd149496721",
       "snapshot_extraction_path": "data/corpus/official-v1-2026-10-11/extracted-files/互联网保险业务监管办法.paragraphs.json",
       "document_status": "effective"
     }
   ],
   "artifacts": {
-    "documents.jsonl": "d4348ca42156f46ddf935e825956510ddd51a49b9d341b5e0dfa568ddc4a8fdf",
-    "articles.jsonl": "b84d6aa21573cd6aabfcb6368a7b7bfb6394bf81fbd68686f2fcc4fdf802245d",
-    "chunks.jsonl": "388455e24e2b95d77839abb8bfaecb834206b373db6f1aebfdbc39c7bcec9c28",
-    "rule_cards.jsonl": "df0a0150643bd6b9f9d1b7df77127783a70d66cf16fc62a4587734f6834df3d4",
-    "article-review-ledger.jsonl": "462b754d09b11c4c92bff5f54d432ad3e933426cb74636ef1976f144d2023d5f",
-    "review.json": "bd1870bdd29fa31cf9476591942616ace1f57009615fbec79c71ee3ac48d2a91"
+    "documents.jsonl": "464110ecde5ade536a75a17674ab89835c2cd5455b468d0dcb7dfe211ac7562a",
+    "articles.jsonl": "cdcdafad2a2c32fc763c712cd7cdbc6a52905ca5ee838781859e5284894d8045",
+    "chunks.jsonl": "456f4fc1e1aa8d0e6b6bcb188599955d3d9b93eb6e1cfedd8618997f2624ea47",
+    "rule_cards.jsonl": "3c83d6c69118026c34f7ab0b59871e4af8ce05a37e60539eb875cce08bd44c63",
+    "article-review-ledger.jsonl": "d1c4e5cb6d28db131dac907cf8532442859e3702d711886741b8b82627b81135",
+    "review.json": "65f79f25553c0ebd29682e54aa6f725c7af2ef9e3ebe5b0438589338b3fd83bb"
   },
   "published_at_utc": "2026-10-11T10:08:55.546735+00:00",
   "review_basis": "implementation_agent_local_source_review",
