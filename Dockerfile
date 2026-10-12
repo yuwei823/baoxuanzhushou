@@ -3,13 +3,18 @@
 # Stage 1: resolve a Linux runtime lock with hashes inside the build.
 FROM python:3.11-slim AS deps
 WORKDIR /build
-# Use the Aliyun PyPI mirror for speed; fall back to PyPI for anything missing.
-# The mirror serves byte-identical files, so --generate-hashes stays valid.
+
+# 复制你的 pip.conf（uv 会自动兼容里面的阿里云镜像源配置）
 COPY pip.conf /etc/pip.conf
-RUN pip install --no-cache-dir pip-tools==7.6.2
+
+# 1. 安装新一代极其高效的 uv 包管理工具
+RUN pip install --no-cache-dir uv==0.5.21
+
 COPY requirements-runtime.in .
-RUN --mount=type=cache,target=/root/.cache/pip \
-    pip-compile --generate-hashes --output-file requirements-runtime.lock requirements-runtime.in
+
+# 2. 挂载专属于 uv 的缓存目录，使用 uv 秒速生成带哈希的锁文件
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv pip compile --generate-hashes --output-file requirements-runtime.lock requirements-runtime.in
 
 # Stage 2: runtime image; published corpus snapshot and vector index are baked in.
 FROM python:3.11-slim AS runtime
