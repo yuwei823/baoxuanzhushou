@@ -22,11 +22,13 @@
                     <li><b>3</b> 查看违规项与法规原文</li>
                 </ol>
             </div>
-            <aside><span class="status-dot"></span>
-                <b>当前规则集</b>
-                <p id="ruleset">正在读取…</p>
-                <small id="scope"></small>
-                <div class="scope-list">
+            <aside>
+                <div class="aside-col"><span class="status-dot"></span>
+                    <b>当前规则集</b>
+                    <p id="ruleset">正在读取…</p>
+                    <small id="scope"></small>
+                </div>
+                <div class="aside-col scope-list">
                     <span class="scope-title">法规范围</span>
                     <ul id="documents"></ul>
                 </div>
@@ -37,6 +39,11 @@
             <section class="panel input-panel">
                 <div class="section-title">
                     <h2>提交审核材料</h2><span>01 / INPUT</span>
+                </div>
+                <div class="examples"><span>试用示例</span>
+                    <button data-example="violation">监管背书</button>
+                    <button data-example="education">教育案例</button>
+                    <button data-example="multi">多图补充</button>
                 </div>
                 <div class="composer"><label for="text" class="composer-label">营销文案 / 图片 <span id="counter">0 /
                             10,000</span></label><textarea id="text" rows="3"
@@ -78,19 +85,19 @@
                 <div class="depth-row">
                     <div class="depth-control"><label class="depth-label" for="depth">审核模式</label>
                         <div class="toggle" role="radiogroup" aria-label="审核模式">
-                            <button type="button" class="toggle-option is-active" data-depth="concise"
-                                role="radio" aria-checked="true">极简 · 只报违规</button>
+                            <button type="button" class="toggle-option is-active" data-depth="concise" role="radio"
+                                aria-checked="true">极简 · 只报违规</button>
                             <button type="button" class="toggle-option" data-depth="strict" role="radio"
                                 aria-checked="false">严格 · 含待核验项</button>
                         </div>
-                    </div><input id="depth" type="hidden" value="concise">
-                    <button id="submit" class="primary">开始审核 <span>↗</span></button>
-                    <div class="actions"><button id="cancel" hidden>取消</button></div>
+                    </div>
+                    <input id="depth" type="hidden" value="concise">
+                    <div id="button-group">
+                        <button id="submit" class="primary">开始审核 <span>↗</span></button>
+                        <button id="cancel" hidden>取消</button>
+                    </div>
                 </div>
                 <p class="privacy">图片仅在本次请求中处理；原文不会写入运行日志。</p>
-                <div class="examples"><span>试用示例</span><button data-example="violation">监管背书</button><button
-                        data-example="education">教育反例</button><button data-example="multi">多图补充</button><button
-                        data-example="review">局部材料</button></div>
             </section>
             <section class="panel output-panel" aria-live="polite">
                 <div class="section-title">
