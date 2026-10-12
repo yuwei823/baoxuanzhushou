@@ -95,6 +95,15 @@ def create_app(settings=None, provider=None):
         response.headers["Cache-Control"] = "no-store"
         return response
 
+    @application.middleware("http")
+    async def access_token(request, call_next):
+        if settings.auth_token and request.url.path.startswith("/api/"):
+            if request.headers.get("authorization") != f"Bearer {settings.auth_token}":
+                return error_response(
+                    "缺少或无效的访问口令，请在页面输入后重试。", 401, "unauthorized"
+                )
+        return await call_next(request)
+
     @application.exception_handler(InputError)
     async def handle_input(request, error):
         return error_response(str(error), error.status)

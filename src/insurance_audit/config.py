@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     batch_rule_count: int = Field(6, ge=1, le=8)
     batch_max_characters: int = Field(90000, ge=1000)
     log_content: bool = False
+    # Deployment guards: optional shared access token and in-flight audit cap.
+    auth_token: str = ""
+    audit_max_concurrency: int = Field(2, ge=1, le=8)
 
     @property
     def configured(self):

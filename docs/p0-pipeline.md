@@ -56,7 +56,7 @@ DOC 需要系统 `py -3.11` 能导入 pywin32 且安装 WPS，单次抽取超时
 
 1. 在候选包中核对新来源全文、版本、生效日期、标题和适用范围，填写 documents.jsonl；为新义务补充 rule_cards.jsonl。每个范围内条文必须有规则映射，范围外条文必须有理由。
 2. 检查与基础集的修订/替代和冲突。默认候选保留旧来源，新文件不会按文件名自动替换旧法；若应替换，调整候选的来源/条文/规则/台账，使引用完整。全部规则集变化需要重新检查。
-3. 以 review-template.json 为结构参考，完成 review.json：真实 reviewer.type/id、实际 method、所有来源哈希、条文原文哈希与已核对 scope、规则语义 digest。规则 digest 使用 `insurance_audit.corpus.review.semantic_digest`；模板的空 reviewer 和 pending_review 不能通过门禁。不要运行针对旧三法规的 record_core_review.py 来给新法规背书。
+3. 以 review-template.json 为结构参考，完成 review.json：真实 reviewer.type/id、实际 method、所有来源哈希、条文原文哈希与已核对 scope、规则语义 digest。规则 digest 使用 `insurance_audit.corpus.review.semantic_digest`；模板的空 reviewer 和 pending_review 不能通过门禁。旧法规的 record_core_review.py 等一次性脚本已随 2026-10-12 清理删除，新法规审阅只使用 pipeline review-template 流程。
 4. 执行 `pipeline seal --ruleset <候选ID>`：应用已完成的审阅记录，核对来源哈希，登记效力元信息，严格校验后生成绑定当前 manifest 哈希的 review-approval.json。
 5. 后台循环发现 approval，自动重验并发布。批准后改动 manifest 会使批准失效；改动条文/规则会触发哈希或审阅不一致。发布后禁止原位覆盖。后台停用时可执行 pipeline run 续跑。
 

@@ -108,12 +108,12 @@ async def test_historical_replay_preserves_real_metadata_without_provider(tmp_pa
         split="dev",
         variant="hybrid",
         out=tmp_path / "replay",
-        replay=Path("reports/g1-live-acceptance-v1.5.json"),
+        replay=Path("reports/g1-next-live-v2.json"),
         mock=False,
     )
     result = await run(args)
     assert result["metrics"]["samples"] == 5
-    assert result["metrics"]["automatic_coverage"]["value"] == 0.6
+    assert result["metrics"]["automatic_coverage"]["value"] == 0.8
     assert result["metadata"]["run_complete"]
     with pytest.raises(ValueError, match="empty output"):
         await run(args)

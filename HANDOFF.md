@@ -25,7 +25,7 @@
 - 最近代码验证：`python -m pytest -q` 为 **98 passed**（新增逐规则引用白名单、trigger_guidance、修复提示断言），`python -m ruff check src tests scripts` 通过。
 - 本轮真实调用：G1 五例复验 `reports/g1-next-live-v2.json`（5/5 通过，verify_g1.py 退出码 0）；压力案例 API 复验 `reports/p2-stress-reverify.json` 与浏览器复验截图 `reports/p2-stress-reverify-browser.png`（completed/non_compliant，4 违规、0 错误、8 次尝试）。meta 中 attempt=1 的引用校验错误是“修复已成功”的轨迹，不是失败。
 - `reports/p3-dev-replay-v1.0/metrics.json`：历史真实记录重放已完成，5 条 provisional 案例；Macro-F1 0.7778、自动判定覆盖率 3/5、原文一致率 24/24。无已核对的类型/条文 gold，相关指标为 null；不能声称当前模型复验或正式效果达标。
-- `reports/p3-mock-runner-v1.0/` 仅验证运行器，不能计入真实效果。`reports/p3-g1-replay/` 为较早开发报告，当前入口使用上述 v1.0 目录。
+- `reports/p3-mock-runner-v1.0/` 仅验证运行器，不能计入真实效果；更早的 p3-g1-replay 开发报告已随 2026-10-12 清理删除。
 - `evaluate --split test` 当前明确拒绝执行；全文基线、共享图片提取 A/B、正式测试及新环境交付复现尚未实现/完成。现有报告目录拒绝覆盖，应使用新目录保存复验。
 
 ### 下一轮执行顺序
@@ -54,12 +54,24 @@
 
 ---
 
+## 2026-10-12 — 项目清理（用户指示）
+
+- 用户指示：删除不必要的中间件、脚本与过时报告。经确认，“中间件”指构建与缓存中间产物；FastAPI 两个请求中间件（BodyLimit、security_headers 响应头）均有测试覆盖且为验收必需，未改动；P0 目录监控后台服务按用户选择保留。
+- 删除中间产物：build/、src/insurance_audit.egg-info/、reports/package-check/ 内 wheel（verification.json 保留）、.pytest_cache、.ruff_cache、各 __pycache__。以上均可重新生成，且均在 .gitignore 中。
+- 删除脚本（被流水线或新入口取代的一次性工具）：record_core_review.py、core_rule_review_data.py、build_rule_card_candidates.py（P0 候选卡一次性构建，现由 corpus/pipeline.py 的候选与审阅模板流程取代）；live_audit_smoke.py（由 verify_g1.py 取代，README 已更新）。保留：cleanup_p0.ps1（本项目指定的缓存清理工具）、create_demo_assets.py（static 演示素材生成器）、install_pipeline_task.ps1、lock_dependencies.py、serve_p2_fixture.py、verify_g1.py、verify_stress.py。
+- 删除过时报告：早期文本冒烟系列（text-audit-smoke*.json、text-smoke.md、live-audit-smoke.json）、RAG 中间运行（text-rag-smoke.json、text-rag-smoke-v1.3.json；v1.4 为 rag-acceptance 现行证据保留）、G1 旧轮（g1-development-v1.5、g1-live-acceptance-v1.5、g1-next-live、g1-progress-2026-10-12.md）、P2 首轮 partial 证据（p2-real-unicode-browser.json、p2-unicode-browser.png）、p3-g1-replay、p3-dev-replay-console.json、p3-mock-console.json、旧清理记录 cleanup-manifest/cleanup-result。当前证据保留：G0 各验收、model-doctor、rag-acceptance（含 v1.4）、g1-next-live-v2、g1-acceptance-2026-10-12、P2 教育/多图/压力复验、p3-dev-replay-v1.0、p3-mock-runner-v1.0、package-check/verification.json。
+- 同步文档：README（运行入口改 verify_g1.py、replay 改 g1-next-live-v2.json、移除 text-smoke 链接）、docs/evaluation-labeling.md、reports/rag-acceptance.md、multimodal-acceptance.md、g1-acceptance-2026-10-12.md、PLAN.md P1-07 产物、HANDOFF 摘要。
+- 验证：pytest 全量通过、ruff check src tests scripts 通过；服务重启后 /readyz 正常（删除 egg-info 不影响已安装可编辑环境与运行中服务；重装时自动重建）。
+- 未删除：data/ 全部（含 pipeline 运行态与用户提供的案例库 data/pipeline/sources/*/source.md，100 条待人工复核案例）、法律法规原始文件、已发布语料快照、docs 与 Spec 历史文档。
+
+---
+
 ## 2026-10-12 — G1/G2 修复与真实验收（本轮）
 
 - 任务：修复 G1 科普改写过度复核与 G2 逐规则引用失败，按 PLAN 顺序复验。
 - G1 修复：`workflow.py` 新增 `TRIGGER_GUIDANCE`，为 `approved_marketing_content_use`、`internet_platform_operating_conditions` 提供触发要点（只关注材料是否呈现营销宣传/平台运营活动，中性教育材料判 false）；judge payload 注入 `trigger_guidance`，JUDGE_PROMPT 增加使用说明。Prompt 版本升级为 `audit-v1.6-citation-guidance`。
 - G2 修复：judge payload 新增逐规则 `allowed_citations`（rule_id→{条文 ID: 条号}）与每条文 `direct_for_rule_ids` 标注，禁止跨规则借条文；`structured()` 新增 `repair_context`，修复提示携带各规则可引用条文（条号+开头原文，`citation_repair_context`），单次修复即可纠正引用。
-- 真实 G1 复验（本轮第二次，第一次暴露出 `illegal_financial_activity_marketing` 跨规则借条文，修复 direct_for_rule_ids 标注后通过）：`scripts/verify_g1.py --out reports/g1-next-live-v2.json` 退出码 0，五例全过——violation non_compliant、education compliant、partial_material needs_review、disguised_sale_injection non_compliant、education_paraphrase compliant。标签未修改。报告 g1-next-live.json 是中间失败轮证据，保留。
+- 真实 G1 复验（本轮第二次，第一次暴露出 `illegal_financial_activity_marketing` 跨规则借条文，修复 direct_for_rule_ids 标注后通过）：`scripts/verify_g1.py --out reports/g1-next-live-v2.json` 退出码 0，五例全过——violation non_compliant、education compliant、partial_material needs_review、disguised_sale_injection non_compliant、education_paraphrase compliant。标签未修改。中间失败轮报告已随 2026-10-12 清理删除，经过见本条记录。
 - 真实 G2 压力复验：`scripts/verify_stress.py`（新增，API 入口）→ completed/non_compliant、4 违规、0 错误、8 次尝试；首轮 attempt=1 引用校验错误被修复提示纠正，attempt=2 无最终失败。浏览器对同一输入重放：页面显示“发现违规”、HTML 字符串按文本显示、4 违规项，截图 reports/p2-stress-reverify-browser.png；下载 JSON 受浏览器工具限制未落盘，API 报告 p2-stress-reverify.json 为完整响应证据。
 - 离线验证：pytest 98 passed（新增 allowed_citations/direct_for_rule_ids/trigger_guidance 断言与修复提示测试）；ruff check src tests scripts 通过。
 - 版本：qwen3.7-plus / qwen3-vl-plus / text-embedding-v4 1024 维；official-v1-2026-10-11；audit-v1.6-citation-guidance；服务已用 `.venv` 重启于 127.0.0.1:8000。
