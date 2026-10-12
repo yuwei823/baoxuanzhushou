@@ -938,3 +938,4 @@ body.busy .primary {
     border-radius: 8px;
     margin: 12px 0
 }
+.coverage-breakdown{font-size:12px;line-height:1.8;overflow-wrap:anywhere;margin:12px 0}

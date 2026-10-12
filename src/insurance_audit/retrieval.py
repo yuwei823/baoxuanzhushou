@@ -39,6 +39,9 @@ class Corpus:
         self.documents = self.load(path, "documents.jsonl", "document_id")
         self.articles = self.load(path, "articles.jsonl", "article_id")
         self.rules = self.load(path, "rule_cards.jsonl", "rule_id")
+        # Cap on carried article text per batch so a merged group cannot blow the
+        # prompt budget; the judge prompt itself adds rule cards and material.
+        self.article_budget = max(1000, settings.batch_max_characters // 3)
         self.ids = list(self.articles)
         self.index = BM25Okapi(
             [list(jieba.cut(self.articles[aid]["original_text"])) for aid in self.ids]
@@ -118,19 +121,86 @@ class Corpus:
         return sorted(found)
 
     def batches(self, batch_size, retrieved=()):
+        """Group rules so shared law text ships once per call.
+
+        Rules are clustered by their direct article set (union-find over shared
+        ids). Multi-rule clusters stay together so a shared article is carried
+        once; single-rule clusters share nothing, so they are packed together to
+        avoid one call per rule. A batch closes when the carried article text
+        would exceed its budget or the rule cap is reached.
+        """
         hits = set(retrieved)
-        # Prioritize related rules while retaining the complete mandatory ledger.
-        rules = sorted(
-            self.rules.values(), key=lambda c: not bool(hits.intersection(c["article_ids"]))
-        )
-        for offset in range(0, len(rules), batch_size):
-            batch = rules[offset : offset + batch_size]
-            ids = {
-                aid
-                for card in batch
-                for aid in card["article_ids"] + card.get("supporting_article_ids", [])
-            }
-            yield batch, {aid: self.articles[aid] for aid in sorted(ids)}
+        rules = list(self.rules.values())
+        parent = {c["rule_id"]: c["rule_id"] for c in rules}
+
+        def find(x):
+            while parent[x] != x:
+                parent[x] = parent[parent[x]]
+                x = parent[x]
+            return x
+
+        def union(a, b):
+            ra, rb = find(a), find(b)
+            if ra != rb:
+                parent[rb] = ra
+
+        # Link rules that share at least one direct article.
+        owners = {}
+        for card in rules:
+            for aid in card["article_ids"]:
+                for other in owners.get(aid, ()):
+                    union(card["rule_id"], other)
+                owners.setdefault(aid, []).append(card["rule_id"])
+
+        groups = {}
+        for card in rules:
+            groups.setdefault(find(card["rule_id"]), []).append(card)
+
+        def rank(group):
+            related = any(hits.intersection(c["article_ids"]) for c in group)
+            return (not related, -len(group))
+
+        # Multi-rule clusters first (they carry shared text), then singletons
+        # packed together, since a lone rule shares no article with any other.
+        clusters = sorted((g for g in groups.values() if len(g) > 1), key=rank)
+        singles = [g[0] for g in sorted(groups.values(), key=rank) if len(g) == 1]
+
+        for group in clusters:
+            yield from self.pack([group], batch_size)
+        if singles:
+            yield from self.pack([[card] for card in singles], batch_size)
+
+    def pack(self, groups, batch_size):
+        """Flatten groups into batches bounded by article budget and rule cap."""
+        batch, carried = [], set()
+        for group in groups:
+            for card in group:
+                extra = {
+                    aid
+                    for aid in card["article_ids"] + card.get("supporting_article_ids", [])
+                }
+                if batch and (
+                    self.carried_characters(carried | extra) > self.article_budget
+                    or len(batch) >= self.max_batch_rules(batch_size)
+                ):
+                    yield batch, {aid: self.articles[aid] for aid in sorted(carried)}
+                    batch, carried = [], set()
+                batch.append(card)
+                carried |= extra
+        if batch:
+            yield batch, {aid: self.articles[aid] for aid in sorted(carried)}
+
+    def max_batch_rules(self, batch_size):
+        """Upper bound on rules per batch.
+
+        Clustering keeps shared law text from repeating, but each extra rule adds
+        output tokens, and latency tracks output length. Keep batches small: the
+        cap trades call count against per-call latency.
+        """
+        return max(batch_size, 2)
+
+    def carried_characters(self, ids):
+        return sum(len(self.articles[aid]["original_text"]) for aid in ids if aid in self.articles)
 
     def context_articles(self, articles, retrieved):
         return {**articles, **{aid: self.articles[aid] for aid in retrieved}}

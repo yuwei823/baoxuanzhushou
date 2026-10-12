@@ -26,8 +26,17 @@ partial 返回 HTTP 200；审核失败按错误原因返回 502/503/504。输入
 
 证据分 present 与 absence。present 的 start/end 为 Unicode 码点左闭右开；文本来源起点保留原输入位置。absence 仅在适用条件明确且完整材料可读时成立，标注完整性来自用户声明。条文原文由本地 article_id 回填。
 
-coverage.total 为规则全集数量；eligible 排除 not_applicable/out_of_scope；checked 为已检查条数；coverage_ratio=checked/eligible；resolved_ratio 为已检查且无 uncertain 的条数/eligible。分母为 0 时比率为 null。34 条都有处理记录不等于 34 条均已确认适用或通过。
+coverage.total 为规则全集数量；eligible 排除 not_applicable/out_of_scope；checked 为已检查条数；coverage_ratio=checked/eligible；resolved_ratio 为已检查且无 uncertain 的条数/eligible。分母为 0 时比率为 null。当前 v2 共 46 条规则；都有处理记录不等于均已确认适用或通过。
 
 GET /healthz 检查进程，/readyz 检查本地配置与语料，不调用付费模型。GET /api/v1/rulesets/current 提供当前快照，GET /api/v1/articles/{article_id} 只允许读取快照内 ID。
 
 契约和故障注入测试已实现；完整 G1/G2 验收状态以 PLAN 与实际报告为准。
+
+
+## 性能诊断（workflow 1.2-diagnostics）
+
+meta.rule_status_counts 按 coverage.rules.status 汇总，包含材料待核验及技术失败的区别。meta.calls 的 queue_ms 是等待本进程模型信号量的时间；request_ms 从取得名额后发请求到返回/异常，含网络与服务端处理。旧 latency_ms 包含排队，不能用于推算模型纯并行度。
+
+transport_retry 为网络层重试序号（0=首次）；structure_attempt 为结构/证据校验后的修复序号（0=首次，1=唯一一次修复）。结构修复内仍可能遇到网络重试，meta 分别计数。每条调用有返回用量时保留 token_usage 与 reasoning_tokens；供应商未返回细分则 null，失败请求未知用量不能据此宣称没有计费。backoff_ms 是计划退避等待时间，outcome 只记录安全错误类别/HTTP 状态，不记录服务端异常正文。
+
+未取得并发名额的超时不算已发送调用，整体耗时和规则 failed 台账仍记录。简要模式的 hidden_review_items 是被隐藏的补充提示数量，不改变最终聚合。

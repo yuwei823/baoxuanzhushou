@@ -1,57 +1,39 @@
 # 实施交接记录
 
-## 当前交接摘要（2026-10-12 更新）
+## 当前交接摘要（2026-10-12 性能复验更新）
 
-接手时先读本节，再查下方历史记录。历史中的“尚未配置 Key”“尚未启用向量”“图片暂缓”“P3 未开始”只代表当时状态，不代表当前进度。
+接手时以本节及最新 reports/performance-* 为准，下面 dated 记录保留历史事实。
 
-| 阶段 | 当前状态 | 证据 |
-|---|---|---|
-| P0 / G0 | 三份核心本地法规已验收并发布；保险法抽取继续暂缓 | reports/p0-acceptance.md；data/extracted/extraction-registry.json |
-| P1 / G1 | **G1 已通过（工程验收）**：五例真实调用全部符合预期，科普改写不再过度复核；逐规则引用修复已纳入 Prompt 与修复提示 | reports/g1-next-live-v2.json；reports/g1-acceptance-2026-10-12.md |
-| P2 | P2-01～04 完成，**G2 已通过**：Unicode/HTML 压力案例由 partial 转为 completed/non_compliant，引用修复成功 | reports/multimodal-acceptance.md；reports/p2-stress-reverify.json |
-| P3 | **暂缓**（用户决定先上线）：P3-01/02 准备已启动，正式数据与效果验收未完成 | reports/p3-dev-replay-v1.0/report.md；docs/evaluation-labeling.md |
-| P4 | 内部上线交付件完成，线上验证待用户执行（P4-06） | docs/deployment.md；Dockerfile；docker-compose.yml；.github/workflows/deploy.yml |
+### 当前规则与实现
 
-### 已实现与实际版本
+- 当前快照 `official-v2-2026-10-12` 已发布：4 份用户本地法规，含保险法，359 条文、46 规则。严格 validate-corpus 为 release_ready=true，0 完整性错误、0 审阅门禁。不要沿用旧“保险法暂缓”的状态。
+- 文本 `qwen3.7-plus`，视觉 `qwen3-vl-plus`；hybrid=BM25 + text-embedding-v4/1024；Prompt `audit-v1.6-citation-guidance`，workflow `1.2-diagnostics`。召回原文与全部必查规则仍进入审核，不放宽引用/证据/未知条件检查。
+- 保留其他 agent 的法规聚类分批改动。当前本地参数为 batch=2、model_concurrency=8、attempts=40、单次45秒/总计150秒。性能比较通过独立 Settings 覆盖，不修改 .env，不自动替换上线配置。
+- 新增逐调用 queue_ms、request_ms、token_usage、reasoning_tokens（缺失为 null）、transport_retry、structure_attempt、outcome；旧 latency_ms 包含排队，保留兼容。meta.rule_status_counts 区分已检查、不适用、范围外、待上下文、待外部核验及技术失败。页面展示各状态数量和简要模式隐藏提示数量。
 
-- 规则快照 `official-v1-2026-10-11`：3 份用户本地来源、172 条文、34 规则；已发布快照不可原位覆盖。保险法未纳入，核对者为实施 agent，不是法律专家。
-- 真实 hybrid RAG：BM25 + `text-embedding-v4`（1024 维），172 条向量索引；召回原文进入模型上下文，同时保留全部必查规则。新法规发布后仍需显式构建对应索引，目录监控不会自动付费建索引。
-- 最新真实记录：文本 `qwen3.7-plus`，视觉 `qwen3-vl-plus`，Prompt `audit-v1.6-citation-guidance`。密钥配置仅在后端本地 `.env`；本次未重新读取密钥，未确认除本轮重启服务以外的其它进程。
-- G1 修复：trigger_guidance 针对 `approved_marketing_content_use`、`internet_platform_operating_conditions` 说明触发要点，中性教育材料触发条件判 false；五例真实复验 5/5 通过（violation/education/partial_material/disguised_sale_injection/education_paraphrase），标签未修改。
-- G2 修复：judge payload 增加逐规则 allowed_citations 与条文 direct_for_rule_ids 标注，防止跨规则借条文；修复提示携带各规则可引用条文（条号+开头原文），单次修复在压力案例中实际成功。真实 Unicode/HTML 案例 completed/non_compliant，4 违规、0 错误，页面与 API 证据一致。
-- P3 新增 `src/insurance_audit/evaluation/{metrics,runner}.py`、CLI `evaluate`、`tests/unit/test_evaluation.py`；支持真实共享服务、mock、历史结果重放和逐样本报告。已有 5 条 provisional 开发种子，不是新的独立测试集；20 开发 / 40 测试及至少 12 图文测试目标尚未满足。
+### 验收与效果边界
 
-### 最近验证与结果边界
+- v1 的 G1/G2 已通过合成开发案例工程验收，证据 reports/g1-acceptance-2026-10-12.md、reports/p2-stress-reverify.json；该结论不能自动覆盖 v2。
+- 本轮 v2 模型初筛已完成：qwen3.7-plus 5/5、qwen-plus 4/5、qwen-turbo 3/5，失败均为教育反例误复核；均不是正式 gold 评估。完整调用、代码/语料/案例哈希见 reports/performance-model-pilot-v2/。保留当前模型。
+- batch=2/3、concurrency=4/8 的完整五例两轮受控比较正在运行，见 reports/performance-batch-matrix-v2/；以 manifest.completed 为完成标志，不把部分结果写为最终结论。
+- 最新全量测试 **105 passed in 21.42s**，Ruff 全库通过；新增三个耗时、修复次数和错误脱敏回归。独立模拟页面已验证状态总数 46（checked=1、needs_context=39、failed=6），没有把待核验算作技术失败；截图 reports/performance-status-ui.png。
+- P3 正式评估继续暂缓：5 条 provisional 开发种子已暴露，20/40 数据、图文人工标注、全文基线及正式 A/B 未完成。P4 部署产物由此前 agent 建立，本轮没有执行远程部署或更改访问控制。
 
-- 最近代码验证：`python -m pytest -q` 为 **98 passed**（新增逐规则引用白名单、trigger_guidance、修复提示断言），`python -m ruff check src tests scripts` 通过。
-- 本轮真实调用：G1 五例复验 `reports/g1-next-live-v2.json`（5/5 通过，verify_g1.py 退出码 0）；压力案例 API 复验 `reports/p2-stress-reverify.json` 与浏览器复验截图 `reports/p2-stress-reverify-browser.png`（completed/non_compliant，4 违规、0 错误、8 次尝试）。meta 中 attempt=1 的引用校验错误是“修复已成功”的轨迹，不是失败。
-- `reports/p3-dev-replay-v1.0/metrics.json`：历史真实记录重放已完成，5 条 provisional 案例；Macro-F1 0.7778、自动判定覆盖率 3/5、原文一致率 24/24。无已核对的类型/条文 gold，相关指标为 null；不能声称当前模型复验或正式效果达标。
-- `reports/p3-mock-runner-v1.0/` 仅验证运行器，不能计入真实效果；更早的 p3-g1-replay 开发报告已随 2026-10-12 清理删除。
-- `evaluate --split test` 当前明确拒绝执行；全文基线、共享图片提取 A/B、正式测试及新环境交付复现尚未实现/完成。现有报告目录拒绝覆盖，应使用新目录保存复验。
+### 下一步与复现
 
-### 下一轮执行顺序
-
-1. 继续 P3 数据准备：保持开发/测试来源和模板分组隔离；用户另行收集资料，未收到前不虚构真实案例或人工 gold。已在开发中暴露的五例不转入固定测试集。
-2. 数据核对与冻结后，实现全文基线（A）与工作流 hybrid（B）的可比 A/B 及共享图片提取，再放行正式测试；分别报告工程完成与效果达标状态。H-03 消融随 A/B 一并实施。
-3. G1/G2 已通过但属合成开发案例工程验收；正式效果验收仍依赖 P3 已核对数据集，不提前宣称准确率。
-4. 保险法抽取仍暂缓；恢复前不得把新文件自动纳入已发布快照。
-
-### 复现入口
-
-在项目根目录 `D:\保宣合规助手` 执行：
+1. 完成分批/并发矩阵，先看预期结论、全部规则台账和失败，再比较 P50/P95、token 和修复次数；每组仅10次，不能称生产稳定指标。
+2. 根据结果决定是否调整 batch；模型初筛不支持换为 qwen-plus/turbo。不要通过省略条件、扩大无限重试或隐藏错误提高覆盖率。
+3. 继续收集独立标注资料；未有人工 gold，不将工程回归通过率当作准确率。
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q
 .\.venv\Scripts\python.exe -m ruff check src tests scripts
-# 不调用外部模型；out 必须是新的空目录
-.\.venv\Scripts\python.exe -m insurance_audit.cli evaluate --split dev --variant hybrid --replay reports/g1-next-live-v2.json --out reports/p3-next-replay
-# 真实 G1 复验，产生百炼 API 用量；需先启动本项目 HTTP 服务
-.\.venv\Scripts\python.exe scripts/verify_g1.py --out reports/g1-next-live.json
-# 真实 G2 压力案例复验（Unicode/HTML 输入），同样需先启动 HTTP 服务
-.\.venv\Scripts\python.exe scripts/verify_stress.py --out reports/p2-stress-reverify.json
+.\.venv\Scripts\python.exe -m insurance_audit.cli validate-corpus --ruleset official-v2-2026-10-12
+# 真实调用产生 API 用量；out 必须尚不存在，不覆盖历史报告
+.\.venv\Scripts\python.exe scripts/benchmark_audit.py --models qwen3.7-plus --batches 2 3 --concurrencies 4 8 --repeats 2 --out reports/performance-next
 ```
 
-本次更新范围：HANDOFF.md、PLAN.md、README.md、docs/decisions.md、reports/g1-acceptance-2026-10-12.md、reports/multimodal-acceptance.md；代码 workflow.py、service.py、models/bailian.py、scripts/verify_stress.py、tests/unit/test_audit.py。已核对 PLAN、P3 metrics/manifest 和当前评估入口，补充当前摘要与接手顺序，保留全部历史记录。
+本轮修改：models/bailian.py、service.py、static/app.js/styles.css、scripts/benchmark_audit.py、tests/unit/test_performance_diagnostics.py、docs/audit-performance.md、docs/api-contract.md、HANDOFF/PLAN。已有 retrieval.py 改动不是本轮原创，未覆盖；语料和评估预期不变。
 
 ---
 

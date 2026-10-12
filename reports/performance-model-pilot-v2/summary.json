@@ -1,0 +1,79 @@
+{
+  "qwen-turbo-b2-c8": {
+    "runs": 5,
+    "all_checks_passed": 3,
+    "expected_decisions": 3,
+    "completed": 5,
+    "latency_p50_ms": 13844,
+    "latency_p95_ms": 20365.6,
+    "queue_ms_sum": 551391,
+    "request_ms_sum": 481551,
+    "transport_retries": 0,
+    "structure_repairs": 0,
+    "tokens": {
+      "prompt_tokens": 816717,
+      "completion_tokens": 43908,
+      "total_tokens": 860625
+    },
+    "rule_statuses": {
+      "checked": 37,
+      "needs_context": 64,
+      "external_verification_required": 27,
+      "not_applicable": 102
+    },
+    "errors": {},
+    "validation_categories": {}
+  },
+  "qwen3.7-plus-b2-c8": {
+    "runs": 5,
+    "all_checks_passed": 5,
+    "expected_decisions": 5,
+    "completed": 5,
+    "latency_p50_ms": 27500,
+    "latency_p95_ms": 27637.4,
+    "queue_ms_sum": 1099577,
+    "request_ms_sum": 971060,
+    "transport_retries": 0,
+    "structure_repairs": 0,
+    "tokens": {
+      "prompt_tokens": 776532,
+      "completion_tokens": 48569,
+      "total_tokens": 825101
+    },
+    "rule_statuses": {
+      "checked": 23,
+      "not_applicable": 173,
+      "needs_context": 31,
+      "external_verification_required": 3
+    },
+    "errors": {},
+    "validation_categories": {}
+  },
+  "qwen-plus-b2-c8": {
+    "runs": 5,
+    "all_checks_passed": 4,
+    "expected_decisions": 4,
+    "completed": 5,
+    "latency_p50_ms": 30141,
+    "latency_p95_ms": 37696.8,
+    "queue_ms_sum": 1164236,
+    "request_ms_sum": 1022907,
+    "transport_retries": 0,
+    "structure_repairs": 2,
+    "tokens": {
+      "prompt_tokens": 836734,
+      "completion_tokens": 42235,
+      "total_tokens": 878969
+    },
+    "rule_statuses": {
+      "checked": 26,
+      "needs_context": 25,
+      "external_verification_required": 9,
+      "not_applicable": 170
+    },
+    "errors": {},
+    "validation_categories": {
+      "Citation is not a direct rule article": 2
+    }
+  }
+}

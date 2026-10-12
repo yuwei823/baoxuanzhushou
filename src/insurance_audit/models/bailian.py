@@ -2,12 +2,15 @@ import asyncio
 import json
 import random
 import time
+from contextvars import ContextVar
 from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 
 import httpx
 from openai import APIConnectionError, APIStatusError, APITimeoutError, AsyncOpenAI
 from pydantic import ValidationError
+
+STRUCTURE_ATTEMPT = ContextVar("structure_attempt", default=0)
 
 
 class ModelFailure(Exception):
@@ -61,14 +64,33 @@ class Bailian:
     async def close(self):
         await self.client.close()
 
-    async def request(self, method, budget, **kwargs):
+    async def request(self, method, budget, record=None, **kwargs):
         # SDK read timeouts alone are not a wall-clock cap on a slowly arriving body.
         limit = min(self.settings.model_timeout_seconds, budget.remaining())
+        started = time.monotonic()
         try:
             async with asyncio.timeout(limit):
-                return await method(timeout=limit, **kwargs)
+                result = await method(timeout=limit, **kwargs)
+            if record is not None:
+                record["outcome"] = "response_received"
+                usage = getattr(result, "usage", None)
+                if usage is not None:
+                    record["token_usage"] = {k: getattr(usage, k, 0) or 0 for k in budget.tokens}
+                    details = getattr(usage, "completion_tokens_details", None)
+                    record["reasoning_tokens"] = getattr(details, "reasoning_tokens", None)
+            return result
         except TimeoutError as error:
+            if record is not None:
+                record["outcome"] = "request_timeout"
             raise APITimeoutError(request=httpx.Request("POST", "https://model.invalid")) from error
+        except (APIStatusError, APIConnectionError) as error:
+            if record is not None:
+                record["outcome"] = type(error).__name__
+                record["http_status"] = getattr(error, "status_code", None)
+            raise
+        finally:
+            if record is not None:
+                record["request_ms"] = round((time.monotonic() - started) * 1000)
 
     async def embed(self, texts, budget):
         """Embedding shares the process gate, deadline and attempt budget with judgment."""
@@ -85,11 +107,18 @@ class Bailian:
                 async with asyncio.timeout(budget.remaining()):
                     async with self.gate:
                         budget.consume()
-                        record = {"kind": "embedding", "model": self.settings.embedding_model}
+                        record = {
+                            "kind": "embedding",
+                            "model": self.settings.embedding_model,
+                            "queue_ms": round((time.monotonic() - started) * 1000),
+                            "transport_retry": retry,
+                            "structure_attempt": 0,
+                        }
                         try:
                             response = await self.request(
                                 self.client.embeddings.create,
                                 budget,
+                                record=record,
                                 model=self.settings.embedding_model,
                                 input=texts,
                                 dimensions=self.settings.embedding_dimensions,
@@ -124,6 +153,7 @@ class Bailian:
             wait = max(wait, 2**retry + random.uniform(0, 0.2))
             if wait >= budget.remaining():
                 raise ModelFailure("budget_exhausted", "向量重试将超过剩余预算。")
+            record["backoff_ms"] = round(wait * 1000)
             await asyncio.sleep(wait)
 
     async def call(self, kind, messages, budget, max_tokens=8000):
@@ -141,7 +171,13 @@ class Bailian:
                 async with asyncio.timeout(budget.remaining()):
                     async with self.gate:
                         budget.consume()
-                        record = {"kind": kind, "model": model}
+                        record = {
+                            "kind": kind,
+                            "model": model,
+                            "queue_ms": round((time.monotonic() - started) * 1000),
+                            "transport_retry": retry,
+                            "structure_attempt": STRUCTURE_ATTEMPT.get(),
+                        }
                         options = {}
                         if kind == "text":
                             options["response_format"] = {"type": "json_object"}
@@ -156,6 +192,7 @@ class Bailian:
                             response = await self.request(
                                 self.client.chat.completions.create,
                                 budget,
+                                record=record,
                                 model=model,
                                 messages=messages,
                                 temperature=0,
@@ -192,6 +229,7 @@ class Bailian:
             wait = max(wait, (2**retry) + random.uniform(0, 0.2))
             if wait >= budget.remaining():
                 raise ModelFailure("budget_exhausted", "重试等待将超过剩余审核预算。")
+            record["backoff_ms"] = round(wait * 1000)
             await asyncio.sleep(wait)
 
 
@@ -205,7 +243,11 @@ async def structured(
     """
     for attempt in range(2):
         try:
-            raw = await provider.call(kind, messages, budget, max_tokens=max_tokens)
+            token = STRUCTURE_ATTEMPT.set(attempt)
+            try:
+                raw = await provider.call(kind, messages, budget, max_tokens=max_tokens)
+            finally:
+                STRUCTURE_ATTEMPT.reset(token)
             value = schema.model_validate_json(raw)
             if validate:
                 validate(value)

@@ -1,6 +1,7 @@
 import asyncio
 import json
 import time
+from collections import Counter
 from uuid import uuid4
 
 from insurance_audit.models.bailian import Budget, ModelFailure, structured
@@ -237,7 +238,14 @@ class AuditService:
             meta={
                 "ruleset_hash": self.corpus.hash,
                 "prompt_version": PROMPT_VERSION,
-                "workflow_version": "1.1-rag",
+                "workflow_version": "1.2-diagnostics",
+                "diagnostics_version": "queue-request-v1",
+                "rule_status_counts": dict(Counter(r.status for r in ledger)),
+                "transport_retry_calls": sum(c.get("transport_retry", 0) > 0 for c in budget.calls),
+                "structure_repair_calls": sum(
+                    c.get("structure_attempt", 0) > 0 and c.get("transport_retry", 0) == 0
+                    for c in budget.calls
+                ),
                 "retrieval_version": "segment512-rrf60-top8-v1",
                 "index_id": digest(self.corpus.vector_manifest)
                 if self.corpus.vector_manifest

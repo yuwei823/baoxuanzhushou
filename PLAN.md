@@ -3,9 +3,11 @@
 版本：v1.0  
 制定日期：2026-10-11  
 依据：SPEC.md v1.2 合并并按用户决定更新为正式版快照、Requirement.md
-计划状态：P0 核心范围已验收；G1/G2 已通过（2026-10-12 真实验收，合成开发案例工程验收）。2026-10-12 用户决定快速上线（阿里云 Docker + 域名 baoxuanzhushou.app + GitHub Actions 自动部署），P3 正式评估暂缓，新增 P4 内部上线阶段。保险法抽取仍暂缓。
+计划状态：P0 核心范围已验收；G1/G2 已通过（2026-10-12 真实验收，合成开发案例工程验收）。2026-10-12 用户决定快速上线（阿里云 Docker + 域名 baoxuanzhushou.app + GitHub Actions 自动部署），P3 正式评估暂缓，新增 P4 内部上线阶段。当前已切换 official-v2-2026-10-12（含保险法，359 条/46 规则）；上述 G1/G2 报告针对 v1，v2 正在重新回归。
 
 最新进展：G1 五例真实验收全部符合预期（Prompt audit-v1.6-citation-guidance）；G2 Unicode/HTML 压力案例 completed/non_compliant。P4 已交付 Dockerfile/compose/Caddyfile/deploy.yml/部署文档与访问口令、并发上限。详见 reports/g1-acceptance-2026-10-12.md、reports/multimodal-acceptance.md、docs/deployment.md。以下 dated 记录为历史事实。
+
+2026-10-12 性能复验：新增排队/请求/重试/结构修复和规则状态诊断；105 tests passed。三个模型固定五例初筛已完成，保留 qwen3.7-plus；批次/并发两轮矩阵进行中。详情 docs/audit-performance.md 和 HANDOFF 当前摘要。
 
 ### 2026-10-11 开发进展同步
 

@@ -25,9 +25,9 @@ AUDIT_TIMEOUT_SECONDS=150
 MODEL_TIMEOUT_SECONDS=45
 ```
 
-## 2. 核心结论：延迟由输出 token 决定，与输入无关
+## 2. 初步观察：输出长度是重要因素，尚未隔离输入影响
 
-裸模型测试（绕过业务代码），证明耗时几乎完全由 `completion_tokens` 决定：
+裸模型测试（绕过业务代码）显示耗时与 `completion_tokens` 有相关性；只有三组样本，未固定输出长度或服务端负载，不能据此证明输入长度无影响：
 
 | 测试 | prompt tokens | completion tokens | 耗时 | 速率 |
 |---|---|---|---|---|
@@ -37,7 +37,7 @@ MODEL_TIMEOUT_SECONDS=45
 
 **输入只有 13 token 也要 4.3 秒**，而输出 1,798 token 要 31.6 秒。生成速率稳定在 **约 60 tokens/s**。
 
-推论：**缩短耗时 = 减少输出 token 数**，而不是缩小输入。
+工作假设：优先减少冗余输出，同时测量输入、排队、请求、重试等因素；保留完整条件和证据，不将省略条件解释为通过。
 
 ## 3. 模型对比（同一 prompt，约 18K 字符）
 
@@ -45,9 +45,9 @@ MODEL_TIMEOUT_SECONDS=45
 |---|---|---|---|
 | `qwen-turbo` | 2.0 s | 243 | 最快，但输出偏短 |
 | `qwen-plus` | 5.9 s | 245 | 快 |
-| `qwen3.7-plus` | 53.5 s | 2,167 | 推理模型，生成大量推理 token |
+| `qwen3.7-plus` | 53.5 s | 2,167 | 输出较长；推理 token 构成未单独验证 |
 
-三者都能通过 JSON Schema 校验。`qwen3.7-plus` 的 completion 是另两者的 **9 倍**，这是它慢的根本原因。
+三者都能通过 JSON Schema 校验。`qwen3.7-plus` 的 completion 是另两者的 **9 倍**，这与耗时增加相关，尚未排除其他因素。当前配置 enable_thinking=false；须根据实际 usage 中 reasoning_tokens 判断，缺失字段为未知，不记为 0。
 
 > 注：单规则测试时 `qwen-plus` 只用 245 token；但真实审核（6 规则/批）平均约 960 token，因为要覆盖全部规则与条件。
 
@@ -55,14 +55,14 @@ MODEL_TIMEOUT_SECONDS=45
 
 ### 4.1 并发（`MODEL_CONCURRENCY`）
 
-单次审核内部有多个独立模型调用（规则批次 + 检索 embedding），彼此无依赖。
+规则批次可并发；查询 embedding 和检索先于规则判断，不是所有调用都彼此独立。
 
 | 并发 | 总耗时 | judge_ms | 调用数 | 覆盖率 | 状态 |
 |---|---|---|---|---|---|
 | 2 | 88.3 s | 88.1 s | 7 | 20% | partial |
 | **8** | **52.6 s** | 52.2 s | 9 | **38%** | completed |
 
-实测并行度约 **3.7x**（9 次调用耗时合计 191.7 s，实际 52.2 s），证明服务端支持并行生成。
+旧 latency_ms 从等待并发名额前计时，包含排队；191.7 / 52.2 不能作为真实并行度。新诊断分别记录 queue_ms、request_ms，且 request_ms 仍包含网络与服务端处理，不等同纯生成时间。
 
 ### 4.2 批次大小（`BATCH_RULE_COUNT`）
 
@@ -121,7 +121,7 @@ intermediary_prohibited_illegal_commission_seeking
 | 8 | 8 | 212,065 | 多为 8 |
 | **聚类前（顺序切分）** | **23** | **405,911** | 2 |
 
-聚类确实减少了法条重复携带：cap=3 时 prompt 总量比聚类前**少 29%**。
+聚类确实减少了法条重复携带：相同 cap=2 时 prompt 从 405,911 减至 358,000（约 11.8%）；cap=3 的 29% 同时包含批次大小改变，不能全部归因于聚类。
 
 ### 5.4 聚类对真实耗时的影响（实测）
 
@@ -139,15 +139,17 @@ intermediary_prohibited_illegal_commission_seeking
 
 **cap=2 比 cap=3 略慢**（35.9 s vs 34.2 s）：cap=2 有 25 批，并发 8 下需 4 轮；cap=3 有 17 批，3 轮。**并发轮次比单次延迟更影响总耗时。**
 
-**cap=3 是平衡点**：34.2 秒、44% 覆盖率、prompt 省 29%。
+**cap=3 是待复验候选**：34.2 秒、44% 覆盖率、prompt 省 29%。
 
-**聚类前最快（27–29 秒）**：但 prompt 用量最大（405,911 字符），API 成本最高。
+**聚类前最快（27–29 秒）**：但 prompt 用量最大（405,911 字符），仅凭输入字符数不能确定费用最高，还需输出 token、重试用量和实际单价。
 
 ## 6. 覆盖率问题
 
-即使调优后，覆盖率仍未达 100%。主要原因：
+即使调优后，覆盖率仍未达 100%。需按状态分别统计，不能把所有未 checked 项归因于技术失败：
 
-**结构校验失败**：部分批次模型输出不符合 JSON Schema，触发一次修复重试后仍失败，该批全部规则作废。
+needs_context 和 external_verification_required 表示材料不足或需要外部核验，不能通过提高重试次数消除。completed 仅表示无技术错误，不代表所有规则已得出明确结论。
+
+**结构或语义校验失败**：部分批次模型输出不符合 JSON Schema，触发一次修复重试后仍失败，该批全部规则作废。
 
 实测错误样例：
 
@@ -183,7 +185,7 @@ intermediary_prohibited_illegal_commission_seeking
 | **合计（无图、无重试）** | **24** |
 | **合计（无图、全部重试）** | **47** |
 
-`AUDIT_MAX_MODEL_ATTEMPTS=40`，最坏情况 47 > 40 会撞上限，导致后续规则 `budget_exhausted` 失败。
+以上 23 批仅适用于旧顺序切分。聚类后 cap=2 的静态结果为 25 批，则无图基础调用 26 次，全部一次结构修复为 51 次；网络重试另计。实际分批还受完整上下文拆分影响，必须按真实批次计数。`AUDIT_MAX_MODEL_ATTEMPTS=40` 在极端重试下会撞上限；保留预算保护，不以无限重试掩盖结构失败。
 
 ## 8. 权衡总结
 
@@ -196,14 +198,14 @@ intermediary_prohibited_illegal_commission_seeking
 | 提覆盖 | 提高 attempts / timeout | 等待更久 |
 | 提覆盖 | 减小批次 | 调用次数增加 |
 
-**当前无法同时最优化「耗时」与「成本」**：聚类省 prompt 但增耗时，小批次快但调用多。
+**当前实验尚未证明存在同时最优化「耗时」与「成本」的配置**：聚类省 prompt 但增耗时，小批次快但调用多。
 
 ## 9. 未验证方向
 
 以下方向未实测，供后续评估：
 
 1. **换 `qwen-plus` 或 `qwen-turbo`**：单规则测试快 9–25 倍，但真实审核质量未评估
-2. **简化输出 schema**：如去掉 `model_confidence`、只输出 `met=false` 的条件
+2. **简化输出 schema**：如减少冗余解释；仍完整输出 true/false/unknown 条件，禁止省略条件默认通过
 3. **按规则单独重试失败批次**：而非整批作废，可提升覆盖率
 4. **提高 `AUDIT_TIMEOUT_SECONDS`**（150 → 240）：让更多批次完成
 5. **索引二进制化**：当前 JSON 存 359×1024 浮点数占 8.2 MB，可压至约 1.5 MB
@@ -241,3 +243,14 @@ AUDIT_MAX_MODEL_ATTEMPTS=40
 - 真实审核结果受模型服务端负载影响，同一配置多次运行耗时会有差异
 - 覆盖率反映「已检查比例」，不代表判定准确性
 - 模型置信度未经校准，不作为正确率
+
+
+## 12. 2026-10-12 诊断修正与受控复验
+
+旧表格作为历史观察保留，不代表新规则集的稳定性能结论。新代码 workflow=1.2-diagnostics，逐调用记录 queue_ms、request_ms、transport_retry、structure_attempt、token_usage、reasoning_tokens（供应商未返回则 null）、outcome；latency_ms 保持旧口径以兼容。未获得调用名额就超时不会计为已发出模型调用；整体耗时与失败台账仍保留。
+
+meta.rule_status_counts 区分 checked、not_applicable、out_of_scope、needs_context、external_verification_required、failed。网络重试次数和结构修复次数分别统计，模型输出不合约仍执行原校验，未放宽证据/引用约束。
+
+`scripts/benchmark_audit.py` 固定 v2 快照、Prompt、五个已暴露 G1 开发案例、关闭思考、同一时间/次数预算；按固定随机种子交错模型配置顺序，每次仅一个审核请求，避免多个实验竞争配额。每条响应落盘，记录源码哈希与数据哈希；输出目录拒绝覆盖。真实 API 产生用量，仅作工程诊断，不能当成专家 gold 或正式测试集。
+
+第一阶段比较三个模型、batch=2/concurrency=8；第二阶段在选定候选上比较 batch=2/3、concurrency=4/8，各重复两轮。配置比较不自动写入 .env；没有稳定性证据不切换线上模型。最新结果目录和结论见后续执行记录。
