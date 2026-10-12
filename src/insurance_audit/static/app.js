@@ -34,7 +34,14 @@ function render(result) {
     if (result.images?.length) { const d = details('逐图提取记录与可读性'); for (const image of result.images) { const original = resultPictures[Number(image.image_id.split('_')[1]) - 1]; if (original) { const preview = elem('img'); preview.src = original.url; preview.alt = `提交原图 ${image.image_id}`; preview.className = 'result-image'; d.append(preview); } d.append(elem('h4', image.image_id), elem('p', image.visible_text || '没有可靠文字', 'source-text')); for (const line of image.unreadable_regions) d.append(elem('p', `不可读：${line}`, 'warning')); for (const line of image.visual_observations) d.append(elem('p', `画面观察：${line}`)); } host.append(d); }
     for (const w of result.warnings || []) host.append(elem('p', w, 'warning')); if (result.meta) host.append(elem('p', `耗时 ${(result.meta.latency_ms / 1000).toFixed(1)} 秒 · 模型尝试 ${result.meta.attempts} 次 · 追踪 ${result.trace_id}`, 'privacy'));
 }
-function busy(on) { document.body.classList.toggle('busy', on); $('submit').disabled = on; $('cancel').hidden = !on; for (const e of document.querySelectorAll('textarea,select,input,[data-example],.toggle-option')) e.disabled = on; setText('empty-title', on ? '审核中' : '等待提交材料'); setText('empty-hint', on ? '正在比对营销证据与法规原文，请稍候。' : '审核完成后，在这里逐项对照营销证据与法规原文。'); const bar = $('progress'); if (bar) bar.hidden = !on; if (!on) setProgress(null); if (on) clearObservations(); redraw(); }
+function busy(on) { document.body.classList.toggle('busy', on); $('submit').disabled = on; $('cancel').hidden = !on; for (const e of document.querySelectorAll('textarea,select,input,[data-example],.toggle-option')) e.disabled = on; setText('empty-title', on ? '审核中' : '等待提交材料'); setText('empty-hint', on ? '正在比对营销证据与法规原文，请稍候。' : '审核完成后，在这里逐项对照营销证据与法规原文。'); const bar = $('progress'); if (bar) bar.hidden = !on; if (!on) setProgress(null); if (on) { clearObservations(); resetResults(); } redraw(); }
+// A new audit starts from a clean panel; the previous verdict must not linger.
+function resetResults() {
+    const host = $('results'); if (host) { host.replaceChildren(); host.hidden = true; }
+    const empty = $('empty'); if (empty) empty.hidden = false;
+    const download = $('download'); if (download) download.disabled = true;
+    lastResult = null;
+}
 // Progress is advisory: it reflects completed rule batches, never a verdict.
 function setProgress(event) {
     const host = $('progress'); if (!host) return;
