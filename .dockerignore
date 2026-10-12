@@ -19,7 +19,6 @@ SPEC.md
 Spec_01.md
 Spec_02.md
 Requirement.md
-requirements-build.in
 requirements-build.lock
 requirements-dev.lock
 requirements-runtime.in

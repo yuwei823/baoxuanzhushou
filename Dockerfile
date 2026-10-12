@@ -1,9 +1,15 @@
+# syntax=docker/dockerfile:1
+
 # Stage 1: resolve a Linux runtime lock with hashes inside the build.
 FROM python:3.11-slim AS deps
 WORKDIR /build
+# Use the Aliyun PyPI mirror for speed; fall back to PyPI for anything missing.
+# The mirror serves byte-identical files, so --generate-hashes stays valid.
+COPY pip.conf /etc/pip.conf
 RUN pip install --no-cache-dir pip-tools==7.6.2
 COPY requirements-runtime.in .
-RUN pip-compile --generate-hashes --output-file requirements-runtime.lock requirements-runtime.in
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip-compile --generate-hashes --output-file requirements-runtime.lock requirements-runtime.in
 
 # Stage 2: runtime image; published corpus snapshot and vector index are baked in.
 FROM python:3.11-slim AS runtime
@@ -12,6 +18,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     PROJECT_ROOT=/app
 WORKDIR /app
+COPY pip.conf /etc/pip.conf
 COPY --from=deps /build/requirements-runtime.lock .
 RUN pip install --require-hashes -r requirements-runtime.lock
 COPY pyproject.toml ./
