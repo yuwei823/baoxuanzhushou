@@ -140,9 +140,14 @@ def main() -> None:
     elif args.command == "ingest":
         from insurance_audit.corpus.ingest import build_candidate
 
+        # Default to the source manifest that matches the requested ruleset, so
+        # the default cannot silently drift to a superseded snapshot.
+        source_manifest = args.source_manifest or (
+            args.root / f"data/extracted/source-manifest-{args.ruleset}.json"
+        )
         result = build_candidate(
             args.root.resolve(),
-            args.source_manifest or args.root / "data/extracted/official-source-manifest.json",
+            source_manifest,
             args.ruleset,
         )
         print(json.dumps(result, ensure_ascii=False, indent=2))

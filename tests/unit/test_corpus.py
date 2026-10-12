@@ -50,12 +50,11 @@ def candidate(tmp_path):
     root = Path(__file__).resolve().parents[2]
     for folder in ("data/corpus", "data/sources", "data/extracted", "法律法规"):
         shutil.copytree(root / folder, tmp_path / folder)
-    manifest_path = tmp_path / "data/corpus/official-v1-2026-10-11/manifest.json"
+    manifest_path = tmp_path / "data/corpus/official-v3-2026-10-12/manifest.json"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     manifest["publication_status"] = "candidate"
     manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
-    return tmp_path, "official-v1-2026-10-11"
-
+    return tmp_path, "official-v3-2026-10-12"
 
 def mutate(root, ruleset, filename, transform, *, rehash=False):
     output = root / "data/corpus" / ruleset
@@ -154,7 +153,11 @@ def test_publication_is_immutable_and_idempotent(candidate):
     assert first["publication_status"] == "published"
     assert publish_snapshot(root, ruleset) == first
     with pytest.raises(ValueError, match="cannot be overwritten"):
-        build_candidate(root, root / "data/extracted/official-source-manifest.json", ruleset)
+        build_candidate(
+            root,
+            root / "data/extracted/source-manifest-official-v3-2026-10-12.json",
+            ruleset,
+        )
     with pytest.raises(ValueError, match="immutable"):
         snapshot_manifest(root, root / "data/corpus" / ruleset, ruleset)
 
