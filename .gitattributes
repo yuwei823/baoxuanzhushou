@@ -1,0 +1,17 @@
+# Normalize line endings so hash-bound corpus files stay byte-identical
+# across Windows checkouts and Linux CI/Docker builds.
+* text=auto eol=lf
+
+# Binary sources must never be touched by line-ending conversion.
+*.doc binary
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.zip binary
+*.gz binary

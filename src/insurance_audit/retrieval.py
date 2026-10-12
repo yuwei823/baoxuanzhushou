@@ -1,5 +1,7 @@
 import json
 import logging
+from functools import lru_cache
+from pathlib import Path
 
 import jieba
 from rank_bm25 import BM25Okapi
@@ -12,15 +14,25 @@ from insurance_audit.vector_index import load_index, normalize
 jieba.setLogLevel(logging.ERROR)
 
 
+@lru_cache(maxsize=8)
+def corpus_release_ready(root: str, ruleset_id: str) -> bool:
+    """Cache the release gate per (root, ruleset).
+
+    A published snapshot is immutable, so re-validating on every Corpus
+    construction only repeats the same full-file hashing. Callers that mutate
+    corpus files must call validate_corpus directly (or invalidate this cache).
+    """
+    return validate_corpus(Path(root), ruleset_id)["release_ready"]
+
+
 class Corpus:
     def __init__(self, settings, require_index=True):
         self.settings = settings
         root, ruleset = settings.project_root.resolve(), settings.ruleset_id
         path = confined(root, "data/corpus/" + ruleset)
         manifest = json.loads((path / "manifest.json").read_text(encoding="utf-8"))
-        if (
-            manifest.get("publication_status") != "published"
-            or not validate_corpus(root, ruleset)["release_ready"]
+        if manifest.get("publication_status") != "published" or not corpus_release_ready(
+            str(root), ruleset
         ):
             raise ValueError("语料尚未发布或未通过完整性校验。")
         self.manifest, self.hash = manifest, sha256(path / "manifest.json")
