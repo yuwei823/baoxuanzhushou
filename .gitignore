@@ -14,3 +14,4 @@ tmp/
 data/runtime/
 data/uploads/
 *.log
+data/extracted/extraction-registry.json
