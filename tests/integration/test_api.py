@@ -38,7 +38,8 @@ def post(client, text="测试", context=None, files=None):
 
 def test_metadata_and_current_article_allowlist(client):
     assert client.get("/readyz").json()["mock"]
-    assert client.get("/api/v1/rulesets/current").json()["rule_count"] == 34
+    corpus = client.app.state.corpus
+    assert client.get("/api/v1/rulesets/current").json()["rule_count"] == len(corpus.rules)
     assert client.get("/api/v1/articles/not-known").status_code == 404
     assert client.get("/").status_code == 200
     assert "frame-ancestors 'none'" in client.get("/").headers["Content-Security-Policy"]

@@ -118,7 +118,7 @@ async def test_text_batch_timeout_retains_valid_violation_and_otherwise_fails(co
             AuditRequest(text=text, context=AuditContext(material_completeness="complete"))
         )
         assert result.status == expected
-        assert len(result.coverage.rules) == 34
+        assert len(result.coverage.rules) == len(corpus.rules)
         assert any(r.status == "failed" for r in result.coverage.rules)
 
 

@@ -16,13 +16,13 @@ class Settings(BaseSettings):
     embedding_model: str = "text-embedding-v4"
     embedding_dimensions: int = Field(1024, gt=0)
     retrieval_mode: Literal["bm25", "hybrid"] = "bm25"
-    ruleset_id: str = "official-v1-2026-10-11"
+    ruleset_id: str = "official-v2-2026-10-12"
     audit_mock: bool = False
     model_timeout_seconds: float = Field(45, gt=0)
     audit_timeout_seconds: float = Field(150, gt=0)
     model_max_retries: int = Field(2, ge=0, le=2)
-    model_concurrency: int = Field(2, ge=1, le=2)
-    audit_max_model_attempts: int = Field(16, ge=1, le=16)
+    model_concurrency: int = Field(2, ge=1, le=16)
+    audit_max_model_attempts: int = Field(16, ge=1, le=64)
     batch_rule_count: int = Field(6, ge=1, le=8)
     batch_max_characters: int = Field(90000, ge=1000)
     log_content: bool = False

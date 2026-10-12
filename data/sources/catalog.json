@@ -50,15 +50,14 @@
       "source_path": "法律法规/中华人民共和国保险法.doc",
       "source_type": "statute",
       "document_status": "effective",
-      "membership": "include_pending_extraction",
-      "verification_status": "metadata_pending_local_text_extraction",
+      "membership": "include",
+      "verification_status": "agent_reviewed_local_source",
       "source_sha256": "083a55d495a75a6335c02af3c90c139f3fd8f3db14548967179a397dad86527c",
       "published_on": "1995-06-30",
       "last_amended_on": "2015-04-24",
       "amendment_effective_on": "2015-04-24",
       "official_source_url": "https://www.samr.gov.cn/zw/zfxxgk/fdzdgknr/bgt/art/2023/art_4c715a53f3d4402c89f62ae77809f638.html",
-      "note": "Use the user-provided DOC as the operative source text; compare local version metadata and sampled wording before release.",
-      "workflow_status": "extraction_deferred_by_user"
+      "note": "Use the user-provided DOC as the operative source text; compare local version metadata and sampled wording before release."
     },
     {
       "document_id": "consumer_financial_rights_guidance_2015",

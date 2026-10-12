@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0",
+  "ruleset_id": "official-v2-2026-10-12",
+  "ruleset_mode": "official_snapshot",
+  "publication_status": "published",
+  "scope": "Explicitly selected locally provided regulations",
+  "excluded_sources": [
+    {
+      "document_id": "consumer_financial_rights_guidance_2015",
+      "reason": "reference_only"
+    }
+  ],
+  "sources": [
+    {
+      "document_id": "insurance_sales_behavior_order_2023_02",
+      "source_path": "法律法规/保险销售行为管理办法.doc",
+      "source_sha256": "e929839e427ed300853ed7417bdc7c1688c955e62df47cfe3f27f9231681b52a",
+      "snapshot_source_path": "data/corpus/official-v2-2026-10-12/source-files/保险销售行为管理办法.doc",
+      "extraction_sha256": "ee0f6fea1adbcd243c9a728a3184c6773c690540cc135de9139a5dcb83d8cedc",
+      "snapshot_extraction_path": "data/corpus/official-v2-2026-10-12/extracted-files/保险销售行为管理办法.paragraphs.json",
+      "document_status": "effective"
+    },
+    {
+      "document_id": "financial_network_marketing_order_2026_09",
+      "source_path": "法律法规/金融产品网络营销管理办法.pdf",
+      "source_sha256": "7bc3f991244609af7a171c302282ab03bdc8d6540a86bd20cc5cbeb5b9e8f001",
+      "snapshot_source_path": "data/corpus/official-v2-2026-10-12/source-files/金融产品网络营销管理办法.pdf",
+      "extraction_sha256": "75b96d6f412046fee87da515656010d11dc3afe9ee91ff7b018e03261ad45197",
+      "snapshot_extraction_path": "data/corpus/official-v2-2026-10-12/extracted-files/金融产品网络营销管理办法.pages.json",
+      "document_status": "effective"
+    },
+    {
+      "document_id": "internet_insurance_supervision_order_2020_13",
+      "source_path": "法律法规/互联网保险业务监管办法.doc",
+      "source_sha256": "70222ac5d0ab7819bfdc7eabbaf6c8eeb8414b2d038e16b99ca8de09a90efd9a",
+      "snapshot_source_path": "data/corpus/official-v2-2026-10-12/source-files/互联网保险业务监管办法.doc",
+      "extraction_sha256": "aff3b0af04f165690e8d698a4424c11aa5d40f2f949f5b0234cccbd149496721",
+      "snapshot_extraction_path": "data/corpus/official-v2-2026-10-12/extracted-files/互联网保险业务监管办法.paragraphs.json",
+      "document_status": "effective"
+    },
+    {
+      "document_id": "insurance_law_local_2015_consolidation",
+      "source_path": "法律法规/中华人民共和国保险法.doc",
+      "source_sha256": "083a55d495a75a6335c02af3c90c139f3fd8f3db14548967179a397dad86527c",
+      "snapshot_source_path": "data/corpus/official-v2-2026-10-12/source-files/中华人民共和国保险法.doc",
+      "extraction_sha256": "1eb7c541c06f89dee549f7c382320a6ac9faf6e62418a0b2b3c39905ec41ec04",
+      "snapshot_extraction_path": "data/corpus/official-v2-2026-10-12/extracted-files/中华人民共和国保险法.paragraphs.json",
+      "document_status": "effective"
+    }
+  ],
+  "artifacts": {
+    "documents.jsonl": "39e136ff8ee1b137ae9e2e7c4e7fe2dc82b3d1e5591102bfbd59d31c717e4e5b",
+    "articles.jsonl": "5c9f12e794d4b3574183aa56d0b3328453a5362dcb03e75104f94da545143bb3",
+    "chunks.jsonl": "9bc6ab8fad5dbf2574795cc6badf4d72a6208172a9ef869bfc922854d7e90e1c",
+    "rule_cards.jsonl": "aff2ccf1c52ff7f0d918ab455f70a815993cfef1dea295d8562bc60477761764",
+    "article-review-ledger.jsonl": "8baedb7703445d5706a8773981726a41d0909f78c8b08636e6ac9f3956134b76",
+    "review.json": "849914e324e166ac5a05a41d64c0e472adc0aa39709aadca74b056757b98f748"
+  },
+  "published_at_utc": "2026-10-12T07:07:28.969426+00:00",
+  "review_basis": "implementation_agent_local_source_review",
+  "production_legal_certification": false
+}

@@ -32,9 +32,10 @@ async def test_index_build_reuse_and_tamper_rejection(corpus, tmp_path):
 
     provider = Embeddings()
     report = await build_index(corpus, settings, provider)
-    assert provider.calls == 18 and report["article_count"] == 172
+    expected_calls = -(-len(corpus.ids) // 10)
+    assert provider.calls == expected_calls and report["article_count"] == len(corpus.ids)
     assert (await build_index(corpus, settings, provider))["status"] == "reused"
-    assert provider.calls == 18
+    assert provider.calls == expected_calls
     from pathlib import Path
 
     path = Path(report["path"])
@@ -107,7 +108,12 @@ async def test_hybrid_search_full_text_and_recalled_originals_in_prompt(corpus):
                 hits,
             )[1]["content"]
         )
-        supplied = {a["article_id"]: a["original_text"] for a in payload["articles"]}
+        supplied = {
+            a["article_id"]: a["original_text"]
+            for group in payload["rule_articles"]
+            for a in group["articles"]
+        }
+        supplied.update({a["article_id"]: a["original_text"] for a in payload["articles"]})
         assert all(supplied[aid] == corpus.articles[aid]["original_text"] for aid in hits)
     assert seen == set(corpus.rules)
 

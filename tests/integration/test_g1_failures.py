@@ -20,9 +20,10 @@ def test_text_api_failure_matrix_and_sanitized_metadata(code, http_status, caplo
 
     with TestClient(create_app(Settings(_env_file=None, audit_mock=True), Failed())) as client:
         response = client.post("/api/v1/audits", files={"text": (None, "private_marker_87321")})
+        total = len(client.app.state.corpus.rules)
     assert response.status_code == http_status
     assert response.json()["decision"] is None
-    assert response.json()["coverage"]["total"] == 34
+    assert response.json()["coverage"]["total"] == total
     assert "private_marker_87321" not in caplog.text
     assert response.json()["trace_id"] in caplog.text
 

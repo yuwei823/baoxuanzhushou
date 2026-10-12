@@ -15,3 +15,5 @@ data/runtime/
 data/uploads/
 *.log
 data/extracted/extraction-registry.json
+# Evaluation run output; the extracted .json fixture is what tests replay.
+reports/g1-next-live-*/

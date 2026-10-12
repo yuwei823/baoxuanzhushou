@@ -22,6 +22,7 @@ from insurance_audit.schemas import (
 from insurance_audit.service import AuditService, aggregate
 from insurance_audit.uploads import InputError, validate_image
 from insurance_audit.workflow import (
+    JUDGE_RULE_FIELDS,
     citation_repair_context,
     judge_messages,
     resolve_condition_ids,
@@ -211,8 +212,18 @@ def test_compact_prompt_preserves_full_articles_and_rule_conditions(corpus):
                 "content"
             ]
         )
-        assert payload["rules"] == cards
-        assert {a["article_id"] for a in payload["articles"]} == set(articles)
+        assert payload["rules"] == [{k: c[k] for k in JUDGE_RULE_FIELDS if k in c} for c in cards]
+        # Citable articles carry their full text under rule_articles...
+        supplied = {
+            a["article_id"]: a for group in payload["rule_articles"] for a in group["articles"]
+        }
+        for card in cards:
+            for aid in card["article_ids"]:
+                assert supplied[aid]["original_text"] == articles[aid]["original_text"]
+                assert "normalized_text" not in supplied[aid]
+                assert "text_sha256" not in supplied[aid]
+        # ...and `articles` holds only the remaining context, so nothing repeats.
+        assert {a["article_id"] for a in payload["articles"]}.isdisjoint(supplied)
         for article in payload["articles"]:
             assert article["original_text"] == articles[article["article_id"]]["original_text"]
             assert "normalized_text" not in article
@@ -231,14 +242,18 @@ def test_prompt_lists_per_rule_citation_allowlist_and_trigger_guidance(corpus):
             assert payload["allowed_citations"][card["rule_id"]] == {
                 aid: articles[aid]["article_label"] for aid in card["article_ids"]
             }
-        supplied = {a["article_id"]: a for a in payload["articles"]}
+        supplied = {
+            a["article_id"]: a for group in payload["rule_articles"] for a in group["articles"]
+        }
         for card in cards:
             for aid in card["article_ids"]:
-                assert card["rule_id"] in supplied[aid]["direct_for_rule_ids"]
+                assert card["rule_id"] in [
+                    g["rule_id"] for g in payload["rule_articles"] if aid in g["article_ids"]
+                ]
         for aid in articles:
-            assert supplied[aid]["direct_for_rule_ids"] == [
-                c["rule_id"] for c in cards if aid in c["article_ids"]
-            ]
+            if aid in supplied:
+                continue
+            assert supplied.get(aid) is None
     payload = json.loads(
         judge_messages(
             AuditRequest(text="教育问答"),
