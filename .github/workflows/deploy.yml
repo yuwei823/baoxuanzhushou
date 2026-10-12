@@ -33,7 +33,18 @@ jobs:
             set -e
             cd /root/baoxuanzhushou
             git pull --ff-only
+            # .env is gitignored, so a stale copy silently pins an old ruleset.
+            # Fail loudly instead of deploying the wrong corpus.
+            expected=$(grep -E '^RULESET_ID=' .env.example | cut -d= -f2)
+            actual=$(grep -E '^RULESET_ID=' .env | cut -d= -f2)
+            if [ "$expected" != "$actual" ]; then
+              echo "::error::.env RULESET_ID=$actual does not match .env.example RULESET_ID=$expected"
+              exit 1
+            fi
             docker compose up -d --build
-            sleep 10
-            curl -fsS --max-time 30 http://127.0.0.1:8000/readyz
+            sleep 15
+            # The audit service is only exposed on the compose network, so probe it
+            # from inside the container instead of from the host.
+            docker compose exec -T audit python -c \
+              "import urllib.request;print(urllib.request.urlopen('http://127.0.0.1:8000/readyz',timeout=10).read().decode())"
             docker compose ps
