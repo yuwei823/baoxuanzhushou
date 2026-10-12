@@ -21,6 +21,9 @@ class AuditContext(StrictModel):
 class AuditRequest(StrictModel):
     text: str = Field("", max_length=10000)
     context: AuditContext = Field(default_factory=AuditContext)
+    # "concise" hides non-blocking review items so simple material is not buried in
+    # caveats; "strict" surfaces every review item. Violations always show.
+    depth: Literal["concise", "strict"] = "concise"
 
 
 class TextBlock(StrictModel):
@@ -133,6 +136,8 @@ class ReviewItem(StrictModel):
     type: str
     reason: str
     blocking: bool = True
+    # Advisory items still shape the verdict but are hidden in concise mode.
+    advisory: bool = False
     required_information: list[str] = Field(default_factory=list)
 
 

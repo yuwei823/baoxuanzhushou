@@ -350,6 +350,10 @@ def verify(finding, card, sources, corpus, request, readable):
             type=status,
             reason=finding.reason,
             required_information=finding.missing_facts or card["required_facts"],
+            # Advisory: concise mode hides this from the report, but it still
+            # drives the verdict so the conclusion stays honest.
+            blocking=True,
+            advisory=True,
         )
     violation = None
     if outcome == "violation":

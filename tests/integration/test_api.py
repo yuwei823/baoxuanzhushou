@@ -98,33 +98,28 @@ def test_body_total_limit_without_relying_on_file_extension(client):
     assert response.status_code == 413
 
 
-def test_shared_token_guards_api_and_stays_off_by_default(client):
+def test_api_is_open_by_default(client):
     assert client.post("/api/v1/audits", files={"text": (None, "测试")}).status_code == 200
 
 
-def test_shared_token_guards_api_but_page_and_health_stay_open():
-    settings = Settings(_env_file=None, audit_mock=True, auth_token="team-secret")
-    with TestClient(create_app(settings)) as client:
-        assert client.get("/").status_code == 200
-        assert client.get("/healthz").status_code == 200
-        assert client.get("/readyz").status_code == 200
-        assert (
-            client.post("/api/v1/audits", files={"text": (None, "测试")}).status_code == 401
-        )
-        assert (
-            client.post(
-                "/api/v1/audits",
-                files={"text": (None, "测试")},
-                headers={"Authorization": "Bearer wrong"},
-            ).status_code
-            == 401
-        )
-        ok = client.post(
-            "/api/v1/audits",
-            files={"text": (None, "测试")},
-            headers={"Authorization": "Bearer team-secret"},
-        )
-        assert ok.status_code == 200
+def test_depth_defaults_to_concise_and_accepts_strict(client):
+    concise = client.post("/api/v1/audits", files={"text": (None, "监管部门担保收益")}).json()
+    assert concise["meta"]["depth"] == "concise"
+    strict = client.post(
+        "/api/v1/audits",
+        files={"text": (None, "监管部门担保收益"), "depth": (None, "strict")},
+    ).json()
+    assert strict["meta"]["depth"] == "strict"
+    # Strict surfaces at least as many review items, and never changes the violations.
+    assert len(strict["review_items"]) >= len(concise["review_items"])
+    assert len(strict["violations"]) == len(concise["violations"])
+
+
+def test_unknown_depth_is_rejected(client):
+    response = client.post(
+        "/api/v1/audits", files={"text": (None, "测试"), "depth": (None, "deep")}
+    )
+    assert response.status_code == 422
 
 
 @pytest.mark.asyncio
@@ -137,12 +132,11 @@ async def test_audit_concurrency_cap_rejects_while_busy():
             await release.wait()
             return await super().call(*args, **kwargs)
 
-    app = create_app(
-        Settings(_env_file=None, audit_mock=True, audit_max_concurrency=1), Slow()
-    )
-    async with app.router.lifespan_context(app), httpx.AsyncClient(
-        transport=httpx.ASGITransport(app=app), base_url="http://test"
-    ) as client:
+    app = create_app(Settings(_env_file=None, audit_mock=True, audit_max_concurrency=1), Slow())
+    async with (
+        app.router.lifespan_context(app),
+        httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client,
+    ):
         first = asyncio.create_task(
             client.post("/api/v1/audits", files={"text": (None, "监管部门担保收益")})
         )

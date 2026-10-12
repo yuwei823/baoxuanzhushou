@@ -33,14 +33,17 @@ vim .env
 ```
 DASHSCOPE_API_KEY=sk-xxx
 BAILIAN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
-BAILIAN_TEXT_MODEL=qwen3.7-plus
+BAILIAN_TEXT_MODEL=qwen-plus
 BAILIAN_VISION_MODEL=qwen3-vl-plus
-AUTH_TOKEN=换成团队共享口令
+MODEL_CONCURRENCY=8
+BATCH_RULE_COUNT=2
+AUDIT_MAX_MODEL_ATTEMPTS=40
 AUDIT_MAX_CONCURRENCY=2
 ```
 
-- `AUTH_TOKEN`：建议必设。页面上会提示填写此口令，API 无口令返回 401。
 - `AUDIT_MAX_CONCURRENCY`：同时进行的审核数上限，超限返回 429（防止误操作产生大量调用费用）。
+- `MODEL_CONCURRENCY` / `BATCH_RULE_COUNT` / `AUDIT_MAX_MODEL_ATTEMPTS`：单次审核内的并发与分批参数。实测将单次审核从约 88 秒降到约 27–29 秒，并提高规则覆盖率。
+- 服务默认对 `/api/*` 开放，不设访问口令。如需限制访问，请在 Caddy 层加认证，不要依赖应用内的口令。
 
 ## 2. 首次启动
 

@@ -47,6 +47,10 @@
                 <details class="context" open>
                     <summary>补充上下文 <small>不确定时保留“未知”</small></summary>
                     <div class="fields">
+                        <label>审核模式<select id="depth">
+                                <option value="concise">极简 · 只报违规</option>
+                                <option value="strict">严格 · 含待核验项</option>
+                            </select></label>
                         <label>投放渠道<select id="channel">
                                 <option value="unknown">未知</option>
                                 <option value="internet">互联网</option>
@@ -73,8 +77,7 @@
                             </select></label>
                     </div>
                 </details>
-                <div class="actions"><input id="token" type="password" placeholder="访问口令（可选）" autocomplete="off"
-                        aria-label="访问口令"><button id="submit" class="primary">开始审核 <span>↗</span></button><button
+                <div class="actions"><button id="submit" class="primary">开始审核 <span>↗</span></button><button
                         id="cancel" hidden>取消</button></div>
                 <p class="privacy">图片仅在本次请求中处理；原文不会写入运行日志。</p>
                 <div class="examples"><span>试用示例</span><button data-example="violation">监管背书</button><button

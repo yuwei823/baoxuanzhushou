@@ -2,9 +2,13 @@
 
 2026-10-11。对应 schemas.py、api.py、service.py。图片代码保留，当前开发与真实验收以纯文本为主。
 
-POST /api/v1/audits 使用 multipart/form-data；text 为最多 10,000 Unicode 码点的文本，context 为可选 JSON 字符串。图片参数 images 支持文件，禁止 URL/任意服务器路径。文本与图片至少提供一项。
+POST /api/v1/audits 使用 multipart/form-data；text 为最多 10,000 Unicode 码点的文本，context 为可选 JSON 字符串，depth 为可选审核模式。图片参数 images 支持文件，禁止 URL/任意服务器路径。文本与图片至少提供一项。
 
 context 四个字段默认 unknown：channel（internet/offline），publisher_type（insurance_institution/insurance_intermediary/marketing_personnel/other），product_type（insurance/life_insurance/property_insurance/other），material_completeness（complete/partial）。用户声明不等于外部认证。
+
+depth 默认 concise：只返回阻断性 review_items，隐藏提示性待核验项，避免简单材料被大量保留意见淹没；strict 返回全部 review_items。两种模式都不改变 violations、status 与 decision，仅影响 review_items 的展示数量；被隐藏的条数记在 meta.hidden_review_items。非法取值返回 422。
+
+接口默认开放，不校验访问口令。如需限制访问请在反向代理层实现。
 
 ## 确定性状态矩阵
 

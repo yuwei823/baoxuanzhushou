@@ -96,14 +96,6 @@ def create_app(settings=None, provider=None):
         response.headers["Cache-Control"] = "no-store"
         return response
 
-    @application.middleware("http")
-    async def access_token(request, call_next):
-        if settings.auth_token and request.url.path.startswith("/api/") and (
-            request.headers.get("authorization") != f"Bearer {settings.auth_token}"
-        ):
-            return error_response("缺少或无效的访问口令，请在页面输入后重试。", 401, "unauthorized")
-        return await call_next(request)
-
     @application.exception_handler(InputError)
     async def handle_input(request, error):
         return error_response(str(error), error.status)
@@ -178,18 +170,26 @@ def create_app(settings=None, provider=None):
         if not content_type.startswith("multipart/form-data"):
             raise InputError("请使用 multipart/form-data 上传图文。", 415)
         try:
-            async with request.form(max_files=5, max_fields=3, max_part_size=100 * 1024) as form:
-                if set(form) - {"text", "context", "images", "images[]"}:
+            async with request.form(max_files=5, max_fields=4, max_part_size=100 * 1024) as form:
+                if set(form) - {"text", "context", "images", "images[]", "depth"}:
                     raise InputError("存在不支持的字段。")
-                if len(form.getlist("text")) > 1 or len(form.getlist("context")) > 1:
-                    raise InputError("text 和 context 不可重复。")
+                if (
+                    len(form.getlist("text")) > 1
+                    or len(form.getlist("context")) > 1
+                    or len(form.getlist("depth")) > 1
+                ):
+                    raise InputError("text、context 和 depth 不可重复。")
                 files = form.getlist("images") + form.getlist("images[]")
                 if form.getlist("images") and form.getlist("images[]"):
                     raise InputError("请统一使用 images 字段，以保留上传顺序。")
                 if any(not isinstance(f, UploadFile) for f in files):
                     raise InputError("图片只能使用上传文件，不能使用 URL 或路径。")
                 context = AuditContext.model_validate_json(form.get("context") or "{}")
-                audit_request = AuditRequest(text=form.get("text") or "", context=context)
+                audit_request = AuditRequest(
+                    text=form.get("text") or "",
+                    context=context,
+                    depth=form.get("depth") or "concise",
+                )
                 if not audit_request.text.strip() and not files:
                     raise InputError("请输入文本或至少上传一张图片。")
                 images = await read_uploads(files)

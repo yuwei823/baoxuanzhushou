@@ -206,6 +206,11 @@ class AuditService:
             summary = "已发现违规，但部分检查未完成。"
         else:
             summary = summaries[decision]
+        # Concise mode keeps the verdict honest (advisory items still drive it) but
+        # hides them from the report so simple material is not buried in caveats.
+        shown_reviews = reviews
+        if request.depth == "concise":
+            shown_reviews = [r for r in reviews if not r.advisory]
         response = AuditResponse(
             audit_id=str(uuid4()),
             trace_id=str(uuid4()),
@@ -215,7 +220,7 @@ class AuditService:
             summary=summary,
             ruleset_id=self.settings.ruleset_id,
             violations=violations,
-            review_items=reviews,
+            review_items=shown_reviews,
             coverage=Coverage(
                 total=len(self.corpus.rules),
                 eligible=eligible,
@@ -243,6 +248,8 @@ class AuditService:
                 },
                 "retrieved_article_ids": retrieved,
                 "retrieval_mode": self.settings.retrieval_mode,
+                "depth": request.depth,
+                "hidden_review_items": len(reviews) - len(shown_reviews),
                 "retrieval_trace": retrieval_trace,
                 "context_trace": context_trace,
                 "assessment_trace": assessment_trace,
