@@ -1,16 +1,101 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>保宣 · 营销内容审核</title><link rel="stylesheet" href="/static/styles.css"><script src="/static/app.js" defer></script></head>
-<body><header><a href="/" class="brand">保宣<span>合规助手</span></a><span class="tag">本地审核工作台</span><span id="mode">连接中</span></header>
-<main><div class="intro"><div><p class="eyebrow">INSURANCE CONTENT REVIEW</p><h1>保险营销内容智能审核</h1><p class="lead">把文案或图片贴进下面的方框，即可对照已核对法规，得到违规结论、证据与条文原文。</p><ol class="steps"><li><b>1</b> 粘贴文案 / 拖入图片</li><li><b>2</b> 点击「开始审核」</li><li><b>3</b> 查看违规项与法规原文</li></ol></div><aside><span class="status-dot"></span><b>当前规则集</b><p id="ruleset">正在读取…</p><small id="scope"></small><details><summary>查看法规范围</summary><ul id="documents"></ul></details></aside></div>
-<div id="notice" role="status" hidden></div>
-<div class="workspace"><section class="panel input-panel"><div class="section-title"><h2>提交审核材料</h2><span>01 / INPUT</span></div>
-<div class="composer"><label for="text" class="composer-label">营销文案 / 图片 <span id="counter">0 / 10,000</span></label><textarea id="text" rows="9" placeholder="把文案粘贴到这里，或把图片拖进来（也可点下方「＋ 添加图片」）…"></textarea><div id="previews" class="previews"></div><div class="composer-bar"><label for="images" class="attach"><strong>＋ 添加图片</strong><span>JPEG / PNG / WebP · 最多 5 张 · 单张 10 MB</span></label><input id="images" type="file" accept="image/jpeg,image/png,image/webp" multiple></div></div>
-<details class="context" open><summary>补充上下文 <small>不确定时保留“未知”</small></summary><div class="fields">
-<label>投放渠道<select id="channel"><option value="unknown">未知</option><option value="internet">互联网</option><option value="offline">线下</option></select></label>
-<label>发布主体<select id="publisher_type"><option value="unknown">未知</option><option value="insurance_institution">保险机构</option><option value="insurance_intermediary">保险中介</option><option value="marketing_personnel">营销人员</option><option value="other">其他</option></select></label>
-<label>产品类型<select id="product_type"><option value="unknown">未知</option><option value="insurance">保险产品</option><option value="life_insurance">人身保险</option><option value="property_insurance">财产保险</option><option value="other">其他</option></select></label>
-<label>材料完整性<select id="material_completeness"><option value="unknown">未知</option><option value="complete">已提供完整材料</option><option value="partial">局部截取</option></select></label></div></details>
-<div class="actions"><input id="token" type="password" placeholder="访问口令（可选）" autocomplete="off" aria-label="访问口令"><button id="submit" class="primary">开始审核 <span>↗</span></button><button id="cancel" hidden>取消</button></div><p class="privacy">图片仅在本次请求中处理；原文不会写入运行日志。</p>
-<div class="examples"><span>试用示例</span><button data-example="violation">监管背书</button><button data-example="education">教育反例</button><button data-example="multi">多图补充</button><button data-example="review">局部材料</button></div>
-</section><section class="panel output-panel" aria-live="polite"><div class="section-title"><h2>审核结果</h2><button id="download" disabled>↓ JSON</button></div><div id="empty"><div class="empty-symbol">≋</div><h3>等待提交材料</h3><p>审核完成后，在这里逐项对照营销证据与法规原文。</p><div class="legend"><span>违规项</span><span>待核验事项</span><span>规则覆盖</span></div></div><div id="results" hidden></div></section></div>
-<footer>结论仅限当前规则集及已提交材料范围。模型置信度未经校准；内容检查不替代现实资质核验。</footer></main></body></html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>保宣 · 营销内容审核</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="/static/app.js" defer></script>
+</head>
+
+<body>
+    <main>
+        <div class="intro">
+            <div>
+                <p class="eyebrow">INSURANCE CONTENT REVIEW</p>
+                <h1>保险营销内容智能审核</h1>
+                <p class="lead">把文案或图片贴进下面的方框，即可对照已核对法规，得到违规结论、证据与条文原文。</p>
+                <ol class="steps">
+                    <li><b>1</b> 粘贴文案 / 拖入图片</li>
+                    <li><b>2</b> 点击「开始审核」</li>
+                    <li><b>3</b> 查看违规项与法规原文</li>
+                </ol>
+            </div>
+            <aside><span class="status-dot"></span><b>当前规则集</b>
+                <p id="ruleset">正在读取…</p><small id="scope"></small>
+                <details>
+                    <summary>查看法规范围</summary>
+                    <ul id="documents"></ul>
+                </details>
+            </aside>
+        </div>
+        <div id="notice" role="status" hidden></div>
+        <div class="workspace">
+            <section class="panel input-panel">
+                <div class="section-title">
+                    <h2>提交审核材料</h2><span>01 / INPUT</span>
+                </div>
+                <div class="composer"><label for="text" class="composer-label">营销文案 / 图片 <span id="counter">0 /
+                            10,000</span></label><textarea id="text" rows="4"
+                        placeholder="把文案粘贴到这里，或把图片拖进来（也可点下方「＋ 添加图片」）…"></textarea>
+                    <div id="previews" class="previews"></div>
+                    <div class="composer-bar"><label for="images" class="attach"><strong>＋ 添加图片</strong><span>JPEG / PNG
+                                / WebP · 最多 5 张 · 单张 10 MB</span></label><input id="images" type="file"
+                            accept="image/jpeg,image/png,image/webp" multiple></div>
+                </div>
+                <details class="context" open>
+                    <summary>补充上下文 <small>不确定时保留“未知”</small></summary>
+                    <div class="fields">
+                        <label>投放渠道<select id="channel">
+                                <option value="unknown">未知</option>
+                                <option value="internet">互联网</option>
+                                <option value="offline">线下</option>
+                            </select></label>
+                        <label>发布主体<select id="publisher_type">
+                                <option value="unknown">未知</option>
+                                <option value="insurance_institution">保险机构</option>
+                                <option value="insurance_intermediary">保险中介</option>
+                                <option value="marketing_personnel">营销人员</option>
+                                <option value="other">其他</option>
+                            </select></label>
+                        <label>产品类型<select id="product_type">
+                                <option value="unknown">未知</option>
+                                <option value="insurance">保险产品</option>
+                                <option value="life_insurance">人身保险</option>
+                                <option value="property_insurance">财产保险</option>
+                                <option value="other">其他</option>
+                            </select></label>
+                        <label>材料完整性<select id="material_completeness">
+                                <option value="unknown">未知</option>
+                                <option value="complete">已提供完整材料</option>
+                                <option value="partial">局部截取</option>
+                            </select></label>
+                    </div>
+                </details>
+                <div class="actions"><input id="token" type="password" placeholder="访问口令（可选）" autocomplete="off"
+                        aria-label="访问口令"><button id="submit" class="primary">开始审核 <span>↗</span></button><button
+                        id="cancel" hidden>取消</button></div>
+                <p class="privacy">图片仅在本次请求中处理；原文不会写入运行日志。</p>
+                <div class="examples"><span>试用示例</span><button data-example="violation">监管背书</button><button
+                        data-example="education">教育反例</button><button data-example="multi">多图补充</button><button
+                        data-example="review">局部材料</button></div>
+            </section>
+            <section class="panel output-panel" aria-live="polite">
+                <div class="section-title">
+                    <h2>审核结果</h2><button id="download" disabled>↓ JSON</button>
+                </div>
+                <div id="empty">
+                    <div class="empty-symbol">≋</div>
+                    <h3>等待提交材料</h3>
+                    <p>审核完成后，在这里逐项对照营销证据与法规原文。</p>
+                    <div class="legend"><span>违规项</span><span>待核验事项</span><span>规则覆盖</span></div>
+                </div>
+                <div id="results" hidden></div>
+            </section>
+        </div>
+        <footer>结论仅限当前规则集及已提交材料范围。模型置信度未经校准；内容检查不替代现实资质核验。</footer>
+    </main>
+</body>
+
+</html>

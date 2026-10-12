@@ -43,18 +43,18 @@
       "source_path": "法律法规/中华人民共和国保险法.doc",
       "source_sha256": "083a55d495a75a6335c02af3c90c139f3fd8f3db14548967179a397dad86527c",
       "snapshot_source_path": "data/corpus/official-v2-2026-10-12/source-files/中华人民共和国保险法.doc",
-      "extraction_sha256": "1eb7c541c06f89dee549f7c382320a6ac9faf6e62418a0b2b3c39905ec41ec04",
+      "extraction_sha256": "ac87401b20711cc6e98fb770e1883a75b99531d1134535b88a591c498ebf1cfc",
       "snapshot_extraction_path": "data/corpus/official-v2-2026-10-12/extracted-files/中华人民共和国保险法.paragraphs.json",
       "document_status": "effective"
     }
   ],
   "artifacts": {
-    "documents.jsonl": "39e136ff8ee1b137ae9e2e7c4e7fe2dc82b3d1e5591102bfbd59d31c717e4e5b",
-    "articles.jsonl": "5c9f12e794d4b3574183aa56d0b3328453a5362dcb03e75104f94da545143bb3",
-    "chunks.jsonl": "9bc6ab8fad5dbf2574795cc6badf4d72a6208172a9ef869bfc922854d7e90e1c",
-    "rule_cards.jsonl": "aff2ccf1c52ff7f0d918ab455f70a815993cfef1dea295d8562bc60477761764",
-    "article-review-ledger.jsonl": "8baedb7703445d5706a8773981726a41d0909f78c8b08636e6ac9f3956134b76",
-    "review.json": "849914e324e166ac5a05a41d64c0e472adc0aa39709aadca74b056757b98f748"
+    "documents.jsonl": "04b358edab043389610094b2242a8a0c83d50ce3f147c52e8ddcba00ff5e1bd4",
+    "articles.jsonl": "0aae1f668481a7c832923d2df8618fea62faa2af7da198c43992120edfbba242",
+    "chunks.jsonl": "8ecaa7aab4c509a70b53191bde18a680e9bf8f46c3a16fbf055dfee2fe602746",
+    "rule_cards.jsonl": "924a83e79e0079d79a32e6d2c5b4fa4d88681152a98f78fc3f2eca7d9a2a24b7",
+    "article-review-ledger.jsonl": "e5d8b85027528d8d607ba2b39d8501b028e4c6361c05cbf3e1e8b2ce415e5b4b",
+    "review.json": "ae1812cfb927491d4613c89cc804b478e2613b4d9584248624d13904b1b047b2"
   },
   "published_at_utc": "2026-10-12T07:07:28.969426+00:00",
   "review_basis": "implementation_agent_local_source_review",

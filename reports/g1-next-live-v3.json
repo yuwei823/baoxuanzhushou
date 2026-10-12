@@ -784,7 +784,7 @@
         ],
         "mock": false,
         "meta": {
-          "ruleset_hash": "a8f8bb6ea2c13ccb00ee76198cf7300add81aa9b272b6e0739357a3bddcbe10e",
+          "ruleset_hash": "e01875d6939355982eb51703a158d4eeac51e3a89d500e3853a9a7c2b2f13ed3",
           "prompt_version": "audit-v1.6-citation-guidance",
           "workflow_version": "1.1-rag",
           "retrieval_version": "segment512-rrf60-top8-v1",
@@ -2694,7 +2694,7 @@
         ],
         "mock": false,
         "meta": {
-          "ruleset_hash": "a8f8bb6ea2c13ccb00ee76198cf7300add81aa9b272b6e0739357a3bddcbe10e",
+          "ruleset_hash": "e01875d6939355982eb51703a158d4eeac51e3a89d500e3853a9a7c2b2f13ed3",
           "prompt_version": "audit-v1.6-citation-guidance",
           "workflow_version": "1.1-rag",
           "retrieval_version": "segment512-rrf60-top8-v1",
@@ -4796,7 +4796,7 @@
         ],
         "mock": false,
         "meta": {
-          "ruleset_hash": "a8f8bb6ea2c13ccb00ee76198cf7300add81aa9b272b6e0739357a3bddcbe10e",
+          "ruleset_hash": "e01875d6939355982eb51703a158d4eeac51e3a89d500e3853a9a7c2b2f13ed3",
           "prompt_version": "audit-v1.6-citation-guidance",
           "workflow_version": "1.1-rag",
           "retrieval_version": "segment512-rrf60-top8-v1",
@@ -7252,7 +7252,7 @@
         ],
         "mock": false,
         "meta": {
-          "ruleset_hash": "a8f8bb6ea2c13ccb00ee76198cf7300add81aa9b272b6e0739357a3bddcbe10e",
+          "ruleset_hash": "e01875d6939355982eb51703a158d4eeac51e3a89d500e3853a9a7c2b2f13ed3",
           "prompt_version": "audit-v1.6-citation-guidance",
           "workflow_version": "1.1-rag",
           "retrieval_version": "segment512-rrf60-top8-v1",
@@ -9143,7 +9143,7 @@
         ],
         "mock": false,
         "meta": {
-          "ruleset_hash": "a8f8bb6ea2c13ccb00ee76198cf7300add81aa9b272b6e0739357a3bddcbe10e",
+          "ruleset_hash": "e01875d6939355982eb51703a158d4eeac51e3a89d500e3853a9a7c2b2f13ed3",
           "prompt_version": "audit-v1.6-citation-guidance",
           "workflow_version": "1.1-rag",
           "retrieval_version": "segment512-rrf60-top8-v1",

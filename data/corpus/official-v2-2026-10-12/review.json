@@ -30,7 +30,7 @@
     },
     "insurance_law_local_2015_consolidation": {
       "source_sha256": "083a55d495a75a6335c02af3c90c139f3fd8f3db14548967179a397dad86527c",
-      "extraction_sha256": "1eb7c541c06f89dee549f7c382320a6ac9faf6e62418a0b2b3c39905ec41ec04",
+      "extraction_sha256": "ac87401b20711cc6e98fb770e1883a75b99531d1134535b88a591c498ebf1cfc",
       "status": "reviewed_local_extraction",
       "official_check": "metadata_and_sample_only"
     }
