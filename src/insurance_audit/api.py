@@ -76,6 +76,7 @@ def create_app(settings=None, provider=None):
     application.state.provider = provider or (
         MockProvider() if settings.audit_mock else Bailian(settings)
     )
+    audit_slots = asyncio.Semaphore(settings.audit_max_concurrency)
     try:
         application.state.corpus = Corpus(settings)
         application.state.startup_error = None
@@ -97,11 +98,10 @@ def create_app(settings=None, provider=None):
 
     @application.middleware("http")
     async def access_token(request, call_next):
-        if settings.auth_token and request.url.path.startswith("/api/"):
-            if request.headers.get("authorization") != f"Bearer {settings.auth_token}":
-                return error_response(
-                    "缺少或无效的访问口令，请在页面输入后重试。", 401, "unauthorized"
-                )
+        if settings.auth_token and request.url.path.startswith("/api/") and (
+            request.headers.get("authorization") != f"Bearer {settings.auth_token}"
+        ):
+            return error_response("缺少或无效的访问口令，请在页面输入后重试。", 401, "unauthorized")
         return await call_next(request)
 
     @application.exception_handler(InputError)
@@ -199,60 +199,67 @@ def create_app(settings=None, provider=None):
                 raise
             raise InputError("参数无效：检查上下文枚举与文本长度（最多 10,000 字）。") from error
 
-        task = asyncio.create_task(service.review(audit_request, images))
+        if audit_slots.locked():
+            return error_response("审核并发已满，请稍后重试。", 429, "busy")
 
-        client_disconnected = False
+        async def perform(audit_request, images):
+            task = asyncio.create_task(service.review(audit_request, images))
 
-        async def disconnected():
-            nonlocal client_disconnected
-            while not task.done():
-                if await request.is_disconnected():
-                    client_disconnected = True
+            client_disconnected = False
+
+            async def disconnected():
+                nonlocal client_disconnected
+                while not task.done():
+                    if await request.is_disconnected():
+                        client_disconnected = True
+                        task.cancel()
+                        return
+                    await asyncio.sleep(0.2)
+
+            monitor = asyncio.create_task(disconnected())
+            try:
+                result = await task
+            except asyncio.CancelledError:
+                if client_disconnected:
+                    return JSONResponse({"status": "cancelled", "decision": None}, status_code=499)
+                raise
+            finally:
+                monitor.cancel()
+                await asyncio.gather(monitor, return_exceptions=True)
+                if not task.done():
                     task.cancel()
-                    return
-                await asyncio.sleep(0.2)
-
-        monitor = asyncio.create_task(disconnected())
-        try:
-            result = await task
-        except asyncio.CancelledError:
-            if client_disconnected:
-                return JSONResponse({"status": "cancelled", "decision": None}, status_code=499)
-            raise
-        finally:
-            monitor.cancel()
-            await asyncio.gather(monitor, return_exceptions=True)
-            if not task.done():
-                task.cancel()
-            await asyncio.gather(task, return_exceptions=True)
-            images.clear()
-        LOGGER.info(
-            json.dumps(
-                {
-                    "trace_id": result.trace_id,
-                    "ruleset_id": result.ruleset_id,
-                    "status": result.status,
-                    "error_codes": [e.code for e in result.errors],
-                    "coverage": {
-                        "total": result.coverage.total,
-                        "checked": result.coverage.checked,
+                await asyncio.gather(task, return_exceptions=True)
+                images.clear()
+            LOGGER.info(
+                json.dumps(
+                    {
+                        "trace_id": result.trace_id,
+                        "ruleset_id": result.ruleset_id,
+                        "status": result.status,
+                        "error_codes": [e.code for e in result.errors],
+                        "coverage": {
+                            "total": result.coverage.total,
+                            "checked": result.coverage.checked,
+                        },
+                        **result.meta,
                     },
-                    **result.meta,
-                },
-                ensure_ascii=False,
+                    ensure_ascii=False,
+                )
             )
-        )
-        status_code = 200
-        if result.status == "failed":
-            codes = {e.code for e in result.errors}
-            status_code = (
-                504
-                if "budget_exhausted" in codes
-                else 502
-                if "invalid_model_output" in codes
-                else 503
-            )
-        return JSONResponse(result.model_dump(mode="json"), status_code=status_code)
+            status_code = 200
+            if result.status == "failed":
+                codes = {e.code for e in result.errors}
+                status_code = (
+                    504
+                    if "budget_exhausted" in codes
+                    else 502
+                    if "invalid_model_output" in codes
+                    else 503
+                )
+            return JSONResponse(result.model_dump(mode="json"), status_code=status_code)
+
+        async with audit_slots:
+            return await perform(audit_request, images)
 
     @application.get("/")
     async def index():

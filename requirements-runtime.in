@@ -1,0 +1,13 @@
+# Runtime-only dependencies for the Linux container image.
+# Versions mirror the verified Windows dev lock (requirements-dev.lock);
+# a Linux lock with hashes is generated inside the Docker build via pip-compile.
+fastapi==0.143.0
+uvicorn==0.54.0
+pydantic==2.14.0
+pydantic-settings==2.15.0
+openai==3.28.0
+httpx==0.28.1
+python-multipart==0.0.32
+pillow==12.3.0
+rank-bm25==0.2.2
+jieba==0.42.1

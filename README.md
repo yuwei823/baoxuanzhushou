@@ -1,8 +1,12 @@
 # 保险营销内容智能审核
 
-P0 知识库及目录自动化流水线已完成；G1/G2 已通过（2026-10-12 真实验收，合成开发案例工程验收），P3 数据集与正式效果评估尚未完成。详见 [G1 验收报告](reports/g1-acceptance-2026-10-12.md)、[图文报告](reports/multimodal-acceptance.md)。实施规格见 [SPEC.md](SPEC.md)，进度见 [PLAN.md](PLAN.md)，验收证据见 [HANDOFF.md](HANDOFF.md)。
+P0 知识库及目录自动化流水线已完成；G1/G2 已通过（2026-10-12 真实验收，合成开发案例工程验收），P3 正式评估暂缓（用户决定先上线），P4 内部上线交付件已就绪（阿里云 Docker + HTTPS + CI/CD），部署步骤见 [部署说明](docs/deployment.md)。实施规格见 [SPEC.md](SPEC.md)，进度见 [PLAN.md](PLAN.md)，验收证据见 [HANDOFF.md](HANDOFF.md)。
 
 ## 安装（Windows / Python 3.11）
+
+一键本地部署：双击根目录 **`deploy-local.bat`** —— 首次运行自动创建 .venv、按哈希锁安装依赖，然后启动服务并打开浏览器（http://127.0.0.1:8000）；停止服务双击 `stop-local.bat`。缺向量索引时会询问是否构建（产生少量 Embedding 用量），选 N 则本次以 BM25 启动。
+
+手动安装命令：
 
 ```powershell
 py -3.11 -m venv .venv

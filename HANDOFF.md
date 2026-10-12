@@ -9,7 +9,8 @@
 | P0 / G0 | 三份核心本地法规已验收并发布；保险法抽取继续暂缓 | reports/p0-acceptance.md；data/extracted/extraction-registry.json |
 | P1 / G1 | **G1 已通过（工程验收）**：五例真实调用全部符合预期，科普改写不再过度复核；逐规则引用修复已纳入 Prompt 与修复提示 | reports/g1-next-live-v2.json；reports/g1-acceptance-2026-10-12.md |
 | P2 | P2-01～04 完成，**G2 已通过**：Unicode/HTML 压力案例由 partial 转为 completed/non_compliant，引用修复成功 | reports/multimodal-acceptance.md；reports/p2-stress-reverify.json |
-| P3 | P3-01/02 准备和评估工具已启动，完整任务未验收；P3-03～05 / G3 未通过 | reports/p3-dev-replay-v1.0/report.md；docs/evaluation-labeling.md |
+| P3 | **暂缓**（用户决定先上线）：P3-01/02 准备已启动，正式数据与效果验收未完成 | reports/p3-dev-replay-v1.0/report.md；docs/evaluation-labeling.md |
+| P4 | 内部上线交付件完成，线上验证待用户执行（P4-06） | docs/deployment.md；Dockerfile；docker-compose.yml；.github/workflows/deploy.yml |
 
 ### 已实现与实际版本
 
@@ -51,6 +52,17 @@
 ```
 
 本次更新范围：HANDOFF.md、PLAN.md、README.md、docs/decisions.md、reports/g1-acceptance-2026-10-12.md、reports/multimodal-acceptance.md；代码 workflow.py、service.py、models/bailian.py、scripts/verify_stress.py、tests/unit/test_audit.py。已核对 PLAN、P3 metrics/manifest 和当前评估入口，补充当前摘要与接手顺序，保留全部历史记录。
+
+---
+
+## 2026-10-12 — P4 内部上线交付（用户指示：P3 暂缓、先上线）
+
+- 用户决定：快速上线到阿里云（Docker + 域名 baoxuanzhushou.app + GitHub Actions 自动部署），P3 正式评估暂缓（保留未勾选，不取消）。本机不装 Docker，构建在服务器上执行。
+- 代码：config.py 新增 `auth_token`（可选共享口令，未设时行为不变）与 `audit_max_concurrency`（默认 2，超限 429）；api.py 增加口令中间件（仅保护 /api/*，页面与健康检查开放）与审核并发信号量；前端新增口令输入框（localStorage 保存）、Authorization 头与 401/429 提示；.env.example 增补两项。
+- 部署件：Dockerfile（两阶段：容器内 pip-compile 生成 Linux 哈希锁 → 运行时镜像烘焙已发布语料与向量索引，PROJECT_ROOT=/app）、.dockerignore、requirements-runtime.in（与 Windows dev 锁同版本）、docker-compose.yml（audit + caddy、健康检查、日志轮转）、Caddyfile（自动 HTTPS、其它主机名 404）、.github/workflows/deploy.yml（push main → 测试 → SSH 部署 → /readyz 检查）、docs/deployment.md（ECS 初始化、DNS/安全组、secrets、运维与免责）。另交付本地一键部署：deploy-local.bat / stop-local.bat + scripts/deploy_local.ps1 / stop_local.ps1（自动建 venv 装锁、检查 .env 与索引、停旧启新、开浏览器；已实测 hybrid 就绪）。
+- 验证：pytest 全量通过（新增口令 401/200、并发 429 用例）；ruff 通过。Docker 镜像未本地构建（本机无 Docker），首次构建与 G4 线上验证待用户在阿里云执行。
+- 边界：上线状态为“内部使用”；P3 未验收，不得宣称效果达标；规则卡非法律专家认证，needs_review 通道与免责声明保留。密钥仅存服务器 .env，不入库不入镜像。
+- 下一步：用户在 GitHub 建私有仓库并推送（推送前按 docs/deployment.md 清点敏感文件）、ECS 初始化与首次构建、配置 Actions secrets 与 Deploy Key、验证域名与一次真实审核（P4-06）。
 
 ---
 

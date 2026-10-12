@@ -1,0 +1,15 @@
+# 站点：自动申请并续期 HTTPS 证书（.app 域名强制 HTTPS）。
+{$DOMAIN:baoxuanzhushou.app} {
+	encode zstd gzip
+	reverse_proxy audit:8000
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+		Strict-Transport-Security "max-age=31536000;"
+	}
+}
+
+# 其它主机名（含直接访问服务器 IP）一律拒绝。
+http:// {
+	respond "not found" 404
+}

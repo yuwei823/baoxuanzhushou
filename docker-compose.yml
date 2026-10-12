@@ -1,0 +1,52 @@
+services:
+  audit:
+    build: .
+    image: baoxuan-audit:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PROJECT_ROOT: /app
+      RETRIEVAL_MODE: ${RETRIEVAL_MODE:-hybrid}
+      BAILIAN_TEXT_MODEL: ${BAILIAN_TEXT_MODEL:-qwen3.7-plus}
+      BAILIAN_VISION_MODEL: ${BAILIAN_VISION_MODEL:-qwen3-vl-plus}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-text-embedding-v4}
+      EMBEDDING_DIMENSIONS: ${EMBEDDING_DIMENSIONS:-1024}
+      AUDIT_MAX_CONCURRENCY: ${AUDIT_MAX_CONCURRENCY:-2}
+    expose:
+      - "8000"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8000/readyz',timeout=5)",
+        ]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  caddy:
+    image: caddy:2.9-alpine
+    restart: unless-stopped
+    depends_on:
+      - audit
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:-baoxuanzhushou.app}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

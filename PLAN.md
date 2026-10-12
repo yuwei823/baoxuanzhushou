@@ -3,9 +3,9 @@
 版本：v1.0  
 制定日期：2026-10-11  
 依据：SPEC.md v1.2 合并并按用户决定更新为正式版快照、Requirement.md
-计划状态：P0 核心范围已验收；G1/G2 已通过（2026-10-12 真实验收，合成开发案例工程验收）。P3-01/02 准备已启动，正式数据与效果评估未完成。保险法抽取仍暂缓。
+计划状态：P0 核心范围已验收；G1/G2 已通过（2026-10-12 真实验收，合成开发案例工程验收）。2026-10-12 用户决定快速上线（阿里云 Docker + 域名 baoxuanzhushou.app + GitHub Actions 自动部署），P3 正式评估暂缓，新增 P4 内部上线阶段。保险法抽取仍暂缓。
 
-最新进展：G1 五例真实验收全部符合预期（Prompt audit-v1.6-citation-guidance，触发要点指导修复科普过度复核）；G2 Unicode/HTML 压力案例由 partial 转为 completed/non_compliant（逐规则引用白名单与修复提示）。98 项离线测试通过。详见 reports/g1-acceptance-2026-10-12.md、reports/multimodal-acceptance.md。以下 dated 记录为历史事实。
+最新进展：G1 五例真实验收全部符合预期（Prompt audit-v1.6-citation-guidance）；G2 Unicode/HTML 压力案例 completed/non_compliant。P4 已交付 Dockerfile/compose/Caddyfile/deploy.yml/部署文档与访问口令、并发上限。详见 reports/g1-acceptance-2026-10-12.md、reports/multimodal-acceptance.md、docs/deployment.md。以下 dated 记录为历史事实。
 
 ### 2026-10-11 开发进展同步
 
@@ -42,6 +42,7 @@
 | P1 纯文本闭环 | 共享服务、BM25、校验聚合、CLI/API | G0 通过 | G1：真实文本调用及状态／错误矩阵通过 |
 | P2 图文与页面 | 多图提取、网页、证据展示及导出 | G1 通过 | G2：图文、输入安全、预算与页面验收通过 |
 | P3 评估与交接 | 固定数据集、A/B、实际报告、完整文档 | G2 通过；评估标签已核对 | G3：可复现交付，指标达标情况如实列出 |
+| P4 内部上线（新增） | Docker 镜像、HTTPS 域名、CI/CD 自动部署 | G2 通过；用户决定先上线 | G4：域名可用、部署可复现、访问与成本有控制 |
 | H 混合检索 | hybrid 与 B/C 消融 | 用户已要求实施 | 工程集成验收与效果评估分开记录 |
 
 主依赖链：P0-01 → P0-02/03 → P0-04 → P0-05 → G0 → P1 → G1 → P2 → G2 → P3 → G3。P0-03A 按用户要求暂缓，作为后续扩展，不阻塞三份核心来源的 G0；当前快照不宣称覆盖保险法。
@@ -177,6 +178,8 @@
 
 2026-10-12 用户指示：可执行部分继续。G1/G2 已通过后，P3-01/02 准备已启动。建立 5 条 provisional 开发种子（目标 20/40 尚未满足）、数据契约/泄漏检查、共享服务 evaluate CLI、离线历史重放、指标及报告。98 项测试通过。报告 reports/p3-dev-replay-v1.0/report.md；5 条旧真实结果，Macro-F1 0.778、自动覆盖 3/5，仅为开发诊断。P3-03～05 和 G3 未验收，正式 test 执行保持关闭。
 
+2026-10-12 用户决定：为快速上线，**P3 正式评估暂缓**（保留未勾选，不取消）。上线状态为“内部使用”，不得宣称效果达标或正式准确率；needs_review 复核通道与免责声明必须保留。P4 上线完成后，P3 按原验收口径恢复执行。
+
 
 - [ ] **P3-01 数据集构建、核对与冻结**
   - 依赖：G0；可提前准备，最终冻结前须确定规则版本。
@@ -209,6 +212,17 @@
   - 验收：每个考题要求有对应产物及证据；锁定依赖可复现；无密钥；未完成／已知问题明确；报告目标、实测、mock 和真实调用不混淆。
 
 **G3 验收：** 交付完整且复现通过。分别记录“工程交付状态”和“效果目标达标状态”；低于目标可以交付诚实报告，但不能标为效果验收通过。人工 gold 未就绪也须作为验收未完成项保留。
+
+## 6A. P4：内部上线（用户新增，2026-10-12）
+
+- [x] **P4-01 容器化与镜像**：Dockerfile（两阶段：容器内生成 Linux 依赖哈希锁 + 运行时镜像，烘焙已发布语料与向量索引）、.dockerignore、requirements-runtime.in（与 Windows dev 锁同版本号）。本机未装 Docker，镜像构建未在本地实测，首次构建在阿里云执行。
+- [x] **P4-02 HTTPS 域名与反代**：Caddyfile 自动签发/续期证书（.app 域名强制 HTTPS），其它主机名 404；docker-compose.yml（audit 内部 8000 + caddy 80/443、健康检查、日志轮转、重启策略）。
+- [x] **P4-03 访问与成本控制**：可选 AUTH_TOKEN 口令（未设时行为不变，API 401、页面提示输入并本地保存）；AUDIT_MAX_CONCURRENCY 并发上限（超限 429）。密钥只存服务器 .env，不入库不进镜像。
+- [x] **P4-04 CI/CD 自动部署**：.github/workflows/deploy.yml——push main → Linux runner 跑 pytest → SSH 登录 ECS → git pull + docker compose up -d --build → /readyz 健康检查失败即报红。secrets：SSH_HOST/SSH_USER/SSH_KEY；ECS 配 Deploy Key。
+- [x] **P4-05 部署文档与边界**：docs/deployment.md（ECS 初始化、DNS/安全组、.env、首次启动、CI secrets、运维命令、免责声明与规则更新流程）。
+- [ ] **P4-06 线上验证（待用户执行）**：ECS 首次构建成功、https://baoxuanzhushou.app 可访问、真实一次审核完成、CI 触发一次自动部署。
+
+**G4 验收：** 域名可用、CI 自动部署生效、访问口令与并发上限生效、免责声明保留。P4 不改变 P3 未验收状态；上线不等于效果达标。
 
 ## 7. H：混合检索（按用户后续要求实施）
 
