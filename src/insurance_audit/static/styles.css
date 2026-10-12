@@ -516,7 +516,7 @@ body.busy #button-group #cancel {
     border: 0;
     border-radius: 0;
     background: transparent;
-    font-size: 14px;
+    font-size: 13px;
     height: 48px;
     color: var(--muted);
     cursor: pointer;
@@ -571,7 +571,7 @@ select {
     flex: 1 1 auto;
     width: auto;
     border: 0;
-    font-size: 14px;
+    font-size: 13px;
     height: 48px;
     white-space: nowrap
 }
@@ -583,7 +583,7 @@ select {
     color: white;
     border: 0;
     border-radius: 7px;
-    font-size: 14px;
+    font-size: 13px;
     height: 48px;
     white-space: nowrap
 }

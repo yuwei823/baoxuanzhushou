@@ -6,7 +6,7 @@
 
 ### 当前规则与实现
 
-- 当前快照 `official-v2-2026-10-12` 已发布：4 份用户本地法规，含保险法，359 条文、46 规则。严格 validate-corpus 为 release_ready=true，0 完整性错误、0 审阅门禁。不要沿用旧“保险法暂缓”的状态。
+- 当前快照 `official-v3-2026-10-12` 已发布：4 份用户本地法规，含保险法，359 条文、46 规则。严格 validate-corpus 为 release_ready=true，0 完整性错误、0 审阅门禁。不要沿用旧“保险法暂缓”的状态。v3 与 v2 内容完全一致，仅文档顺序不同（保险法置于首位）；已发布快照不可原位覆盖，故顺序调整必须新建 ruleset。
 - 文本 `qwen3.7-plus`，视觉 `qwen3-vl-plus`；hybrid=BM25 + text-embedding-v4/1024；Prompt `audit-v1.6-citation-guidance`，workflow `1.2-diagnostics`。召回原文与全部必查规则仍进入审核，不放宽引用/证据/未知条件检查。
 - 保留其他 agent 的法规聚类分批改动。当前本地参数为 batch=2、model_concurrency=8、attempts=40、单次45秒/总计150秒。性能比较通过独立 Settings 覆盖，不修改 .env，不自动替换上线配置。
 - 新增逐调用 queue_ms、request_ms、token_usage、reasoning_tokens（缺失为 null）、transport_retry、structure_attempt、outcome；旧 latency_ms 包含排队，保留兼容。meta.rule_status_counts 区分已检查、不适用、范围外、待上下文、待外部核验及技术失败。页面展示各状态数量和简要模式隐藏提示数量。
@@ -28,7 +28,7 @@
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q
 .\.venv\Scripts\python.exe -m ruff check src tests scripts
-.\.venv\Scripts\python.exe -m insurance_audit.cli validate-corpus --ruleset official-v2-2026-10-12
+.\.venv\Scripts\python.exe -m insurance_audit.cli validate-corpus --ruleset official-v3-2026-10-12
 # 真实调用产生 API 用量；out 必须尚不存在，不覆盖历史报告
 .\.venv\Scripts\python.exe scripts/benchmark_audit.py --models qwen3.7-plus --batches 2 3 --concurrencies 4 8 --repeats 2 --out reports/performance-next
 ```

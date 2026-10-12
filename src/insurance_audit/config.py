@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     embedding_model: str = "text-embedding-v4"
     embedding_dimensions: int = Field(1024, gt=0)
     retrieval_mode: Literal["bm25", "hybrid"] = "bm25"
-    ruleset_id: str = "official-v2-2026-10-12"
+    ruleset_id: str = "official-v3-2026-10-12"
     audit_mock: bool = False
     model_timeout_seconds: float = Field(45, gt=0)
     audit_timeout_seconds: float = Field(150, gt=0)

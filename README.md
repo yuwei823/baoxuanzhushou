@@ -26,7 +26,7 @@ py -3.11 -m venv .venv
 
 ## 当前阻塞
 
-当前规则集为用户确认的 `official-v1-2026-10-11`，只使用本地三份核心正式文件，含 172 条文、34 张规则卡；实施 agent 的核对不代表法律专家认证，保险法仍暂缓。本地 hybrid RAG 已接通；G1/G2 已通过，正式效果评估未完成。详见 [RAG 实测报告](reports/rag-acceptance.md)、[G1 验收报告](reports/g1-acceptance-2026-10-12.md)、[运行说明](docs/rag-operations.md)。
+当前规则集为用户确认的 `official-v3-2026-10-12`，使用本地四份正式文件（中华人民共和国保险法、保险销售行为管理办法、金融产品网络营销管理办法、互联网保险业务监管办法），含 359 条文、46 张规则卡；实施 agent 的核对不代表法律专家认证。本地 hybrid RAG 已接通；G1/G2 已通过，正式效果评估未完成。详见 [RAG 实测报告](reports/rag-acceptance.md)、[G1 验收报告](reports/g1-acceptance-2026-10-12.md)、[运行说明](docs/rag-operations.md)。
 
 ## 纯文本运行
 
@@ -43,16 +43,16 @@ $env:PYTHONIOENCODING='utf-8'
 
 本地文本模型为 qwen3.7-plus，使用 `BAILIAN_TEXT_ENABLE_THINKING=false` 控制思考模式；更换模型时按其能力确认该参数，移除参数则使用模型默认行为。依据：[百炼思考模式文档](https://help.aliyun.com/zh/model-studio/deep-thinking)。本地已启用 RETRIEVAL_MODE=hybrid，使用 text-embedding-v4/1024 维和 BM25，经 RRF 融合召回后将原文送入模型，同时保留全部规则覆盖。查询向量失败不会静默降级。
 
-`build-index` 首次调用真实 Embedding，现有 172 条文每批最多 10 条；重复运行校验并复用同一版本。索引单独保存在 data/indexes/，绑定法规快照哈希、模型、维度和检索文本哈希。新快照发布后需显式重新执行 build-index；不匹配的旧索引不会被使用。当前整条索引限每条检索文本 2000 字符，未来超长条文需实现分款/父条方案，构建器会拒绝而非截断。图片验收已恢复，保险法抽取仍暂缓。
+`build-index` 首次调用真实 Embedding，现有 359 条文每批最多 10 条；重复运行校验并复用同一版本。索引单独保存在 data/indexes/，绑定法规快照哈希、模型、维度和检索文本哈希。新快照发布后需显式重新执行 build-index；不匹配的旧索引不会被使用。当前整条索引限每条检索文本 2000 字符，未来超长条文需实现分款/父条方案，构建器会拒绝而非截断。
 
 ## P0 语料命令与快照
 
 ```powershell
-.\.venv\Scripts\python.exe -m insurance_audit.cli validate-corpus --ruleset official-v1-2026-10-11
+.\.venv\Scripts\python.exe -m insurance_audit.cli validate-corpus --ruleset official-v3-2026-10-12
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-已发布快照保存在 `data/corpus/official-v1-2026-10-11/`，包含原 DOC/PDF 的字节副本、原始抽取 JSON、条文、规则、逐条范围台账、哈希绑定的审阅记录和 manifest。集中来源与工具登记在 `data/extracted/extraction-registry.json`。
+已发布快照保存在 `data/corpus/official-v3-2026-10-12/`，包含原 DOC/PDF 的字节副本、原始抽取 JSON、条文、规则、逐条范围台账、哈希绑定的审阅记录和 manifest。集中来源与工具登记在 `data/extracted/extraction-registry.json`。
 
 新法规放入 `法律法规/` 后，后台每 5 秒扫描，自动登记、保存原件、抽取、切分、校验并构建待审候选；完成审阅并 seal 后自动续跑发布。已发布 ID 禁止覆盖，目录新文件不会直接参与审核裁决。完整步骤、状态和审阅协议见 [P0 流水线说明](docs/p0-pipeline.md)。
 

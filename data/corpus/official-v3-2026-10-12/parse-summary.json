@@ -1,0 +1,14 @@
+{
+  "ruleset_id": "official-v3-2026-10-12",
+  "document_count": 4,
+  "article_count": 359,
+  "by_document": {
+    "insurance_law_local_2015_consolidation": 187,
+    "insurance_sales_behavior_order_2023_02": 50,
+    "financial_network_marketing_order_2026_09": 39,
+    "internet_insurance_supervision_order_2020_13": 83
+  },
+  "all_text_nonempty": true,
+  "article_text_verified": false,
+  "ruleset_published": false
+}
