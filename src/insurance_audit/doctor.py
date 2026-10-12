@@ -28,15 +28,15 @@ async def probe(settings):
         except (ModelFailure, ValueError) as error:
             result["text"] = {"error": getattr(error, "code", "invalid_json")}
         try:
-            path = settings.project_root / "src/insurance_audit/static/demo-1.png"
-            image = validate_image(path.read_bytes(), "image_1", "image/png")
+            path = settings.project_root / "src/insurance_audit/static/demo-1.jpg"
+            image = validate_image(path.read_bytes(), "image_1", "image/jpeg")
             extracted = await structured(
                 provider, "vision", vision_messages(image), VisionOutput, budget
             )
             result["vision"] = {
                 "model": settings.bailian_vision_model,
                 "schema_valid": True,
-                "contains_expected_text": any("保险知识" in b.text for b in extracted.text_blocks),
+                "contains_expected_text": any("友邦保险" in b.text for b in extracted.text_blocks),
                 "extracted_demo_text": [b.text for b in extracted.text_blocks],
             }
         except (ModelFailure, OSError) as error:

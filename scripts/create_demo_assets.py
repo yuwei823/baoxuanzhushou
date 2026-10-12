@@ -1,4 +1,10 @@
-"""Create explicitly synthetic marketing examples for UI and live smoke tests."""
+"""Create explicitly synthetic marketing examples for UI and live smoke tests.
+
+The UI ships one real demo image (demo-1.jpg) whose extracted text is recorded
+in demo-images.json for mock mode. This script only produces the synthetic
+backup fixtures; it must not overwrite the entry for the shipped demo image,
+so it merges into the existing manifest instead of replacing it.
+"""
 
 import hashlib
 import json
@@ -27,7 +33,10 @@ EXAMPLES = [
 
 def main():
     OUTPUT.mkdir(parents=True, exist_ok=True)
-    manifest = {}
+    manifest_path = OUTPUT / "demo-images.json"
+    manifest = (
+        json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else {}
+    )
     for index, lines in enumerate(EXAMPLES, 1):
         image = Image.new("RGB", (1000, 520), "#f0f5ed")
         draw = ImageDraw.Draw(image)
@@ -42,7 +51,7 @@ def main():
         path = OUTPUT / f"demo-{index}.png"
         image.save(path)
         manifest[hashlib.sha256(path.read_bytes()).hexdigest()] = "\n".join(lines)
-    (OUTPUT / "demo-images.json").write_text(
+    manifest_path.write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
     )
 
