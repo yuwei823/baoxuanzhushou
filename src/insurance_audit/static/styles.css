@@ -831,6 +831,26 @@ li {
     max-width: 220px
 }
 
+.ledger th {
+    padding: 8px;
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--line);
+    font-weight: 400
+}
+
+.ledger td.state-ok {
+    color: var(--green);
+    font-weight: 600
+}
+
+.ledger td.state-warn {
+    color: var(--amber);
+    font-weight: 600
+}
+
 .warning {
     font-size: 12px;
     color: var(--amber)
