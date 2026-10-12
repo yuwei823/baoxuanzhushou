@@ -15,14 +15,14 @@
 
 - v1 的 G1/G2 已通过合成开发案例工程验收，证据 reports/g1-acceptance-2026-10-12.md、reports/p2-stress-reverify.json；该结论不能自动覆盖 v2。
 - 本轮 v2 模型初筛已完成：qwen3.7-plus 5/5、qwen-plus 4/5、qwen-turbo 3/5，失败均为教育反例误复核；均不是正式 gold 评估。完整调用、代码/语料/案例哈希见 reports/performance-model-pilot-v2/。保留当前模型。
-- batch=2/3、concurrency=4/8 的完整五例两轮受控比较正在运行，见 reports/performance-batch-matrix-v2/；以 manifest.completed 为完成标志，不把部分结果写为最终结论。
+- v2 的 batch=2/3、concurrency=4/8 两轮比较已完成 40 次：b2c8=10/10，P50 27.83秒、P95 29.06秒，无修复；b3c8=9/10，教育反例证据校验失败。保留模型和 batch=2/concurrency=8。见 reports/performance-batch-matrix-v2/report.md；不能直接当作 v3 的验收。
 - 最新全量测试 **105 passed in 21.42s**，Ruff 全库通过；新增三个耗时、修复次数和错误脱敏回归。独立模拟页面已验证状态总数 46（checked=1、needs_context=39、failed=6），没有把待核验算作技术失败；截图 reports/performance-status-ui.png。
 - P3 正式评估继续暂缓：5 条 provisional 开发种子已暴露，20/40 数据、图文人工标注、全文基线及正式 A/B 未完成。P4 部署产物由此前 agent 建立，本轮没有执行远程部署或更改访问控制。
 
 ### 下一步与复现
 
-1. 完成分批/并发矩阵，先看预期结论、全部规则台账和失败，再比较 P50/P95、token 和修复次数；每组仅10次，不能称生产稳定指标。
-2. 根据结果决定是否调整 batch；模型初筛不支持换为 qwen-plus/turbo。不要通过省略条件、扩大无限重试或隐藏错误提高覆盖率。
+1. 分批/并发矩阵已完成；每组仅10次，不能称生产稳定指标。后续如变更规则或 Prompt，单独复验。
+2. 本轮结论保留 batch=2/concurrency=8；模型初筛不支持换为 qwen-plus/turbo。不要通过省略条件、扩大无限重试或隐藏错误提高覆盖率。
 3. 继续收集独立标注资料；未有人工 gold，不将工程回归通过率当作准确率。
 
 ```powershell
