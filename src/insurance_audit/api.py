@@ -90,9 +90,20 @@ def create_app(settings=None, provider=None):
     async def security_headers(request, call_next):
         response = await call_next(request)
         response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["Content-Security-Policy"] = (
-            "default-src 'self'; img-src 'self' blob: data:; style-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; frame-ancestors 'none'"
-        )
+        # The demo deck at /intro is a single self-contained file with inline
+        # style and script, so it needs 'unsafe-inline'. Every other route keeps
+        # the strict policy; hashes are not usable because the file is generated
+        # and would need a new hash on every edit.
+        if request.url.path == "/intro":
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'self'; img-src 'self' blob: data:; "
+                "style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; "
+                "connect-src 'self'; object-src 'none'; frame-ancestors 'none'"
+            )
+        else:
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'self'; img-src 'self' blob: data:; style-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; frame-ancestors 'none'"
+            )
         response.headers["Cache-Control"] = "no-store"
         return response
 
@@ -339,6 +350,11 @@ def create_app(settings=None, provider=None):
     @application.get("/")
     async def index():
         return FileResponse(STATIC / "index.html")
+
+    @application.get("/intro")
+    async def intro():
+        """Self-contained demo deck, served as a plain page."""
+        return FileResponse(STATIC / "intro.html")
 
     application.mount("/static", StaticFiles(directory=STATIC, check_dir=False), name="static")
     return application

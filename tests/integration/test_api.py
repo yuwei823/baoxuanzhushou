@@ -45,6 +45,28 @@ def test_metadata_and_current_article_allowlist(client):
     assert "frame-ancestors 'none'" in client.get("/").headers["Content-Security-Policy"]
 
 
+def test_intro_route_serves_the_self_contained_deck_with_a_relaxed_csp(client):
+    response = client.get("/intro")
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/html")
+    assert "保宣合规助手" in response.text
+
+    # The deck carries inline style and script, so it needs 'unsafe-inline'.
+    csp = response.headers["Content-Security-Policy"]
+    assert "style-src 'self' 'unsafe-inline'" in csp
+    assert "script-src 'self' 'unsafe-inline'" in csp
+    # Relaxing those must not widen anything else.
+    assert "object-src 'none'" in csp
+    assert "frame-ancestors 'none'" in csp
+    assert "img-src 'self' blob: data:" in csp
+
+
+def test_only_the_intro_route_gets_the_relaxed_csp(client):
+    for path in ("/", "/api/v1/rulesets/current"):
+        csp = client.get(path).headers["Content-Security-Policy"]
+        assert "'unsafe-inline'" not in csp, path
+
+
 @pytest.mark.parametrize(
     "text,context,files,expected",
     [
