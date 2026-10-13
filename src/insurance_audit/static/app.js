@@ -10,8 +10,20 @@ const stateOrder = { needs_context: 0, external_verification_required: 1, failed
 const stateTone = { checked: 'ok', needs_context: 'warn', external_verification_required: 'warn', failed: 'warn' };
 const elem = (tag, text, cls) => { const e = document.createElement(tag); if (text !== undefined) e.textContent = text; if (cls) e.className = cls; return e; };
 function notice(text) { $('notice').hidden = !text; $('notice').textContent = text; }
+// The API rejects text beyond 10,000 Unicode code points. Enforce it in the
+// input itself so a long paste cannot reach the backend and fail mid-audit.
+const MAX_TEXT = 10000;
 function count() { $('counter').textContent = `${Array.from($('text').value).length.toLocaleString()} / 10,000`; }
-$('text').addEventListener('input', count);
+// Counts code points (not UTF-16 units) so emoji match the server-side limit.
+function enforceTextLimit() {
+    const chars = Array.from($('text').value);
+    if (chars.length <= MAX_TEXT) { count(); return true; }
+    $('text').value = chars.slice(0, MAX_TEXT).join('');
+    count();
+    alert(`文本最多 10,000 个 Unicode 字符，已自动截取前 10,000 字。`);
+    return false;
+}
+$('text').addEventListener('input', enforceTextLimit);
 function redraw() { const host = $('previews'); if (!host) return; host.replaceChildren(); pictures.forEach((p, i) => { const card = elem('div', undefined, 'preview'); const img = elem('img'); img.src = p.url; img.alt = `图片 ${i + 1}：${p.file.name}`; card.append(img, elem('span', `${i + 1}. ${p.file.name}`));[['←', i - 1], ['→', i + 1], ['×', -1]].forEach(([label, target]) => { const b = elem('button', label); b.type = 'button'; b.setAttribute('aria-label', label === '×' ? `删除图片 ${i + 1}` : `移动图片 ${i + 1} ${label}`); b.disabled = controller !== null || (label !== '×' && (target < 0 || target >= pictures.length)); b.onclick = () => { if (label === '×') { URL.revokeObjectURL(p.url); pictures.splice(i, 1); } else { [pictures[i], pictures[target]] = [pictures[target], pictures[i]]; } redraw(); }; card.append(b); }); host.append(card); }); }
 function addFiles(files) { if (pictures.length + files.length > 5) return notice('最多上传 5 张图片。'); if ([...pictures.map(p => p.file), ...files].reduce((n, f) => n + f.size, 0) > 25 * 1024 * 1024) return notice('图片总计不能超过 25 MB。'); if (files.some(f => f.size > 10 * 1024 * 1024)) return notice('单张图片不能超过 10 MB。'); if (files.some(f => !['image/jpeg', 'image/png', 'image/webp'].includes(f.type))) return notice('仅支持 JPEG、PNG、WebP。'); pictures.push(...files.map(file => ({ file, url: URL.createObjectURL(file) }))); notice(''); redraw(); }
 $('images').onchange = () => { addFiles(Array.from($('images').files)); $('images').value = ''; };
@@ -78,7 +90,7 @@ function pushObservations(event) {
 }
 function clearObservations() { const host = $('observations'); if (host) { host.replaceChildren(); host.hidden = true; } }
 $('submit').onclick = async () => {
-    if (controller) return; const text = $('text').value; if (!text.trim() && !pictures.length) return notice('请输入文本或上传图片。'); if (Array.from(text).length > 10000) return notice('文本最多 10,000 个 Unicode 字符。');
+    if (controller) return; const text = $('text').value; if (!text.trim() && !pictures.length) return notice('请输入文本或上传图片。'); if (Array.from(text).length > MAX_TEXT) return alert('文本最多 10,000 个 Unicode 字符，请删减后再提交。');
     exampleGeneration++; const submitted = pictures.map(p => ({ file: p.file, url: URL.createObjectURL(p.file) })); let rendered = false;
     const form = new FormData(); form.append('text', text); const context = {}; for (const id of ['channel', 'publisher_type', 'product_type', 'material_completeness']) context[id] = $(id).value; form.append('context', JSON.stringify(context)); form.append('depth', $('depth').value); pictures.forEach(p => form.append('images', p.file));
     controller = new AbortController(); busy(true); notice(''); const start = Date.now(); $('submit').textContent = '审核中 · 0 秒'; timer = setInterval(() => $('submit').textContent = `审核中 · ${Math.floor((Date.now() - start) / 1000)} 秒`, 1000);
