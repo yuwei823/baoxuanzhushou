@@ -1,5 +1,6 @@
 import json
 import logging
+import math
 from functools import lru_cache
 from pathlib import Path
 
@@ -43,6 +44,7 @@ class Corpus:
         # prompt budget; the judge prompt itself adds rule cards and material.
         self.article_budget = max(1000, settings.batch_max_characters // 3)
         self.ids = list(self.articles)
+        self.article_positions = {aid: index for index, aid in enumerate(self.ids)}
         self.index = BM25Okapi(
             [list(jieba.cut(self.articles[aid]["original_text"])) for aid in self.ids]
         )
@@ -213,26 +215,145 @@ class Corpus:
     def context_articles(self, articles, retrieved):
         return {**articles, **{aid: self.articles[aid] for aid in retrieved}}
 
-    def budgeted_context_articles(self, articles, retrieved):
+    def batch_ranked_retrieval(self, cards, retrieved, mandatory_ids, limit):
+        """Rank optional hits by both material relevance and batch relevance.
+
+        ``retrieved`` is globally ordered by the submitted material's RRF
+        score. The batch's direct law text becomes a local BM25 query. In
+        hybrid mode, the centroid of those direct-article embeddings supplies
+        a semantic ranking without another paid embedding request. RRF then
+        combines the material and batch ranks.
+        """
+        optional = [
+            aid for aid in retrieved if aid in self.articles and aid not in mandatory_ids
+        ]
+        if not optional or limit <= 0:
+            return []
+
+        direct_ids = {
+            aid for card in cards for aid in card["article_ids"] if aid in self.articles
+        }
+        query_tokens = []
+        seen_tokens = set()
+        for aid in sorted(direct_ids):
+            for token in jieba.cut(self.articles[aid]["original_text"]):
+                token = token.strip()
+                if token and token not in seen_tokens:
+                    seen_tokens.add(token)
+                    query_tokens.append(token)
+
+        pool_size = max(limit * 3, 8)
+        lexical = []
+        if query_tokens:
+            scores = self.index.get_scores(query_tokens)
+            lexical = sorted(
+                optional,
+                key=lambda aid: (-scores[self.article_positions[aid]], aid),
+            )
+            lexical = [
+                aid for aid in lexical if scores[self.article_positions[aid]] > 0
+            ][:pool_size]
+
+        semantic = []
+        if self.vectors is not None and direct_ids:
+            direct_vectors = [
+                self.vectors[self.article_positions[aid]]
+                for aid in direct_ids
+                if aid in self.article_positions
+            ]
+            if direct_vectors:
+                centroid = [sum(values) / len(direct_vectors) for values in zip(*direct_vectors)]
+                norm = math.sqrt(sum(value * value for value in centroid))
+                if norm:
+                    centroid = [value / norm for value in centroid]
+                    similarities = {
+                        aid: sum(
+                            left * right
+                            for left, right in zip(
+                                centroid, self.vectors[self.article_positions[aid]]
+                            )
+                        )
+                        for aid in optional
+                    }
+                    semantic = sorted(optional, key=lambda aid: (-similarities[aid], aid))[
+                        :pool_size
+                    ]
+
+        relation_rrf = {}
+        for ranking in (lexical, semantic):
+            for rank, aid in enumerate(ranking, 1):
+                relation_rrf[aid] = relation_rrf.get(aid, 0) + 1 / (60 + rank)
+        if not relation_rrf:
+            return []
+
+        input_rank = {aid: rank for rank, aid in enumerate(retrieved, 1)}
+        # A candidate must be near the front of both rankings. Without this
+        # intersection every batch would still receive ``limit`` articles,
+        # including weak matches from the tail of a long multi-section query.
+        material_pool_size = max(limit * 6, 32)
+        combined = {
+            aid: score + 1 / (60 + input_rank[aid])
+            for aid, score in relation_rrf.items()
+            if input_rank[aid] <= material_pool_size
+        }
+        return sorted(combined, key=lambda aid: (-combined[aid], aid))[:limit]
+
+    def budgeted_context_articles(
+        self,
+        articles,
+        retrieved,
+        cards=(),
+        mode=None,
+        retrieved_limit=None,
+        retrieved_max_characters=None,
+    ):
         """Add ranked retrieval hits without displacing mandatory rule articles.
 
         ``articles`` contains the direct and supporting law text required by the
-        batch.  Retrieval hits are augmentation, so they are admitted in the
-        relevance order returned by ``search`` only while the existing article
-        budget has room.  The caller records omitted ids for auditability.
+        batch. Retrieval hits are augmentation. Global mode follows the material
+        order; targeted mode first intersects material relevance with batch-law
+        relevance and applies tighter count/character caps. The caller records
+        omitted ids for auditability.
         """
         context = dict(articles)
-        selected, dropped = [], []
+        mandatory_ids = set(context)
+        mode = mode or self.settings.rag_batch_context_mode
+        retrieved_limit = (
+            self.settings.rag_batch_retrieved_limit
+            if retrieved_limit is None
+            else retrieved_limit
+        )
+        retrieved_max_characters = (
+            self.settings.rag_batch_retrieved_max_characters
+            if retrieved_max_characters is None
+            else retrieved_max_characters
+        )
+        mandatory_hits = [aid for aid in retrieved if aid in mandatory_ids]
+        optional = [aid for aid in retrieved if aid in self.articles and aid not in mandatory_ids]
+        if mode == "global":
+            candidates = optional
+            augmentation_budget = self.article_budget
+        elif mode == "targeted":
+            candidates = self.batch_ranked_retrieval(
+                cards, retrieved, mandatory_ids, retrieved_limit
+            )
+            augmentation_budget = min(self.article_budget, retrieved_max_characters)
+        elif mode == "none":
+            candidates = []
+            augmentation_budget = 0
+        else:
+            raise ValueError(f"Unknown RAG batch context mode: {mode}")
+
+        selected = list(mandatory_hits)
+        candidate_set = set(candidates)
+        dropped = [aid for aid in optional if aid not in candidate_set]
         augmentation_characters = 0
-        for aid in retrieved:
+        for aid in candidates:
             article = self.articles.get(aid)
             if article is None:
                 continue
-            if aid in context:
-                selected.append(aid)
-                continue
             length = len(article["original_text"])
-            if augmentation_characters + length <= self.article_budget:
+            if augmentation_characters + length <= augmentation_budget:
                 context[aid] = article
                 augmentation_characters += length
                 selected.append(aid)

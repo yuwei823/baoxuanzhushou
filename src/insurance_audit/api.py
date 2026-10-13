@@ -26,10 +26,10 @@ if not LOGGER.handlers:
     LOGGER.addHandler(logging.StreamHandler())
 STATIC = Path(__file__).with_name("static")
 
-# Self-contained presentation pages. /intro also runs inline script; the
-# workflow page is style-only, so it does not need script relaxed.
-INLINE_SCRIPT_PAGES = {"/intro"}
-INLINE_STYLE_PAGES = {"/intro", "/workflow"}
+# Self-contained presentation pages. /intro and /batch-flow run inline script;
+# the workflow page is style-only, so it does not need script relaxed.
+INLINE_SCRIPT_PAGES = {"/intro", "/batch-flow"}
+INLINE_STYLE_PAGES = {"/intro", "/workflow", "/batch-flow"}
 
 # /workflow loads Mermaid from a CDN first and falls back to the bundled copy.
 # Only this page may fetch that one script origin; everything else stays 'self'.
@@ -383,6 +383,11 @@ def create_app(settings=None, provider=None):
     async def workflow():
         """End-to-end flow diagram, rendered as inline SVG (no JS, no CDN)."""
         return FileResponse(STATIC / "workflow.html")
+
+    @application.get("/batch-flow")
+    async def batch_flow():
+        """Animated explanation of rule batching and judge prompt assembly."""
+        return FileResponse(STATIC / "audit-batch-flow.html")
 
     application.mount("/static", StaticFiles(directory=STATIC, check_dir=False), name="static")
     return application

@@ -75,14 +75,20 @@ def checks(response, expected, corpus):
             else:
                 evidence_valid &= evidence["material_completeness"] == "complete"
     hits = set(response["meta"]["retrieved_article_ids"])
+    context_trace = response["meta"]["context_trace"]
+    retrieval_accounted = bool(hits) and bool(context_trace)
+    for batch in context_trace:
+        selected = set(batch["retrieved_article_ids"])
+        dropped = set(batch["dropped_retrieved_article_ids"])
+        retrieval_accounted &= selected <= set(batch["article_ids"])
+        retrieval_accounted &= selected | dropped == hits
+        retrieval_accounted &= not selected & dropped
     return {
         "expected_decision": response["decision"] == expected,
         "completed_without_errors": response["status"] == "completed" and not response["errors"],
         "real_hybrid": not response["mock"] and response["meta"]["retrieval_mode"] == "hybrid",
         "all_rules_accounted": set(ids) == set(corpus.rules) and len(ids) == len(set(ids)),
-        "all_retrieved_articles_supplied": bool(hits)
-        and bool(response["meta"]["context_trace"])
-        and all(hits.issubset(batch["article_ids"]) for batch in response["meta"]["context_trace"]),
+        "retrieval_context_accounted": retrieval_accounted,
         "citation_originals": bool(citation_valid),
         "evidence_offsets": bool(evidence_valid),
         "no_vision_call": all(call["kind"] != "vision" for call in response["meta"]["calls"]),

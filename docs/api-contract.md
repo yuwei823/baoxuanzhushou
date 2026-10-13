@@ -48,7 +48,7 @@ GET /healthz 检查进程，/readyz 检查本地配置与语料，不调用付�
 契约和故障注入测试已实现；完整 G1/G2 验收状态以 PLAN 与实际报告为准。
 
 
-## 性能诊断（workflow 1.3-context-budget）
+## 性能诊断（workflow 1.4-batch-targeted-rag）
 
 meta.rule_status_counts 按 coverage.rules.status 汇总，包含材料待核验及技术失败的区别。meta.calls 的 queue_ms 是等待本进程模型信号量的时间；request_ms 从取得名额后发请求到返回/异常，含网络与服务端处理。旧 latency_ms 包含排队，不能用于推算模型纯并行度。
 
@@ -56,4 +56,6 @@ transport_retry 为网络层重试序号（0=首次）；structure_attempt 为�
 
 未取得并发名额的超时不算已发送调用，整体耗时和规则 failed 台账仍记录。简要模式的 hidden_review_items 是被隐藏的补充提示数量，不改变最终聚合。
 
-meta.context_trace 逐批记录实际送入模型的 article_ids、retrieved_article_ids、因预算未加入的 dropped_retrieved_article_ids 以及 prompt_characters。直接与支持条文始终保留；只有额外 RAG 召回可按相关性和预算省略。顶层 meta.retrieved_article_ids 仍保留本次检索的完整有序命中，便于区分“检索到了”与“本批实际使用”。
+meta.context_trace 逐批记录实际送入模型的 article_ids、retrieved_article_ids、因定向筛选或预算未加入的 dropped_retrieved_article_ids、retrieval_context_mode、可选条文条数/字符上限以及 prompt_characters。直接与支持条文始终保留；只有额外 RAG 召回可省略。顶层 meta.retrieved_article_ids 仍保留本次文本的完整有序命中，便于区分“检索到了”与“本批实际使用”。
+
+默认 `targeted` 模式把文本的全局 RRF 顺序与当前批次直接法条的 BM25/向量相似顺序再次融合，候选需同时处于两侧前列，每批最多加入 8 条、8,000 字符。`global` 仅用于 A/B 复现旧行为，`none` 用于无额外召回条文的工程基线；三种模式都检查全部规则，不能用相似度删除规则。

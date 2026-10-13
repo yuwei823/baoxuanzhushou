@@ -1,0 +1,62 @@
+{
+  "qwen3.7-plus-b4-c8-rag-global": {
+    "runs": 5,
+    "all_checks_passed": 4,
+    "expected_decisions": 4,
+    "completed": 4,
+    "latency_p50_ms": 32609,
+    "latency_p95_ms": 34168.6,
+    "queue_ms_sum": 293935,
+    "request_ms_sum": 925159,
+    "transport_retries": 0,
+    "structure_repairs": 3,
+    "tokens": {
+      "prompt_tokens": 625312,
+      "completion_tokens": 48356,
+      "total_tokens": 673668
+    },
+    "rule_statuses": {
+      "checked": 15,
+      "needs_context": 18,
+      "not_applicable": 190,
+      "external_verification_required": 3,
+      "failed": 4
+    },
+    "errors": {
+      "invalid_model_output": 1
+    },
+    "validation_categories": {
+      "Evidence does not occur in the specified source": 4
+    }
+  },
+  "qwen3.7-plus-b4-c8-rag-targeted": {
+    "runs": 5,
+    "all_checks_passed": 4,
+    "expected_decisions": 4,
+    "completed": 4,
+    "latency_p50_ms": 26609,
+    "latency_p95_ms": 32912.6,
+    "queue_ms_sum": 291406,
+    "request_ms_sum": 873784,
+    "transport_retries": 0,
+    "structure_repairs": 1,
+    "tokens": {
+      "prompt_tokens": 533436,
+      "completion_tokens": 46197,
+      "total_tokens": 579633
+    },
+    "rule_statuses": {
+      "checked": 14,
+      "needs_context": 27,
+      "not_applicable": 182,
+      "external_verification_required": 3,
+      "failed": 4
+    },
+    "errors": {
+      "invalid_model_output": 1
+    },
+    "validation_categories": {
+      "Evidence does not occur in the specified source": 2
+    }
+  }
+}

@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>待审核文本如何进入模型</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #17223b;
+            --muted: #68738a;
+            --line: #dce2ec;
+            --paper: #f4f7fb;
+            --panel: #ffffff;
+            --navy: #18243e;
+            --blue: #3169d8;
+            --blue-soft: #e9f0ff;
+            --violet: #7857d6;
+            --violet-soft: #f0ebff;
+            --green: #23836f;
+            --green-soft: #e5f5f0;
+            --orange: #bd6826;
+            --orange-soft: #fff0e3;
+            --yellow: #f3c849;
+            --yellow-soft: #fff8d8;
+            --shadow: 0 18px 50px rgba(25, 40, 74, .10);
+        }
+
+        * { box-sizing: border-box; }
+        html { background: var(--paper); }
+        body {
+            margin: 0;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 12% 0%, rgba(49,105,216,.10), transparent 27rem),
+                radial-gradient(circle at 88% 12%, rgba(120,87,214,.09), transparent 24rem),
+                var(--paper);
+            font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+        }
+        button { font: inherit; }
+        .shell { width: min(1440px, 100%); margin: 0 auto; padding: 28px; }
+        .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
+        .eyebrow { color: var(--blue); font-size: 13px; font-weight: 700; letter-spacing: .12em; }
+        h1 { margin: 7px 0 8px; font-size: clamp(28px, 4vw, 48px); line-height: 1.12; }
+        .lead { max-width: 820px; margin: 0; color: var(--muted); line-height: 1.7; }
+        .snapshot { flex: 0 0 auto; padding: 12px 16px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.78); color: var(--muted); font-size: 13px; }
+        .snapshot strong { color: var(--ink); }
+
+        .stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin: 22px 0 18px; }
+        .stat { padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.82); }
+        .stat b { display: block; font-size: 24px; }
+        .stat span { color: var(--muted); font-size: 12px; }
+
+        .steps { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 14px; }
+        .step {
+            position: relative; min-height: 64px; padding: 10px 10px 10px 38px;
+            border: 1px solid var(--line); border-radius: 13px; background: rgba(255,255,255,.68);
+            text-align: left; color: var(--muted); cursor: pointer; transition: .22s ease;
+        }
+        .step:hover { transform: translateY(-1px); border-color: #aebbd0; }
+        .step.active { color: var(--ink); background: var(--panel); border-color: var(--blue); box-shadow: 0 7px 22px rgba(49,105,216,.12); }
+        .step .n { position: absolute; left: 10px; top: 11px; width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; background: #e7ebf2; color: var(--muted); font-size: 11px; }
+        .step.active .n { color: #fff; background: var(--blue); }
+        .step strong { display: block; color: inherit; font-size: 13px; }
+        .step small { display: block; margin-top: 4px; line-height: 1.3; }
+
+        .stage {
+            position: relative; min-height: 560px; overflow: hidden;
+            border: 1px solid var(--line); border-radius: 22px; background: rgba(255,255,255,.93); box-shadow: var(--shadow);
+        }
+        .scene { display: none; padding: 26px; min-height: 560px; animation: sceneIn .32s ease both; }
+        .scene.active { display: block; }
+        @keyframes sceneIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+        .scene-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+        .scene-head h2 { margin: 0 0 6px; font-size: 24px; }
+        .scene-head p { margin: 0; color: var(--muted); line-height: 1.6; }
+        .pill { flex: 0 0 auto; padding: 7px 11px; border-radius: 999px; background: var(--yellow-soft); color: #715800; font-size: 12px; font-weight: 700; }
+
+        .flow3 { display: grid; grid-template-columns: minmax(210px, 1fr) 70px minmax(270px, 1.25fr); gap: 12px; align-items: center; min-height: 390px; }
+        .flow4 { display: grid; grid-template-columns: 1fr 56px 1fr 56px 1fr; gap: 10px; align-items: center; min-height: 380px; }
+        .box { padding: 18px; border-radius: 17px; background: #f8fafe; border: 1px solid var(--line); }
+        .box h3 { margin: 0 0 12px; font-size: 16px; }
+        .arrow { color: #9aa6ba; text-align: center; font-size: 30px; animation: arrowPulse 1.1s ease-in-out 2; }
+        @keyframes arrowPulse { 50% { color: var(--blue); transform: translateX(4px); } }
+        .stack { display: grid; gap: 7px; }
+        .block { padding: 10px 12px; border-radius: 9px; font-size: 13px; line-height: 1.35; transition: .25s ease; }
+        .block.evidence { color: #214b98; background: var(--blue-soft); }
+        .block.rule { color: #8a4618; background: var(--orange-soft); }
+        .block.law { color: #176958; background: var(--green-soft); }
+        .block.rag { color: #573aa6; background: var(--violet-soft); }
+        .block.contract { color: #46536b; background: #edf0f5; }
+        .block.glow { transform: translateX(6px); box-shadow: inset 3px 0 0 currentColor; }
+        .mono { font-family: Consolas, "SFMono-Regular", monospace; }
+        .mini { color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+        .split-visual { display: grid; gap: 8px; }
+        .source-row { display: grid; grid-template-columns: 92px 1fr; gap: 10px; align-items: center; }
+        .source-id { color: var(--muted); font: 12px Consolas, monospace; }
+        .source-text { position: relative; overflow: hidden; height: 34px; border-radius: 8px; background: var(--blue-soft); }
+        .source-text::before, .source-text::after { content: ""; position: absolute; left: 10px; height: 4px; border-radius: 3px; background: rgba(49,105,216,.48); }
+        .source-text::before { top: 9px; width: 78%; }
+        .source-text::after { top: 20px; width: 48%; }
+        .slice { position: absolute; inset: 0 auto 0 66%; width: 2px; background: var(--blue); opacity: 0; animation: sliceIn .5s .2s ease forwards; }
+        @keyframes sliceIn { to { opacity: 1; } }
+
+        .retrieval { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .rank-list { counter-reset: rank; display: grid; gap: 7px; }
+        .rank-item { counter-increment: rank; display: flex; gap: 9px; align-items: center; padding: 9px; border-radius: 9px; background: var(--panel); border: 1px solid var(--line); font-size: 12px; }
+        .rank-item::before { content: counter(rank); display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--violet-soft); color: var(--violet); font-weight: 700; }
+        .funnel { text-align: center; }
+        .funnel b { display: block; margin: 8px 0; font-size: 28px; color: var(--violet); }
+
+        .batch-layout { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(260px, .7fr); gap: 20px; }
+        .batch-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 9px; }
+        .batch {
+            min-height: 76px; padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: #f8fafe;
+            text-align: left; cursor: pointer; transition: .2s ease; color: var(--ink);
+        }
+        .batch:hover, .batch.active { transform: translateY(-2px); border-color: var(--orange); background: var(--orange-soft); }
+        .batch b { display: block; font-size: 14px; }
+        .batch small { display: block; margin-top: 5px; color: var(--muted); }
+        .dots { display: flex; gap: 3px; margin-top: 8px; }
+        .dots i { display: block; width: 9px; height: 9px; border-radius: 3px; background: var(--orange); }
+        .batch-detail { min-height: 360px; }
+        .batch-detail h3 { margin: 0 0 6px; }
+        .rule-list { margin: 12px 0 0; padding-left: 20px; color: #5a3c22; }
+        .rule-list li { margin: 7px 0; overflow-wrap: anywhere; }
+
+        .packet-layout { display: grid; grid-template-columns: minmax(250px, .78fr) 48px minmax(390px, 1.22fr); gap: 10px; align-items: center; }
+        .packet-parts { display: grid; gap: 8px; }
+        .envelope { padding: 16px; border-radius: 16px; color: #eef3ff; background: var(--navy); box-shadow: 0 16px 34px rgba(24,36,62,.18); }
+        .envelope h3 { margin: 0 0 10px; color: #fff; }
+        .message { margin-top: 10px; padding: 12px; border-radius: 10px; background: rgba(255,255,255,.08); }
+        .message b { color: #fff; }
+        .payload { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; margin-top: 9px; }
+        .payload span { padding: 7px 8px; border-radius: 7px; background: rgba(255,255,255,.10); font: 11px Consolas, monospace; }
+        .budget { margin-top: 12px; }
+        .budget-bar { display: flex; height: 13px; overflow: hidden; border-radius: 999px; background: rgba(255,255,255,.12); }
+        .budget-bar i:nth-child(1) { width: 36%; background: #6090ef; }
+        .budget-bar i:nth-child(2) { width: 22%; background: #e79654; }
+        .budget-bar i:nth-child(3) { width: 19%; background: #43aa91; }
+        .budget-bar i:nth-child(4) { width: 13%; background: #9b80e3; }
+        .budget-bar i:nth-child(5) { flex: 1; background: rgba(255,255,255,.16); }
+        .budget small { display: block; margin-top: 7px; color: #c8d2e8; }
+
+        .dispatch { display: grid; grid-template-columns: 250px 1fr; gap: 22px; align-items: start; }
+        .queue { display: grid; gap: 7px; }
+        .queue-item { display: flex; justify-content: space-between; padding: 9px 11px; border-radius: 9px; background: #f0f3f8; color: var(--muted); font-size: 12px; transition: .25s ease; }
+        .queue-item.sent { color: #fff; background: var(--blue); transform: translateX(7px); }
+        .lanes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .lane { min-height: 96px; padding: 11px; border-radius: 12px; background: #f8fafe; border: 1px dashed #bdc7d7; }
+        .lane b { display: block; margin-bottom: 10px; color: var(--muted); font-size: 12px; }
+        .model-packet { padding: 9px; border-radius: 8px; color: #fff; background: var(--blue); font-size: 12px; animation: packetIn .35s ease both; }
+        @keyframes packetIn { from { transform: translateY(18px); opacity: 0; } }
+        .model { grid-column: 1 / -1; margin-top: 8px; padding: 17px; border-radius: 14px; text-align: center; color: #fff; background: var(--navy); }
+        .model b { display: block; font-size: 19px; }
+        .model span { color: #c9d3e8; font-size: 12px; }
+
+        .notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 18px; }
+        .note { padding: 12px 14px; border-left: 3px solid var(--yellow); background: #fffaf0; font-size: 12px; line-height: 1.55; }
+        .controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; }
+        .controls-left { display: flex; gap: 8px; }
+        .control { padding: 9px 15px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--ink); cursor: pointer; }
+        .control.primary { color: #fff; border-color: var(--blue); background: var(--blue); }
+        .control:disabled { opacity: .45; cursor: default; }
+        #status { color: var(--muted); font-size: 13px; }
+
+        @media (max-width: 920px) {
+            .shell { padding: 18px; }
+            .hero { align-items: flex-start; flex-direction: column; }
+            .stats { grid-template-columns: repeat(3, 1fr); }
+            .steps { grid-template-columns: repeat(3, 1fr); }
+            .flow3, .flow4, .batch-layout, .packet-layout, .dispatch { grid-template-columns: 1fr; min-height: 0; }
+            .flow4 .arrow, .flow3 .arrow, .packet-layout .arrow { transform: rotate(90deg); }
+            .batch-grid { grid-template-columns: repeat(3, 1fr); }
+            .scene, .stage { min-height: 0; }
+        }
+        @media (max-width: 560px) {
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .steps { grid-template-columns: repeat(2, 1fr); }
+            .scene { padding: 18px; }
+            .scene-head { flex-direction: column; }
+            .retrieval, .payload, .notes { grid-template-columns: 1fr; }
+            .batch-grid, .lanes { grid-template-columns: repeat(2, 1fr); }
+            .controls { align-items: stretch; flex-direction: column; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition: none !important; }
+        }
+    </style>
+</head>
+<body>
+<main class="shell">
+    <header class="hero">
+        <div>
+            <div class="eyebrow">AUDIT PIPELINE · CURRENT IMPLEMENTATION</div>
+            <h1>一段文案，如何变成 13 个模型批次</h1>
+            <p class="lead">重点观察三类文字块：待审证据、46 张规则卡、法规原文。后端先检索和聚类，再为每个批次拼出一份完整的 system + user 消息。</p>
+        </div>
+        <div class="snapshot"><strong>当前本地配置快照</strong><br>official-v3 · batch=4 · concurrency=8</div>
+    </header>
+
+    <section class="stats" aria-label="当前配置">
+        <div class="stat"><b>46</b><span>规则卡全部覆盖</span></div>
+        <div class="stat"><b>13</b><span>当前计划批次</span></div>
+        <div class="stat"><b>4</b><span>单批最多规则</span></div>
+        <div class="stat"><b>8</b><span>模型并发上限</span></div>
+        <div class="stat"><b>8 / 8k</b><span>每批可选 RAG 条文上限</span></div>
+    </section>
+
+    <nav class="steps" aria-label="处理步骤">
+        <button class="step active" data-step="0"><span class="n">1</span><strong>证据分块</strong><small>按非空行保留位置</small></button>
+        <button class="step" data-step="1"><span class="n">2</span><strong>混合检索</strong><small>排序条文，不删除规则</small></button>
+        <button class="step" data-step="2"><span class="n">3</span><strong>规则聚类</strong><small>共享法条的规则成组</small></button>
+        <button class="step" data-step="3"><span class="n">4</span><strong>批次装箱</strong><small>当前 46 → 13 批</small></button>
+        <button class="step" data-step="4"><span class="n">5</span><strong>Prompt 合并</strong><small>system + user JSON</small></button>
+        <button class="step" data-step="5"><span class="n">6</span><strong>并发发送</strong><small>8 路进入模型</small></button>
+    </nav>
+
+    <section class="stage" aria-live="polite">
+        <article class="scene active" data-scene="0">
+            <header class="scene-head">
+                <div><h2>① 文案先变成可引用的证据块</h2><p>每个非空行成为一个 Source，保存 source_id、原文和 Unicode 起点；每个 Source 再按最多 512 字生成检索查询。</p></div>
+                <span class="pill">不先压成摘要</span>
+            </header>
+            <div class="flow3">
+                <div class="box">
+                    <h3>用户提交的完整文本</h3>
+                    <div class="stack">
+                        <div class="block evidence">产品介绍与销售主张……</div>
+                        <div class="block evidence">投保条件、收益与理赔描述……</div>
+                        <div class="block evidence">案例、用户原话与行动引导……</div>
+                        <div class="block evidence">风险提示与补充说明……</div>
+                    </div>
+                    <p class="mini">页面目前最多 5,000 个 Unicode 字符；API 上限仍为 10,000。</p>
+                </div>
+                <div class="arrow" aria-hidden="true">→</div>
+                <div class="box">
+                    <h3>Source 列表 + 512 字检索片段</h3>
+                    <div class="split-visual">
+                        <div class="source-row"><span class="source-id">text_1</span><div class="source-text"><i class="slice"></i></div></div>
+                        <div class="source-row"><span class="source-id">text_2</span><div class="source-text"><i class="slice"></i></div></div>
+                        <div class="source-row"><span class="source-id">text_3</span><div class="source-text"><i class="slice"></i></div></div>
+                        <div class="source-row"><span class="source-id">text_N</span><div class="source-text"><i class="slice"></i></div></div>
+                    </div>
+                    <p class="mini"><span class="mono">sources[]</span> 后续会完整复制进每一个规则批次，使模型能引用原句；512 字片段只用于检索。</p>
+                </div>
+            </div>
+        </article>
+
+        <article class="scene" data-scene="1">
+            <header class="scene-head">
+                <div><h2>② 每个检索片段走两路召回</h2><p>每段分别取 BM25 Top 8 与向量 Top 8，再用 RRF(k=60) 融合；最后跨全部文本段累计分数，形成一个全局法规条文顺序。</p></div>
+                <span class="pill">结果随文案变化</span>
+            </header>
+            <div class="flow4">
+                <div class="box">
+                    <h3>一个 512 字查询片段</h3>
+                    <div class="block evidence">“体检结果直接作为理赔依据……”</div>
+                    <p class="mini">所有片段都会参与，不只看开头 512 字。</p>
+                </div>
+                <div class="arrow">→</div>
+                <div class="retrieval">
+                    <div class="box"><h3>BM25 Top 8</h3><div class="rank-list"><div class="rank-item">关键词匹配条文</div><div class="rank-item">主体披露条文</div><div class="rank-item">合同一致性条文</div></div></div>
+                    <div class="box"><h3>向量 Top 8</h3><div class="rank-list"><div class="rank-item">语义相近条文</div><div class="rank-item">误导宣传条文</div><div class="rank-item">理赔条件条文</div></div></div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="box funnel">
+                    <h3>跨段累计 RRF</h3>
+                    <b>R1 → R2 → R3 …</b>
+                    <div class="block rag">全局有序 retrieved_article_ids</div>
+                    <p class="mini">这个列表只决定额外法规原文和规则批次的优先顺序；46 条规则仍然全部检查，不由检索结果淘汰。</p>
+                </div>
+            </div>
+            <div class="notes"><div class="note"><strong>RAG 决定：</strong>哪些辅助法条优先进入当前批次，以及哪些规则组先执行。</div><div class="note"><strong>RAG 不决定：</strong>是否跳过某条规则。规则覆盖与检索召回分开处理。</div><div class="note"><strong>原因：</strong>检索可能漏召回；若用它直接删规则，漏召回就会变成漏审。</div></div>
+        </article>
+
+        <article class="scene" data-scene="2">
+            <header class="scene-head">
+                <div><h2>③ 46 条规则不会简单地每 4 条切一刀</h2><p>先用“是否共享直接引用条文”构建规则簇。共享法条的规则留在一起，减少同一法条在多个调用中的重复。</p></div>
+                <span class="pill">规则仍全部检查</span>
+            </header>
+            <div class="flow3">
+                <div class="box">
+                    <h3>46 张规则卡</h3>
+                    <div class="stack">
+                        <div class="block rule">规则 A → 法条 18、22</div>
+                        <div class="block rule">规则 B → 法条 22、23</div>
+                        <div class="block rule">规则 C → 法条 37</div>
+                        <div class="block rule">规则 D → 法条 41、45</div>
+                    </div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="box">
+                    <h3>按共享法条形成连通组</h3>
+                    <div class="stack">
+                        <div class="block law glow">簇 1：A + B · 共享法条 22</div>
+                        <div class="block law">簇 2：C · 独立规则</div>
+                        <div class="block law">簇 3：D + … · 共享其它法条</div>
+                    </div>
+                    <p class="mini">命中检索结果的规则簇优先排列；多规则簇先装箱，互不共享法条的单规则再合并装箱。</p>
+                </div>
+            </div>
+            <div class="notes"><div class="note">同一规则的直接条文和 supporting 条文属于必需内容。</div><div class="note">相似度只影响顺序和辅助上下文，不取消任何规则。</div><div class="note">规则簇边界会造成不足 4 条的批次，因此不是简单的 12 批。</div></div>
+        </article>
+
+        <article class="scene" data-scene="3">
+            <header class="scene-head">
+                <div><h2>④ 当前配置把 46 条规则装成 13 个批次</h2><p>单批最多 4 条规则；同时控制必需法规原文集合。点击任一批次，查看它携带的规则与必需条文规模。</p></div>
+                <span class="pill">batch_rule_count = 4</span>
+            </header>
+            <div class="batch-layout">
+                <div id="batch-grid" class="batch-grid" aria-label="13 个模型批次"></div>
+                <aside id="batch-detail" class="box batch-detail"></aside>
+            </div>
+        </article>
+
+        <article class="scene" data-scene="4">
+            <header class="scene-head">
+                <div><h2>⑤ 每批合并成一份完整模型消息</h2><p>模型收到两条消息：固定 system 指令与 JSON Schema，以及一份包含证据、规则、法条和白名单的 user JSON。</p></div>
+                <span class="pill">不是“文案 + 46 条规则”一次全塞</span>
+            </header>
+            <div class="packet-layout">
+                <div class="packet-parts">
+                    <div class="block evidence">完整 sources[]<br><span class="mini">本次全部文字证据，每批重复携带</span></div>
+                    <div class="block rule">本批 rules[]<br><span class="mini">最多 4 条规则卡 + 条件 + 例外</span></div>
+                    <div class="block law">rule_articles[]<br><span class="mini">本批规则可引用的直接法规原文</span></div>
+                    <div class="block rag">articles[]<br><span class="mini">支持条文 + 本批定向 RAG 原文</span></div>
+                    <div class="block contract">白名单与契约<br><span class="mini">condition_bindings / allowed_citations / evidence IDs</span></div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="envelope">
+                    <h3>Batch N · messages[]</h3>
+                    <div class="message"><b>system</b><div class="mini">审核边界、否定/教育反例、适用性规则、证据要求、输出 JSON Schema</div></div>
+                    <div class="message"><b>user</b><div class="payload"><span>context</span><span>sources</span><span>rules</span><span>rule_articles</span><span>condition_bindings</span><span>allowed_citations</span><span>articles</span><span>retrieved_article_ids</span></div></div>
+                    <div class="budget"><div class="budget-bar"><i></i><i></i><i></i><i></i><i></i></div><small>示意：证据 · 规则 · 必需法条 · RAG 法条 · 剩余空间　总包序列化后必须 ≤ 90,000 字符</small></div>
+                </div>
+            </div>
+            <div class="notes"><div class="note">直接引用条文放在 rule_articles，不在 articles 中重复一份。</div><div class="note">先取文案全局 RRF 前列，再与本批直接法条的 BM25/向量相似前列融合；每批最多 8 条、8,000 字符。</div><div class="note">若整包仍超 90k：从排名末尾移除可选 RAG；仍超限则递归拆分规则，绝不截断必需材料。</div><div class="note">5 条开发案例单次 A/B：通过数持平 4/5，Prompt token -14.7%，P50 -18.4%；尚不能证明准确率提升。</div></div>
+        </article>
+
+        <article class="scene" data-scene="5">
+            <header class="scene-head">
+                <div><h2>⑥ 13 个批次进入最多 8 路模型并发</h2><p>后端用 asyncio 同时调度全部批次，模型客户端的 Semaphore 控制最多 8 个请求在途；其余批次排队。</p></div>
+                <span class="pill">model_concurrency = 8</span>
+            </header>
+            <div class="dispatch">
+                <div class="box"><h3>调度队列</h3><div id="dispatch-queue" class="queue"></div></div>
+                <div>
+                    <div id="lanes" class="lanes"></div>
+                    <div class="model"><b>百炼 qwen3.7-plus</b><span>每个请求返回：本批每条规则恰好一个 Finding；结构不合约时本批可修复一次</span></div>
+                </div>
+            </div>
+            <div class="notes"><div class="note">第一波最多 8 批同时调用，剩余批次等待空闲槽位。</div><div class="note">每批输出通过规则 ID、条件、证据和引用白名单校验。</div><div class="note">所有批次完成后，后端才汇总 46 条规则台账并确定最终三态结论。</div></div>
+        </article>
+    </section>
+
+    <footer class="controls">
+        <div class="controls-left"><button id="prev" class="control" type="button">上一步</button><button id="play" class="control primary" type="button">自动播放</button><button id="next" class="control" type="button">下一步</button></div>
+        <div id="status">步骤 1 / 6 · 证据分块</div>
+    </footer>
+</main>
+
+<script>
+    const batches = [
+        {n:4,a:22,c:5306,r:['marketing_truthful_and_not_misleading','insurance_benefit_uncertainty_and_risk','identify_insurance_product_and_provider','disclose_material_policy_terms_and_restrictions']},
+        {n:4,a:25,c:5292,r:['no_regulatory_guarantee_or_filing_endorsement','marketing_personnel_authorization_and_channel','regional_and_third_party_marketing_scope','licensed_insurance_and_marketing_subject']},
+        {n:4,a:31,c:6492,r:['partner_contract_and_delegation','suitability_and_consumer_demand','truthful_health_disclosure_prompt','official_platform_mandatory_information']},
+        {n:4,a:15,c:3604,r:['offline_service_availability_disclosure','voluntary_renewal_and_sales_choices','marketing_message_optout','algorithm_recommendation_controls']},
+        {n:3,a:22,c:4332,r:['third_party_sales_intervention','special_internet_insurance_business_scope','approved_marketing_content_use']},
+        {n:4,a:2,c:846,r:['intermediary_prohibited_deception_and_concealment','intermediary_prohibited_off_contract_benefit','intermediary_prohibited_coercion_and_misrepresentation','intermediary_prohibited_premium_misappropriation']},
+        {n:1,a:1,c:347,r:['intermediary_prohibited_illegal_commission_seeking']},
+        {n:4,a:2,c:846,r:['insurer_prohibited_deception_of_policyholder','insurer_prohibited_off_contract_benefit_promise','insurer_prohibited_unauthorized_sales_delegation','insurer_prohibited_false_information_release']},
+        {n:3,a:15,c:2339,r:['intermediary_industry_name_and_brand','multi_product_display_separation','illegal_financial_activity_marketing']},
+        {n:4,a:13,c:2136,r:['public_figure_endorsement_external_review','stop_sale_and_price_change_claims','bundled_financial_products_and_default_choice','policy_confirmation_and_approved_terms']},
+        {n:4,a:21,c:3532,r:['premium_payment_and_accounts','personal_information_consent_and_use','unlawful_surrender_promotion','popup_close_control']},
+        {n:4,a:15,c:3212,r:['regulated_account_names_and_trademarks','paid_education_disguised_marketing','nonbank_payment_marketing_options','internet_platform_operating_conditions']},
+        {n:3,a:5,c:1122,r:['insurer_format_clause_explanation_duty','insurer_prohibited_unfair_competition','intermediary_qualification_requirement']}
+    ];
+    const titles = ['证据分块','混合检索','规则聚类','批次装箱','Prompt 合并','并发发送'];
+    let current = 0, timer = null, dispatchTimer = null;
+
+    function showStep(index) {
+        current = Math.max(0, Math.min(5, index));
+        document.querySelectorAll('.step').forEach((node, i) => node.classList.toggle('active', i === current));
+        document.querySelectorAll('.scene').forEach((node, i) => node.classList.toggle('active', i === current));
+        document.getElementById('prev').disabled = current === 0;
+        document.getElementById('next').disabled = current === 5;
+        document.getElementById('status').textContent = `步骤 ${current + 1} / 6 · ${titles[current]}`;
+        if (current === 5) animateDispatch(); else stopDispatch();
+    }
+
+    function stopAuto() {
+        if (timer) clearInterval(timer);
+        timer = null;
+        document.getElementById('play').textContent = '自动播放';
+    }
+    function toggleAuto() {
+        if (timer) { stopAuto(); return; }
+        document.getElementById('play').textContent = '暂停';
+        if (current === 5) showStep(0);
+        timer = setInterval(() => {
+            if (current === 5) { stopAuto(); return; }
+            showStep(current + 1);
+        }, 2400);
+    }
+
+    const grid = document.getElementById('batch-grid');
+    const detail = document.getElementById('batch-detail');
+    function selectBatch(index) {
+        const b = batches[index];
+        grid.querySelectorAll('.batch').forEach((node, i) => node.classList.toggle('active', i === index));
+        detail.innerHTML = `<h3>Batch ${String(index + 1).padStart(2,'0')}</h3><div class="mini">${b.n} 条规则 · ${b.a} 条必需法规 · ${b.c.toLocaleString()} 法规原文字符</div><ol class="rule-list">${b.r.map(x => `<li class="mono">${x}</li>`).join('')}</ol><p class="mini">这里显示的是当前规则集在无特定检索优先级下的静态装箱。具体文案会改变批次执行顺序和额外 RAG 条文，不会改变规则总覆盖。</p>`;
+    }
+    batches.forEach((b, i) => {
+        const button = document.createElement('button');
+        button.type = 'button'; button.className = 'batch';
+        button.innerHTML = `<b>Batch ${String(i + 1).padStart(2,'0')}</b><small>${b.n} rules · ${b.a} laws</small><span class="dots">${'<i></i>'.repeat(b.n)}</span>`;
+        button.addEventListener('click', () => selectBatch(i));
+        grid.appendChild(button);
+    });
+    selectBatch(0);
+
+    const queue = document.getElementById('dispatch-queue');
+    const lanes = document.getElementById('lanes');
+    function buildDispatch() {
+        queue.replaceChildren(); lanes.replaceChildren();
+        batches.forEach((b, i) => {
+            const row = document.createElement('div'); row.className = 'queue-item'; row.dataset.batch = i;
+            row.innerHTML = `<span>Batch ${String(i + 1).padStart(2,'0')}</span><span>${b.n} rules</span>`;
+            queue.appendChild(row);
+        });
+        for (let i = 0; i < 8; i++) {
+            const lane = document.createElement('div'); lane.className = 'lane'; lane.dataset.lane = i;
+            lane.innerHTML = `<b>并发槽 ${i + 1}</b>`; lanes.appendChild(lane);
+        }
+    }
+    function stopDispatch() { if (dispatchTimer) clearInterval(dispatchTimer); dispatchTimer = null; }
+    function animateDispatch() {
+        stopDispatch(); buildDispatch(); let sent = 0;
+        const send = () => {
+            if (sent >= batches.length) { stopDispatch(); return; }
+            const laneIndex = sent % 8;
+            const row = queue.querySelector(`[data-batch="${sent}"]`);
+            if (row) row.classList.add('sent');
+            const lane = lanes.querySelector(`[data-lane="${laneIndex}"]`);
+            lane.querySelector('.model-packet')?.remove();
+            const packet = document.createElement('div'); packet.className = 'model-packet';
+            packet.textContent = `Batch ${String(sent + 1).padStart(2,'0')} · ${batches[sent].n} rules`;
+            lane.appendChild(packet); sent++;
+        };
+        for (let i = 0; i < 8; i++) send();
+        dispatchTimer = setInterval(send, 520);
+    }
+
+    document.querySelectorAll('.step').forEach(node => node.addEventListener('click', () => { stopAuto(); showStep(Number(node.dataset.step)); }));
+    document.getElementById('prev').addEventListener('click', () => { stopAuto(); showStep(current - 1); });
+    document.getElementById('next').addEventListener('click', () => { stopAuto(); showStep(current + 1); });
+    document.getElementById('play').addEventListener('click', toggleAuto);
+    showStep(0);
+</script>
+</body>
+</html>

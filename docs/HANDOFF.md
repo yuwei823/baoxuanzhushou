@@ -1,23 +1,26 @@
 # 实施交接记录
 
-## 当前交接摘要（2026-10-13 上下文预算修复）
+## 当前交接摘要（2026-10-13 按批次定向 RAG）
 
 接手时以本节及最新 reports/performance-* 为准，下面 dated 记录保留历史事实。
 
 ### 当前规则与实现
 
 - 当前快照 `official-v3-2026-10-12` 已发布：4 份用户本地法规，含保险法，359 条文、46 规则。严格 validate-corpus 为 release_ready=true，0 完整性错误、0 审阅门禁。不要沿用旧“保险法暂缓”的状态。v3 与 v2 内容完全一致，仅文档顺序不同（保险法置于首位）；已发布快照不可原位覆盖，故顺序调整必须新建 ruleset。
-- 文本 `qwen3.7-plus`，视觉 `qwen3-vl-plus`；hybrid=BM25 + text-embedding-v4/1024；Prompt `audit-v1.6-citation-guidance`，workflow `1.3-context-budget`。召回原文与全部必查规则仍进入审核，不放宽引用/证据/未知条件检查。
+- 文本 `qwen3.7-plus`，视觉 `qwen3-vl-plus`；hybrid=BM25 + text-embedding-v4/1024；Prompt `audit-v1.6-citation-guidance`，workflow `1.4-batch-targeted-rag`。默认 targeted：全局召回与当前批次直接法条的 BM25/向量相似度二次 RRF，每批最多补充 8 条/8,000 字符；46 条规则及直接/支持条文仍全部覆盖，不放宽引用/证据/未知条件检查。
 - 2026-10-13 修复长、多段材料的 `context_budget_exceeded`：旧检索将每段 Top 8 的无序并集全部复制到每个判定批次；现按跨段累计 RRF 排序，强制保留规则直接/支持条文，并只在剩余预算中加入额外召回。context_trace 新增实际 Prompt 字符数和 dropped 召回 ID。用户提供的“慈铭体检+保险”原文在旧逻辑下召回 153 条、13 批超过 90,000 字符；修复后离线 46/46 台账、0 超限。真实 hybrid 复验召回 210 条，最大 Prompt 54,529 字符，completed/non_compliant、0 错误，trace_id=`a910cd8c-387d-42a6-9340-2060f294f082`。全量 114 tests passed，Ruff 通过。
-- 保留其他 agent 的法规聚类分批改动。当前本地参数为 batch=2、model_concurrency=8、attempts=40、单次45秒/总计150秒。性能比较通过独立 Settings 覆盖，不修改 .env，不自动替换上线配置。
+- 保留其他 agent 的法规聚类分批改动。当前本地 `.env` 为 batch=4、model_concurrency=8、attempts=40、单次45秒/总计150秒；代码及 `.env.example` 默认 batch=2。性能比较通过独立 Settings 覆盖，不修改密钥或模型配置。
 - 新增逐调用 queue_ms、request_ms、token_usage、reasoning_tokens（缺失为 null）、transport_retry、structure_attempt、outcome；旧 latency_ms 包含排队，保留兼容。meta.rule_status_counts 区分已检查、不适用、范围外、待上下文、待外部核验及技术失败。页面展示各状态数量和简要模式隐藏提示数量。
 
 ### 验收与效果边界
 
+- targeted/global 真实 A/B 已完成：同一 qwen3.7-plus、batch=4、concurrency=8、5 条 provisional 开发案例各 1 次，两组均 4/5；targeted Prompt token 625,312→533,436（-14.7%），P50 32.609→26.609 秒（-18.4%），结构修复 3→1。共同失败是教育案例 `disclose_material_policy_terms_and_restrictions` 的证据原句校验；不宣称准确率提升。详见 `reports/rag-batch-context-ab-2026-10-13/report.md`。
+- “慈铭体检+保险”长材料 targeted 真实复验 completed/non_compliant、0 错误、全局召回 210、13 批、最大 Prompt 44,442 字符、38.391 秒，trace_id=`68b51f73-b8d0-4f3f-a332-a69980f6b99c`。相较旧记录最大 Prompt 54,529 更小，但单次时延更高，不能把时延波动归因于 RAG。
+
 - v1 的 G1/G2 已通过合成开发案例工程验收，证据 reports/g1-acceptance-2026-10-12.md、reports/p2-stress-reverify.json；该结论不能自动覆盖 v2。
 - 本轮 v2 模型初筛已完成：qwen3.7-plus 5/5、qwen-plus 4/5、qwen-turbo 3/5，失败均为教育反例误复核；均不是正式 gold 评估。完整调用、代码/语料/案例哈希见 reports/performance-model-pilot-v2/。保留当前模型。
 - v2 的 batch=2/3、concurrency=4/8 两轮比较已完成 40 次：b2c8=10/10，P50 27.83秒、P95 29.06秒，无修复；b3c8=9/10，教育反例证据校验失败。保留模型和 batch=2/concurrency=8。见 reports/performance-batch-matrix-v2/report.md；不能直接当作 v3 的验收。
-- 最新全量测试 **105 passed in 21.42s**，Ruff 全库通过；新增三个耗时、修复次数和错误脱敏回归。独立模拟页面已验证状态总数 46（checked=1、needs_context=39、failed=6），没有把待核验算作技术失败；截图 reports/performance-status-ui.png。
+- 最新全量测试 **117 passed in 19.67s**，Ruff 全库通过；新增 targeted/global 上下文分配、必需条文保留、召回台账分区和动画路由回归。独立模拟页面此前已验证状态总数 46（checked=1、needs_context=39、failed=6），没有把待核验算作技术失败；截图 reports/performance-status-ui.png。
 - P3 正式评估继续暂缓：5 条 provisional 开发种子已暴露，20/40 数据、图文人工标注、全文基线及正式 A/B 未完成。P4 部署产物由此前 agent 建立，本轮没有执行远程部署或更改访问控制。
 
 ### 下一步与复现

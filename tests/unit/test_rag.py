@@ -191,6 +191,40 @@ async def test_long_material_prunes_optional_retrieval_context_instead_of_failin
         ) == set(corpus.articles)
 
 
+def test_targeted_batch_context_keeps_mandatory_law_and_caps_optional_hits(corpus):
+    retrieved = list(corpus.articles)
+    batches = list(corpus.batches(4, retrieved))
+    selections = []
+    for cards, mandatory in batches[:3]:
+        context, selected, dropped = corpus.budgeted_context_articles(
+            mandatory, retrieved, cards, "targeted", 4
+        )
+        mandatory_hits = set(mandatory) & set(retrieved)
+        optional_selected = set(selected) - mandatory_hits
+        assert set(mandatory) <= set(context)
+        assert len(optional_selected) <= 4
+        assert set(selected) | set(dropped) == set(retrieved)
+        assert not (set(selected) & set(dropped))
+        selections.append(optional_selected)
+
+    # Different rule batches should not receive the same global context copy.
+    assert len({frozenset(selection) for selection in selections}) > 1
+
+
+def test_global_batch_context_remains_available_for_ab_comparison(corpus):
+    cards, mandatory = next(corpus.batches(4, corpus.articles))
+    retrieved = list(corpus.articles)
+    targeted, targeted_ids, _ = corpus.budgeted_context_articles(
+        mandatory, retrieved, cards, "targeted", 8
+    )
+    global_context, global_ids, _ = corpus.budgeted_context_articles(
+        mandatory, retrieved, cards, "global", 8
+    )
+    assert set(mandatory) <= set(targeted)
+    assert set(mandatory) <= set(global_context)
+    assert len(targeted_ids) < len(global_ids)
+
+
 @pytest.mark.asyncio
 async def test_condition_ids_resolve_but_unknown_and_duplicates_fail(corpus):
     card = corpus.rules["marketing_truthful_and_not_misleading"]

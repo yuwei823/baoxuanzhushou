@@ -71,11 +71,19 @@ async def main(args):
     settings = Settings()
     if settings.audit_mock or not settings.configured:
         raise ValueError("Real configured API required")
-    configurations = list(itertools.product(args.models, args.batches, args.concurrencies))
+    configurations = list(
+        itertools.product(args.models, args.batches, args.concurrencies, args.context_modes)
+    )
     corpus = Corpus(settings)
     source_files = [
         Path("src/insurance_audit") / n
-        for n in ("workflow.py", "retrieval.py", "service.py", "models/bailian.py")
+        for n in (
+            "config.py",
+            "workflow.py",
+            "retrieval.py",
+            "service.py",
+            "models/bailian.py",
+        )
     ]
     manifest = {
         "created_at_utc": datetime.now(UTC).isoformat(),
@@ -92,6 +100,7 @@ async def main(args):
         "retrieval": settings.retrieval_mode,
         "embedding": settings.embedding_model,
         "dimensions": settings.embedding_dimensions,
+        "batch_context_modes": args.context_modes,
         "repeats": args.repeats,
         "configurations": configurations,
         "case_sha256": hashlib.sha256(json.dumps(CASES, ensure_ascii=False).encode()).hexdigest(),
@@ -107,8 +116,8 @@ async def main(args):
         for name, _, text, completeness, expected in CASES:
             configs = configurations.copy()
             rng.shuffle(configs)
-            for model, batch, concurrency in configs:
-                config = f"{model}-b{batch}-c{concurrency}"
+            for model, batch, concurrency, context_mode in configs:
+                config = f"{model}-b{batch}-c{concurrency}-rag-{context_mode}"
                 print(f"RUN {repeat + 1} {name} {config}", flush=True)
                 current = settings.model_copy(
                     update={
@@ -116,6 +125,7 @@ async def main(args):
                         "batch_rule_count": batch,
                         "model_concurrency": concurrency,
                         "bailian_text_enable_thinking": False,
+                        "rag_batch_context_mode": context_mode,
                     }
                 )
                 provider = Bailian(current)
@@ -169,8 +179,14 @@ async def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--models", nargs="+", default=["qwen3.7-plus", "qwen-plus", "qwen-turbo"])
-    parser.add_argument("--batches", nargs="+", type=int, choices=[2, 3], default=[2])
+    parser.add_argument("--batches", nargs="+", type=int, choices=[2, 3, 4], default=[2])
     parser.add_argument("--concurrencies", nargs="+", type=int, choices=[4, 8], default=[8])
+    parser.add_argument(
+        "--context-modes",
+        nargs="+",
+        choices=["global", "targeted", "none"],
+        default=["targeted"],
+    )
     parser.add_argument("--repeats", type=int, choices=[1, 2, 3], default=1)
     parser.add_argument("--out", type=Path, required=True)
     asyncio.run(main(parser.parse_args()))

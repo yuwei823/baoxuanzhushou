@@ -1,0 +1,23 @@
+{
+  "status": "completed",
+  "decision": "non_compliant",
+  "errors": [],
+  "trace_id": "68b51f73-b8d0-4f3f-a332-a69980f6b99c",
+  "rules_total": 46,
+  "rules_checked": 10,
+  "retrieved_global": 210,
+  "batches": 13,
+  "prompt_characters_sum": 442479,
+  "prompt_characters_max": 44442,
+  "selected_retrieved_sum": 225,
+  "latency_ms": 38391,
+  "attempts": 19,
+  "token_usage": {
+    "prompt_tokens": 156546,
+    "completion_tokens": 11407,
+    "total_tokens": 167953
+  },
+  "workflow_version": "1.4-batch-targeted-rag",
+  "retrieval_version": "segment512-rrf60-batch-targeted-v3",
+  "rag_batch_context_mode": "targeted"
+}

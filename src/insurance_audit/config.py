@@ -29,6 +29,11 @@ class Settings(BaseSettings):
     audit_max_model_attempts: int = Field(40, ge=1, le=64)
     batch_rule_count: int = Field(2, ge=1, le=8)
     batch_max_characters: int = Field(90000, ge=1000)
+    # Extra RAG articles are optional context. "targeted" keeps only articles
+    # jointly relevant to the submitted material and the current rule batch.
+    rag_batch_context_mode: Literal["global", "targeted", "none"] = "targeted"
+    rag_batch_retrieved_limit: int = Field(8, ge=0, le=32)
+    rag_batch_retrieved_max_characters: int = Field(8000, ge=0, le=30000)
     log_content: bool = False
     # Deployment guard: cap on in-flight audits so a burst cannot exhaust the model budget.
     audit_max_concurrency: int = Field(2, ge=1, le=8)

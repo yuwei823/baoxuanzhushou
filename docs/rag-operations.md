@@ -4,11 +4,11 @@
 
 ## 已实现流程
 
-用户文本按原始位置分段 → text-embedding-v4 查询向量 + 中文 BM25 → 各路 Top 8 → RRF(k=60) 融合取每段 Top 8 → 命中规则优先排列 → 召回整条原文与规则直接/支持原文去重 → 模型逐规则判断 → 引用/条件/证据校验 → 确定性聚合。
+用户文本按原始位置分段 → text-embedding-v4 查询向量 + 中文 BM25 → 各路 Top 8 → RRF(k=60) 融合取每段 Top 8 → 跨段累计得到全局条文顺序 → 规则按共享直接法条聚类 → 对每批规则用直接法条的 BM25 相似度和现有条文向量中心二次 RRF → 每批定向补充最多 8 条/8,000 字符 → 模型逐规则判断 → 引用/条件/证据校验 → 确定性聚合。
 
-额外召回原文实际加入每批模型消息，meta.context_trace 记录提供的 article_ids；meta.retrieval_trace 记录各段位置及两路排名。原文携带 retrieved/mandatory/supporting 角色。检索命中不允许模型新增未核对规则；最终引用仍限于该规则合法 article_ids，并由知识库回填。
+额外召回原文只在与当前批次共同相关时加入模型消息，meta.context_trace 记录实际加入与丢弃的 article_id、定向模式和 Prompt 字符数；meta.retrieval_trace 记录各段位置及两路排名。检索命中不允许模型新增未核对规则；最终引用仍限于该规则合法 article_ids，并由知识库回填。
 
-当前仍检查全部 34 张规则卡，不凭相似度排除规则。这样保留覆盖，但上下文会重复，暂未证明比旧流程更快。以后可以优化分批分配，但不得牺牲覆盖或切掉例外。
+当前仍检查全部 46 张规则卡，不凭相似度排除规则。检索只调整规则组优先级和每批辅助条文；规则直接/支持条文不受 8 条/8,000 字符限制。5 条 provisional 开发案例的单次真实 A/B 中，targeted 与 global 都是 4/5，Prompt token 减少 14.7%、P50 降低 18.4%，但这不是正式准确率证据，详见 `reports/rag-batch-context-ab-2026-10-13/report.md`。
 
 ## 配置与索引
 
@@ -17,6 +17,9 @@ RETRIEVAL_MODE=hybrid
 EMBEDDING_MODEL=text-embedding-v4
 EMBEDDING_DIMENSIONS=1024
 BAILIAN_TEXT_ENABLE_THINKING=false
+RAG_BATCH_CONTEXT_MODE=targeted
+RAG_BATCH_RETRIEVED_LIMIT=8
+RAG_BATCH_RETRIEVED_MAX_CHARACTERS=8000
 ```
 
 ```powershell
@@ -34,7 +37,7 @@ BAILIAN_TEXT_ENABLE_THINKING=false
 
 ## 预算与失败
 
-在线向量和判定共享并发 2、150 秒总预算、最多 16 次尝试。向量每批最多 10 条，鉴权不重试，可恢复错误按 Retry-After 与退避重试。离线构建单独采用 900 秒/60 次预算。
+在线向量和判定共享模型并发 8、150 秒单次审核总预算、最多 40 次模型尝试；服务同时审核请求上限为 2。向量每批最多 10 条，鉴权不重试，可恢复错误按 Retry-After 与退避重试。离线构建单独采用 900 秒/60 次预算。
 
 查询向量失败时未执行的规则进入 failed，整体返回技术失败；不自动退为 BM25。显式 RETRIEVAL_MODE=bm25 可运行文字检索基线，结果会标明模式；不能计入 hybrid 验收。
 

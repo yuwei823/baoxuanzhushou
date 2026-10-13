@@ -175,13 +175,18 @@ class AuditService:
                 if retrieval_error:
                     raise retrieval_error
                 # Direct and supporting articles are mandatory.  Retrieved
-                # articles are optional augmentation and must compete for the
-                # remaining prompt budget in global relevance order.  Previously
-                # every per-segment hit was copied into every batch, so long
-                # line-oriented material could overflow even a one-rule batch.
+                # articles are optional augmentation. Targeted mode re-ranks
+                # them against this batch before applying the prompt budget.
                 mandatory_articles = articles
                 articles, selected_retrieved, dropped_retrieved = (
-                    self.corpus.budgeted_context_articles(mandatory_articles, retrieved)
+                    self.corpus.budgeted_context_articles(
+                        mandatory_articles,
+                        retrieved,
+                        cards,
+                        self.settings.rag_batch_context_mode,
+                        self.settings.rag_batch_retrieved_limit,
+                        self.settings.rag_batch_retrieved_max_characters,
+                    )
                 )
                 messages = judge_messages(
                     request, sources, cards, articles, readable, selected_retrieved
@@ -255,6 +260,15 @@ class AuditService:
                         "article_ids": sorted(articles),
                         "retrieved_article_ids": selected_retrieved,
                         "dropped_retrieved_article_ids": dropped_retrieved,
+                        "retrieval_context_mode": self.settings.rag_batch_context_mode,
+                        "retrieved_optional_limit": self.settings.rag_batch_retrieved_limit,
+                        "retrieved_optional_max_characters": (
+                            self.corpus.article_budget
+                            if self.settings.rag_batch_context_mode == "global"
+                            else self.settings.rag_batch_retrieved_max_characters
+                            if self.settings.rag_batch_context_mode == "targeted"
+                            else 0
+                        ),
                         "prompt_characters": prompt_characters,
                     }
                 )
@@ -381,7 +395,7 @@ class AuditService:
             meta={
                 "ruleset_hash": self.corpus.hash,
                 "prompt_version": PROMPT_VERSION,
-                "workflow_version": "1.3-context-budget",
+                "workflow_version": "1.4-batch-targeted-rag",
                 "diagnostics_version": "queue-request-v1",
                 "rule_status_counts": dict(Counter(r.status for r in ledger)),
                 "transport_retry_calls": sum(c.get("transport_retry", 0) > 0 for c in budget.calls),
@@ -389,7 +403,12 @@ class AuditService:
                     c.get("structure_attempt", 0) > 0 and c.get("transport_retry", 0) == 0
                     for c in budget.calls
                 ),
-                "retrieval_version": "segment512-rrf60-budgeted-v2",
+                "retrieval_version": "segment512-rrf60-batch-targeted-v3",
+                "rag_batch_context_mode": self.settings.rag_batch_context_mode,
+                "rag_batch_retrieved_limit": self.settings.rag_batch_retrieved_limit,
+                "rag_batch_retrieved_max_characters": (
+                    self.settings.rag_batch_retrieved_max_characters
+                ),
                 "index_id": digest(self.corpus.vector_manifest)
                 if self.corpus.vector_manifest
                 else None,

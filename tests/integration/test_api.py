@@ -61,6 +61,22 @@ def test_intro_route_serves_the_self_contained_deck_with_a_relaxed_csp(client):
     assert "img-src 'self' blob: data:" in csp
 
 
+def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
+    response = client.get("/batch-flow")
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/html")
+    assert "一段文案，如何变成 13 个模型批次" in response.text
+    assert "const batches = [" in response.text
+    assert "RAG 不决定" in response.text
+    assert "每批最多 8 条、8,000 字符" in response.text
+
+    csp = response.headers["Content-Security-Policy"]
+    assert "style-src 'self' 'unsafe-inline'" in csp
+    assert "script-src 'self' 'unsafe-inline'" in csp
+    assert "object-src 'none'" in csp
+    assert "frame-ancestors 'none'" in csp
+
+
 def test_only_the_presentation_pages_relax_the_csp(client):
     # The app itself must never allow inline style or script.
     for path in ("/", "/api/v1/rulesets/current"):
@@ -85,7 +101,7 @@ def test_workflow_route_serves_the_diagram_with_its_cdn_fallback(client):
 
 
 def test_only_the_workflow_page_may_reach_the_cdn(client):
-    for path in ("/", "/intro", "/api/v1/rulesets/current"):
+    for path in ("/", "/intro", "/batch-flow", "/api/v1/rulesets/current"):
         csp = client.get(path).headers["Content-Security-Policy"]
         assert "jsdelivr" not in csp, path
 
