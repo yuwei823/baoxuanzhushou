@@ -89,7 +89,7 @@ $('submit').onclick = async () => {
         // Parse the SSE frames by hand: the payload is JSON we already understand,
         // and EventSource cannot issue a POST with a FormData body.
         const reader = r.body.getReader(); const decoder = new TextDecoder(); let buffer = '';
-        for (;;) {
+        for (; ;) {
             const { value, done } = await reader.read(); if (done) break;
             buffer += decoder.decode(value, { stream: true });
             const frames = buffer.split('\n\n'); buffer = frames.pop();
@@ -106,6 +106,6 @@ $('submit').onclick = async () => {
 };
 $('cancel').onclick = () => controller?.abort();
 $('download').onclick = () => { if (!lastResult) return; const url = URL.createObjectURL(new Blob([JSON.stringify(lastResult, null, 2)], { type: 'application/json' })); const a = elem('a'); a.href = url; a.download = `audit-${lastResult.audit_id || 'error'}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); };
-const examples = { violation: '稳赚不赔！本产品年化收益8%，保本保息，收益写进合同。限时抢购，错过不再有。联系张经理13800008888立即投保。', education: '保险知识科普：任何人都不应宣称“监管部门担保收益”。分红属于非保证利益，实际收益可能低于演示水平。本文不介绍或销售具体产品。', multi: '请审核以下图片材料。'};
+const examples = { violation: '稳赚不赔🚀🚀🚀！产品年化达8%，保本保息，收益写进合同🗝️🗝️🗝️。限时抢购，错过不再有🎊🎊🎊。联系张经理13800008888立即投保。', education: '📕保险知识科普📕：任何人都不应宣称“监管部门担保收益”。分红属于非保证利益，实际收益可能低于演示水平。本文不介绍或销售具体产品。', multi: '请审核以下图片材料。' };
 document.querySelectorAll('[data-example]').forEach(b => b.onclick = async () => { const generation = ++exampleGeneration; releasePictures(pictures); pictures = []; $('text').value = examples[b.dataset.example]; $('channel').value = 'internet'; $('publisher_type').value = 'insurance_institution'; $('product_type').value = 'insurance'; $('material_completeness').value = b.dataset.example === 'review' ? 'partial' : 'complete'; count(); redraw(); if (b.dataset.example === 'multi') { try { const files = await Promise.all([1].map(async n => { const blob = await (await fetch(`/static/demo-${n}.jpg`)).blob(); return new File([blob], `演示图片${n}.jpg`, { type: 'image/jpeg' }); })); if (generation === exampleGeneration && !controller) addFiles(files); } catch { notice('演示图片加载失败。'); } } });
 const setText = (id, text) => { const el = $(id); if (el) el.textContent = text; }; fetch('/api/v1/rulesets/current').then(r => r.json()).then(r => { setText('ruleset', r.ruleset_id || '规则集未就绪'); setText('scope', r.rule_count ? `${(r.documents || []).length} 份法规 · ${r.article_count} 条文 · ${r.rule_count} 条规则。` : r.summary); setText('mode', r.mock ? '模拟模式' : '百炼 API 模式'); const list = $('documents'); if (list) { list.replaceChildren(); for (const d of r.documents || []) list.append(elem('li', d.title)); } if (!r.model_configured) notice('后端尚未配置模型，请在本地 .env 设置密钥及 Base URL。'); }).catch(() => notice('无法连接本地服务。'));
