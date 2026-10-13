@@ -26,6 +26,11 @@ if not LOGGER.handlers:
     LOGGER.addHandler(logging.StreamHandler())
 STATIC = Path(__file__).with_name("static")
 
+# Self-contained presentation pages. /intro also runs inline script; the
+# workflow page is style-only, so it does not need script relaxed.
+INLINE_SCRIPT_PAGES = {"/intro"}
+INLINE_STYLE_PAGES = {"/intro", "/workflow"}
+
 
 def error_response(message, status, code="invalid_request"):
     return JSONResponse(
@@ -90,14 +95,21 @@ def create_app(settings=None, provider=None):
     async def security_headers(request, call_next):
         response = await call_next(request)
         response.headers["X-Content-Type-Options"] = "nosniff"
-        # The demo deck at /intro is a single self-contained file with inline
-        # style and script, so it needs 'unsafe-inline'. Every other route keeps
-        # the strict policy; hashes are not usable because the file is generated
-        # and would need a new hash on every edit.
-        if request.url.path == "/intro":
+        # Static presentation pages carry inline style, so they need
+        # 'unsafe-inline' for style. Only /intro also runs inline script. Every
+        # other route keeps the strict policy; hashes are not usable because the
+        # files are edited by hand and would need a new hash each time.
+        path = request.url.path
+        if path in INLINE_SCRIPT_PAGES:
             response.headers["Content-Security-Policy"] = (
                 "default-src 'self'; img-src 'self' blob: data:; "
                 "style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; "
+                "connect-src 'self'; object-src 'none'; frame-ancestors 'none'"
+            )
+        elif path in INLINE_STYLE_PAGES:
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'self'; img-src 'self' blob: data:; "
+                "style-src 'self' 'unsafe-inline'; script-src 'self'; "
                 "connect-src 'self'; object-src 'none'; frame-ancestors 'none'"
             )
         else:
@@ -355,6 +367,11 @@ def create_app(settings=None, provider=None):
     async def intro():
         """Self-contained demo deck, served as a plain page."""
         return FileResponse(STATIC / "intro.html")
+
+    @application.get("/workflow")
+    async def workflow():
+        """End-to-end flow diagram, rendered as inline SVG (no JS, no CDN)."""
+        return FileResponse(STATIC / "workflow.html")
 
     application.mount("/static", StaticFiles(directory=STATIC, check_dir=False), name="static")
     return application

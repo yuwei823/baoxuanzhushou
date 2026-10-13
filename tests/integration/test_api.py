@@ -61,10 +61,26 @@ def test_intro_route_serves_the_self_contained_deck_with_a_relaxed_csp(client):
     assert "img-src 'self' blob: data:" in csp
 
 
-def test_only_the_intro_route_gets_the_relaxed_csp(client):
+def test_only_the_presentation_pages_relax_the_csp(client):
+    # The app itself must never allow inline style or script.
     for path in ("/", "/api/v1/rulesets/current"):
         csp = client.get(path).headers["Content-Security-Policy"]
         assert "'unsafe-inline'" not in csp, path
+
+
+def test_workflow_route_serves_the_diagram_with_style_only_csp(client):
+    response = client.get("/workflow")
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/html")
+    # The diagram is inline SVG, so it needs no script at all.
+    assert "<svg" in response.text and "端到端流程图" in response.text
+
+    csp = response.headers["Content-Security-Policy"]
+    assert "style-src 'self' 'unsafe-inline'" in csp
+    # Script stays strict: this page ships no JavaScript.
+    assert "script-src 'self';" in csp
+    assert "script-src 'self' 'unsafe-inline'" not in csp
+    assert "object-src 'none'" in csp and "frame-ancestors 'none'" in csp
 
 
 @pytest.mark.parametrize(

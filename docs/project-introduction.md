@@ -277,7 +277,6 @@ score = Σ  1 / (60 + rank)
 ---
 
 ## 附：端到端流程图
-
 ```mermaid
 flowchart TD
     A["用户提交<br/>营销文案 / 图文材料"] --> B["切分：按 512 字符分段"]
@@ -311,9 +310,14 @@ flowchart TD
     style Q fill:#e7f0fa,stroke:#3b6ea5
 ```
 
+流程图已单独成页，在线地址：**https://baoxuanzhushou.app/workflow**
+
+该页由 [src/insurance_audit/static/workflow.html](../../src/insurance_audit/static/workflow.html) 提供，用内联 SVG 渲染（无 JS、无 CDN 依赖，CSP 无需放宽）。
+
 ### 图注
 
 - **实线** = 运行时链路；**虚线** = 离线素材来源（案例库不参与裁决）
 - **绿色** = 哈希密封的不可变快照（应用启动时校验，不一致则拒绝启动）
 - **黄色** = 案例库，标注状态 `provisional`
-- 检索 **1 次**，裁决 **25 次**（8 路并发），单次审核共 **26 次调用**
+- **蓝色** = 最终结论
+- 检索 **1 次**，裁决 **25 次**（8 路并发），单次审核共 **26 次调用**。批次数取决于检索到的条文集合，因此会随材料变化。

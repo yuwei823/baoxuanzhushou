@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>保宣合规助手 · 端到端流程图</title>
+    <style>
+        :root {
+            --ink: #173d36;
+            --muted: #697b75;
+            --line: #dce6de;
+            --green: #24725c;
+            --amber: #95630c;
+            --blue: #3b6ea5
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: #f3f6f2;
+            color: var(--ink);
+            font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif
+        }
+
+        main {
+            max-width: 1180px;
+            margin: auto;
+            padding: 40px 4vw 64px
+        }
+
+        h1 {
+            font-size: 30px;
+            letter-spacing: -.5px;
+            margin: 0 0 8px
+        }
+
+        .lead {
+            color: var(--muted);
+            font-size: 15px;
+            margin: 0 0 6px
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 22px;
+            font-size: 13px;
+            color: var(--green);
+            text-decoration: none
+        }
+
+        .back:hover {
+            text-decoration: underline
+        }
+
+        .canvas {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 22px;
+            overflow-x: auto
+        }
+
+        svg {
+            display: block;
+            margin: auto;
+            max-width: 100%;
+            height: auto
+        }
+
+        .notes {
+            margin-top: 26px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px
+        }
+
+        .note {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 14px 16px
+        }
+
+        .note h3 {
+            font-size: 13px;
+            margin: 0 0 8px
+        }
+
+        .note p {
+            font-size: 12px;
+            line-height: 1.7;
+            color: var(--muted);
+            margin: 0
+        }
+
+        .swatch {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+            margin-right: 6px;
+            vertical-align: middle
+        }
+
+        .s-green {
+            background: #e8f4ea;
+            border: 1px solid #4a7c59
+        }
+
+        .s-amber {
+            background: #fdf6e3;
+            border: 1px solid #b58900
+        }
+
+        .s-blue {
+            background: #e7f0fa;
+            border: 1px solid #3b6ea5
+        }
+
+        footer {
+            margin-top: 32px;
+            font-size: 12px;
+            color: var(--muted)
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <a class="back" href="/">← 返回审核页面</a>
+        <h1>端到端流程图</h1>
+        <p class="lead">一次审核从提交材料到输出结论的完整链路。数字为当前规则集
+            <code>official-v3-2026-10-12</code> 的实测值。
+        </p>
+
+        <div class="canvas">
+            <svg viewBox="0 0 1080 1270" role="img" aria-label="审核端到端流程图" font-family="Microsoft YaHei, PingFang SC, system-ui, sans-serif">
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
+                        orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#8fa79a" />
+                    </marker>
+                    <marker id="arrow-dashed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
+                        orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#b58900" />
+                    </marker>
+                </defs>
+
+                <!-- runtime path -->
+                <g stroke="#8fa79a" stroke-width="1.6" fill="none" marker-end="url(#arrow)">
+                    <path d="M 540 78 L 540 108" />
+                    <path d="M 540 172 L 540 202" />
+                    <path d="M 540 266 L 540 300" />
+                    <path d="M 400 344 L 300 380" />
+                    <path d="M 680 344 L 780 380" />
+                    <path d="M 300 444 L 300 478" />
+                    <path d="M 780 444 L 780 478" />
+                    <path d="M 300 542 L 540 578" />
+                    <path d="M 780 542 L 540 578" />
+                    <path d="M 540 642 L 540 676" />
+                    <path d="M 540 740 L 540 774" />
+                    <path d="M 540 838 L 540 872" />
+                    <path d="M 540 936 L 540 970" />
+                    <path d="M 540 1034 L 540 1068" />
+                </g>
+
+                <!-- snapshot feeds both retrieval and the full rule set -->
+                <g stroke="#8fa79a" stroke-width="1.6" fill="none" marker-end="url(#arrow)">
+                    <path d="M 150 300 L 150 320 L 400 320 L 400 344" />
+                    <path d="M 150 300 L 150 320 L 680 320 L 680 344" />
+                </g>
+
+                <!-- case library: offline source, not a decision input -->
+                <path d="M 930 300 L 930 320 L 880 320 L 880 344" stroke="#b58900" stroke-width="1.6" fill="none"
+                    stroke-dasharray="7 5" marker-end="url(#arrow-dashed)" />
+
+                <!-- mode branch: ledger splits to the two modes, then both merge to the verdict -->
+                <g stroke="#8fa79a" stroke-width="1.6" fill="none" marker-end="url(#arrow)">
+                    <path d="M 420 1100 L 400 1100" />
+                    <path d="M 660 1100 L 680 1100" />
+                </g>
+                <g stroke="#8fa79a" stroke-width="1.6" fill="none" marker-end="url(#arrow)">
+                    <path d="M 290 1132 L 290 1206 L 330 1206" />
+                    <path d="M 790 1132 L 790 1206 L 750 1206" />
+                </g>
+
+                <!-- labels on the dashed branch and the mode edges -->
+                <text x="905" y="313" font-size="11" fill="#95630c" text-anchor="middle">素材与准则来源 · 非裁决依据</text>
+                <text x="410" y="1094" font-size="11" fill="#697b75" text-anchor="middle">极简</text>
+                <text x="670" y="1094" font-size="11" fill="#697b75" text-anchor="middle">严格</text>
+
+                <!-- 1. input -->
+                <rect x="420" y="30" width="240" height="48" rx="9" fill="#fff" stroke="#c9d8cd" />
+                <text x="540" y="52" font-size="13" fill="#173d36" text-anchor="middle">用户提交</text>
+                <text x="540" y="69" font-size="11" fill="#697b75" text-anchor="middle">营销文案 / 图文材料</text>
+
+                <!-- 2. segment -->
+                <rect x="420" y="108" width="240" height="64" rx="9" fill="#fff" stroke="#c9d8cd" />
+                <text x="540" y="134" font-size="13" fill="#173d36" text-anchor="middle">切分</text>
+                <text x="540" y="152" font-size="11" fill="#697b75" text-anchor="middle">按 512 字符分段</text>
+
+                <!-- 3. retrieval -->
+                <rect x="420" y="202" width="240" height="64" rx="9" fill="#fff" stroke="#c9d8cd" />
+                <text x="540" y="228" font-size="13" fill="#173d36" text-anchor="middle">检索</text>
+                <text x="540" y="246" font-size="11" fill="#697b75" text-anchor="middle">1 次调用</text>
+
+                <!-- 4a. BM25 -->
+                <rect x="180" y="380" width="240" height="64" rx="9" fill="#fff" stroke="#c9d8cd" />
+                <text x="300" y="406" font-size="13" fill="#173d36" text-anchor="middle">BM25</text>
+                <text x="300" y="424" font-size="11" fill="#697b75" text-anchor="middle">jieba 分词 · 关键词匹配</text>
+
+                <!-- 4b. Embedding -->
+                <rect x="660" y="380" width="240" height="64" rx="9" fill="#fff" stroke="#c9d8cd" />
+                <text x="780" y="406" font-size="13" fill="#173d36" text-anchor="middle">Embedding</text>
+                <text x="780" y="424" font-size="11" fill="#697b75" text-anchor="middle">text-embedding-v4 · 1024 维</text>
+
+                <!-- 5. RRF -->
+                <rect x="180" y="478" width="240" height="64" rx="9" fill="#fff" stroke="#c9d8cd" />
+                <text x="300" y="504" font-size="13" fill="#173d36" text-anchor="middle">RRF 融合</text>
+                <text x="300" y="522" font-size="11" fill="#697b75" text-anchor="middle">score = Σ 1/(60+rank)</text>
+
+                <rect x="660" y="478" width="240" height="64" rx="9" fill="#fff" stroke="#c9d8cd" />
+                <text x="780" y="504" font-size="13" fill="#173d36" text-anchor="middle">RRF 融合</text>
+                <text x="780" y="522" font-size="11" fill="#697b75" text-anchor="middle">两路名次加权</text>
+
+                <!-- 6. top-8 -->
+                <rect x="420" y="578" width="240" height="64" rx="9" fill="#fff" stroke="#c9d8cd" />
+                <text x="540" y="604" font-size="13" fill="#173d36" text-anchor="middle">取前 8 条相关条文</text>
+                <text x="540" y="622" font-size="11" fill="#697b75" text-anchor="middle">送入裁决上下文</text>
+
+                <!-- 7. rule set (all 46) -->
+                <rect x="420" y="676" width="240" height="64" rx="9" fill="#fff" stroke="#c9d8cd" />
+                <text x="540" y="702" font-size="13" fill="#173d36" text-anchor="middle">规则卡全集</text>
+                <text x="540" y="720" font-size="11" fill="#697b75" text-anchor="middle">46 条全部参与判定</text>
+
+                <!-- 8. batching -->
+                <rect x="420" y="774" width="240" height="64" rx="9" fill="#fff" stroke="#c9d8cd" />
+                <text x="540" y="800" font-size="13" fill="#173d36" text-anchor="middle">按共享条文聚类打包</text>
+                <text x="540" y="818" font-size="11" fill="#697b75" text-anchor="middle">每批 ≤ 2 条规则 → 25 个批次</text>
+
+                <!-- 9. judge -->
+                <rect x="420" y="872" width="240" height="64" rx="9" fill="#fff" stroke="#c9d8cd" />
+                <text x="540" y="898" font-size="13" fill="#173d36" text-anchor="middle">并发裁决（上限 8 路）</text>
+                <text x="540" y="916" font-size="11" fill="#697b75" text-anchor="middle">qwen3.7-plus</text>
+
+                <!-- 10. validation -->
+                <rect x="420" y="970" width="240" height="64" rx="9" fill="#fff" stroke="#c9d8cd" />
+                <text x="540" y="996" font-size="13" fill="#173d36" text-anchor="middle">结构校验</text>
+                <text x="540" y="1014" font-size="11" fill="#697b75" text-anchor="middle">引用回查：不存在的条文被拒绝</text>
+
+                <!-- 11. ledger -->
+                <rect x="420" y="1068" width="240" height="64" rx="9" fill="#fff" stroke="#c9d8cd" />
+                <text x="540" y="1094" font-size="13" fill="#173d36" text-anchor="middle">逐规则台账</text>
+                <text x="540" y="1112" font-size="11" fill="#697b75" text-anchor="middle">46 条状态 + 理由</text>
+
+                <!-- 12a/12b. mode outputs -->
+                <rect x="180" y="1068" width="220" height="64" rx="9" fill="#fff" stroke="#c9d8cd" />
+                <text x="290" y="1094" font-size="13" fill="#173d36" text-anchor="middle">极简模式</text>
+                <text x="290" y="1112" font-size="11" fill="#697b75" text-anchor="middle">只展示违规项</text>
+
+                <rect x="680" y="1068" width="220" height="64" rx="9" fill="#fff" stroke="#c9d8cd" />
+                <text x="790" y="1094" font-size="13" fill="#173d36" text-anchor="middle">严格模式</text>
+                <text x="790" y="1112" font-size="11" fill="#697b75" text-anchor="middle">违规项 + 待核验项</text>
+
+                <!-- 13. verdict (highlighted) -->
+                <rect x="330" y="1168" width="420" height="76" rx="9" fill="#e7f0fa" stroke="#3b6ea5" />
+                <text x="540" y="1194" font-size="12" fill="#173d36" text-anchor="middle">结论：compliant / non_compliant / needs_review</text>
+                <text x="540" y="1216" font-size="11" fill="#3b6ea5" text-anchor="middle">+ 证据 + 法规原文 + trace_id</text>
+
+                <!-- 14. snapshot (highlighted) -->
+                <rect x="30" y="202" width="240" height="98" rx="9" fill="#e8f4ea" stroke="#4a7c59" />
+                <text x="150" y="228" font-size="13" fill="#173d36" text-anchor="middle">法规快照</text>
+                <text x="150" y="248" font-size="11" fill="#4a7c59" text-anchor="middle">official-v3-2026-10-12</text>
+                <text x="150" y="266" font-size="11" fill="#697b75" text-anchor="middle">4 部法规 · 359 条文</text>
+                <text x="150" y="284" font-size="11" fill="#697b75" text-anchor="middle">46 规则卡 · 哈希密封</text>
+
+                <!-- 15. case library (highlighted, dashed) -->
+                <rect x="810" y="202" width="240" height="98" rx="9" fill="#fdf6e3" stroke="#b58900" />
+                <text x="930" y="228" font-size="13" fill="#173d36" text-anchor="middle">案例库 100 条</text>
+                <text x="930" y="248" font-size="11" fill="#95630c" text-anchor="middle">L1=40 / L2=15 / L3=4</text>
+                <text x="930" y="266" font-size="11" fill="#95630c" text-anchor="middle">L4=9 / L5=32</text>
+                <text x="930" y="284" font-size="11" fill="#697b75" text-anchor="middle">标注 provisional</text>
+            </svg>
+        </div>
+
+        <div class="notes">
+            <div class="note">
+                <h3>图注</h3>
+                <p><strong>实线</strong> = 运行时链路；<strong>虚线</strong> = 离线素材来源（案例库不参与裁决）。</p>
+            </div>
+            <div class="note">
+                <h3>配色</h3>
+                <p><span class="swatch s-green"></span>哈希密封的不可变快照（启动时校验，不一致则拒绝启动）<br>
+                    <span class="swatch s-amber"></span>案例库，标注状态 <code>provisional</code><br>
+                    <span class="swatch s-blue"></span>最终结论
+                </p>
+            </div>
+            <div class="note">
+                <h3>调用量</h3>
+                <p>检索 <strong>1 次</strong>，裁决 <strong>25 次</strong>（8 路并发），单次审核共 <strong>26 次调用</strong>。
+                    批次数取决于检索到的条文集合，因此会随材料变化。</p>
+            </div>
+            <div class="note">
+                <h3>关键设计</h3>
+                <p>46 条规则<strong>全部参与判定</strong>，不因检索结果减少。RAG 只决定哪些法规原文进入
+                    prompt，不决定哪些规则被检查——这是防漏检的核心。</p>
+            </div>
+        </div>
+
+        <footer>结论仅限当前规则集及已提交材料范围。模型置信度未经校准；内容检查不替代现实资质核验。</footer>
+    </main>
+</body>
+
+</html>
