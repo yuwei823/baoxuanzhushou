@@ -1,6 +1,6 @@
 # 保险营销内容智能审核
 
-P0 知识库及目录自动化流水线已完成；G1/G2 已通过（2026-10-12 真实验收，合成开发案例工程验收），P3 正式评估暂缓（用户决定先上线），P4 内部上线交付件已就绪（阿里云 Docker + HTTPS + CI/CD），部署步骤见 [部署说明](docs/deployment.md)。实施规格见 [SPEC.md](SPEC.md)，进度见 [PLAN.md](PLAN.md)，验收证据见 [HANDOFF.md](HANDOFF.md)。
+P0 知识库及目录自动化流水线已完成；G1/G2 已通过（2026-10-12 真实验收，合成开发案例工程验收），P3 正式评估暂缓（用户决定先上线），P4 内部上线交付件已就绪（阿里云 Docker + HTTPS + CI/CD），部署步骤见 [部署说明](docs/deployment.md)。实施规格见 [SPEC.md](docs/SPEC.md)，进度见 [PLAN.md](docs/PLAN.md)，验收证据见 [HANDOFF.md](docs/HANDOFF.md)。
 
 ## 安装（Windows / Python 3.11）
 

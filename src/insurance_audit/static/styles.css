@@ -209,7 +209,6 @@ p {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 22px
 }
 
 .section-title span {
@@ -648,7 +647,7 @@ select {
 }
 
 .examples span {
-    font-size: 11px;
+    font-size: 13px;
     color: var(--muted);
     margin-right: 5px
 }
@@ -923,6 +922,24 @@ footer {
     margin: 25px 0
 }
 
+footer p {
+    margin: 0
+}
+
+footer .contact {
+    margin-top: 8px;
+    font-size: 12px
+}
+
+footer .contact a {
+    color: var(--green);
+    text-decoration: none
+}
+
+footer .contact a:hover {
+    text-decoration: underline
+}
+
 mark {
     background: #ffe09b
 }
@@ -1025,10 +1042,6 @@ body.busy .primary {
 
     .fields {
         gap: 8px
-    }
-
-    .section-title {
-        margin-bottom: 16px
     }
 }
 
