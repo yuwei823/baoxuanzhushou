@@ -31,6 +31,10 @@ STATIC = Path(__file__).with_name("static")
 INLINE_SCRIPT_PAGES = {"/intro"}
 INLINE_STYLE_PAGES = {"/intro", "/workflow"}
 
+# /workflow loads Mermaid from a CDN first and falls back to the bundled copy.
+# Only this page may fetch that one script origin; everything else stays 'self'.
+CDN_SCRIPT_ORIGIN = "https://cdn.jsdelivr.net"
+
 
 def error_response(message, status, code="invalid_request"):
     return JSONResponse(
@@ -100,7 +104,14 @@ def create_app(settings=None, provider=None):
         # other route keeps the strict policy; hashes are not usable because the
         # files are edited by hand and would need a new hash each time.
         path = request.url.path
-        if path in INLINE_SCRIPT_PAGES:
+        if path == "/workflow":
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'self'; img-src 'self' blob: data:; "
+                "style-src 'self' 'unsafe-inline'; "
+                f"script-src 'self' 'unsafe-inline' {CDN_SCRIPT_ORIGIN}; "
+                "connect-src 'self'; object-src 'none'; frame-ancestors 'none'"
+            )
+        elif path in INLINE_SCRIPT_PAGES:
             response.headers["Content-Security-Policy"] = (
                 "default-src 'self'; img-src 'self' blob: data:; "
                 "style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; "

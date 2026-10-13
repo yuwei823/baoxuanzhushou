@@ -68,19 +68,26 @@ def test_only_the_presentation_pages_relax_the_csp(client):
         assert "'unsafe-inline'" not in csp, path
 
 
-def test_workflow_route_serves_the_diagram_with_style_only_csp(client):
+def test_workflow_route_serves_the_diagram_with_its_cdn_fallback(client):
     response = client.get("/workflow")
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("text/html")
-    # The diagram is inline SVG, so it needs no script at all.
-    assert "<svg" in response.text and "端到端流程图" in response.text
+    assert "端到端流程图" in response.text
+    # Mermaid source is inlined and rendered client-side.
+    assert "flowchart TD" in response.text
+    assert "mermaid.min.js" in response.text
 
     csp = response.headers["Content-Security-Policy"]
     assert "style-src 'self' 'unsafe-inline'" in csp
-    # Script stays strict: this page ships no JavaScript.
-    assert "script-src 'self';" in csp
-    assert "script-src 'self' 'unsafe-inline'" not in csp
+    # Only this page may load the CDN copy of the library.
+    assert "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;" in csp
     assert "object-src 'none'" in csp and "frame-ancestors 'none'" in csp
+
+
+def test_only_the_workflow_page_may_reach_the_cdn(client):
+    for path in ("/", "/intro", "/api/v1/rulesets/current"):
+        csp = client.get(path).headers["Content-Security-Policy"]
+        assert "jsdelivr" not in csp, path
 
 
 @pytest.mark.parametrize(

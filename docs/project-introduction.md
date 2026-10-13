@@ -312,7 +312,7 @@ flowchart TD
 
 流程图已单独成页，在线地址：**https://baoxuanzhushou.app/workflow**
 
-该页由 [src/insurance_audit/static/workflow.html](../../src/insurance_audit/static/workflow.html) 提供，用内联 SVG 渲染（无 JS、无 CDN 依赖，CSP 无需放宽）。
+该页由 [src/insurance_audit/static/workflow.html](../../src/insurance_audit/static/workflow.html) 提供，用 Mermaid 渲染（优先 CDN，10 秒内未加载则回退到内置 `mermaid.min.js`）。
 
 ### 图注
 
@@ -321,3 +321,59 @@ flowchart TD
 - **黄色** = 案例库，标注状态 `provisional`
 - **蓝色** = 最终结论
 - 检索 **1 次**，裁决 **25 次**（8 路并发），单次审核共 **26 次调用**。批次数取决于检索到的条文集合，因此会随材料变化。
+
+---
+
+## 附二：RAG 与 Prompt 优化（供审核）
+
+本节把正文第四章的 RAG 机制与 Prompt 设计集中列出，便于逐项核对。**所有描述均对应代码**，标注了实现位置。
+
+### A. RAG 检索链路
+
+| 环节 | 实现 | 代码位置 |
+|---|---|---|
+| 材料切段 | 按 **512 字符**切分，每段独立检索（保证长材料靠后内容也能召回） | `retrieval.py` `search()` |
+| 关键词路 | **BM25** + jieba 中文分词，取前 8 名 | `retrieval.py` `BM25Okapi` |
+| 语义路 | **text-embedding-v4**，1024 维（`EMBEDDING_DIMENSIONS`），余弦相似度，取前 8 名 | `vector_index.py` + `config.py` |
+| 融合 | **RRF**：`score = Σ 1/(60 + rank)`，`60` 为平滑常数 | `retrieval.py` |
+| 最终召回 | 融合后取总分 **前 8 条** | `retrieval.py` |
+| 索引构建 | 359 条条文一次性向量化，每批 ≤ 10 条；先写临时文件再原子改名 | `vector_index.py` `build_index()` |
+| 索引绑定 | 文件名 = `digest(meta)`，`meta` 含 `ruleset_hash` → **规则集一变旧索引自动失效** | `vector_index.py` `index_path()` |
+
+**关键设计（防漏检）**：RAG 只决定「哪些法规原文进入 prompt」，**不决定「哪些规则被检查」**。46 条规则全部参与判定。
+
+### B. Prompt 设计要点
+
+当前版本 `audit-v1.6-citation-guidance`（`workflow.py:PROMPT_VERSION`）。
+
+| 机制 | 作用 | 实现 |
+|---|---|---|
+| **allowed_citations** | 逐规则列出唯一可引用的条文 ID；引用其他规则条文会被程序拒绝 | `citation_map()` |
+| **condition_bindings** | 把触发条件编号为 `c1/c2…`，模型只回填键，原文由程序回填 | `judge_messages()` |
+| **trigger_guidance** | 对易误判规则给出判定要点（当前覆盖 2 条规则；如「中性科普无推销线索时触发条件应为 false」） | `TRIGGER_GUIDANCE` |
+| **direct_for_rule_ids** | 标明每条条文属于哪些规则的直接依据，禁止跨规则借用 | `judge_messages()` |
+| **字段裁剪** | 只送模型需要的 12 个字段；注册元数据（`verified`、`valid_from` 等）不进入 prompt | `JUDGE_RULE_FIELDS` |
+| **反例注入** | 明确「不能承诺分红收益」「教育性引用不算宣传主张」等易错场景 | `JUDGE_PROMPT` |
+
+**为什么用 `condition_bindings`**：模型只输出 `{"condition":"c1","met":true}`，条件原文由代码回填。这样**模型无法改写判定依据**，避免它把「触发条件」偷换成对自己有利的措辞。
+
+### C. 结构校验：模型说什么不算数
+
+模型输出后由**确定性代码**逐项回查（`validate_findings()`），任一不通过即拒绝并要求重试：
+
+| 校验 | 拒绝条件 |
+|---|---|
+| 规则覆盖 | 缺失、重复或编造 `rule_id` |
+| 条件覆盖 | `condition_results` 未覆盖该规则全部触发条件 |
+| **引用合法性** | `article_ids` 出现不属于该规则直接依据的条文 |
+| **证据真实性** | `evidence.quote` 在指定 source 中**逐字不存在** |
+| 条件证据 | `evidence_ids` 指向不存在的 source |
+| 违规完整性 | 判违规但无引用或无证据 |
+
+> 这一层是「可验证」的落点：**模型只负责判断，引用是否真实由代码说话**。
+
+### D. 需要你确认的三点
+
+1. **`trigger_guidance` 的措辞**：它直接决定「中性科普」与「实际推销」的边界。当前写法偏保守（无推销线索即判 false）。是否同意？
+2. **`BATCH_RULE_COUNT=2`**：实测延迟由**输出 token** 主导（约 60 token/秒）。上限 8 → 116 秒、4 → 51 秒、2 → 36 秒。当前取 2 换低延迟，代价是 25 次调用。是否接受？
+3. **Prompt 版本号**：当前 `audit-v1.6-citation-guidance`。每次改动 Prompt 是否要求同步升版本号，以便 `meta` 可追溯？
