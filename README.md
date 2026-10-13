@@ -26,7 +26,7 @@ py -3.11 -m venv .venv
 
 ## 当前阻塞
 
-当前规则集为用户确认的 `official-v3-2026-10-12`，使用本地四份正式文件（中华人民共和国保险法、保险销售行为管理办法、金融产品网络营销管理办法、互联网保险业务监管办法），含 359 条文、46 张规则卡；实施 agent 的核对不代表法律专家认证。本地 hybrid RAG 已接通；G1/G2 已通过，正式效果评估未完成。详见 [RAG 实测报告](reports/rag-acceptance.md)、[G1 验收报告](reports/g1-acceptance-2026-10-12.md)、[运行说明](docs/rag-operations.md)。
+当前规则集为用户确认的 `official-v3-2026-10-12`，使用本地四份正式文件（中华人民共和国保险法、保险销售行为管理办法、金融产品网络营销管理办法、互联网保险业务监管办法），含 359 条文、46 张规则卡；实施 agent 的核对不代表法律专家认证。本地 hybrid RAG 已接通；G1/G2 已通过，正式效果评估未完成。详见 [RAG 实测报告](reports/rag-acceptance.md)、[G1 验收报告](reports/g1-acceptance-2026-10-12.md)、[运行说明](docs/rag-operations.md)。规则卡的字段形态、真实实例及"为何不直接用条文向量"见 [规则卡说明](docs/rule-cards.md)。
 
 ## 纯文本运行
 
