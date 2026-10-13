@@ -174,13 +174,63 @@ class AuditService:
             try:
                 if retrieval_error:
                     raise retrieval_error
-                articles = self.corpus.context_articles(articles, retrieved)
-                messages = judge_messages(request, sources, cards, articles, readable, retrieved)
-                if (
-                    len(json.dumps(messages, ensure_ascii=False))
-                    > self.settings.batch_max_characters
-                ):
-                    # Caller splits by rule until the indivisible source/one-rule prompt fits.
+                # Direct and supporting articles are mandatory.  Retrieved
+                # articles are optional augmentation and must compete for the
+                # remaining prompt budget in global relevance order.  Previously
+                # every per-segment hit was copied into every batch, so long
+                # line-oriented material could overflow even a one-rule batch.
+                mandatory_articles = articles
+                articles, selected_retrieved, dropped_retrieved = (
+                    self.corpus.budgeted_context_articles(mandatory_articles, retrieved)
+                )
+                messages = judge_messages(
+                    request, sources, cards, articles, readable, selected_retrieved
+                )
+                prompt_characters = len(json.dumps(messages, ensure_ascii=False))
+                if prompt_characters > self.settings.batch_max_characters:
+                    # The conservative article budget normally prevents this,
+                    # but unusually large material may consume the remaining
+                    # prompt. Remove the lowest-ranked optional hits one by one
+                    # before splitting mandatory rules or reporting a true
+                    # indivisible overflow.
+                    optional_selected = [
+                        aid for aid in selected_retrieved if aid not in mandatory_articles
+                    ]
+                    while (
+                        prompt_characters > self.settings.batch_max_characters
+                        and optional_selected
+                    ):
+                        # Remove enough low-ranked article text to cover the
+                        # measured excess, then serialize once.  Rebuilding the
+                        # entire prompt after every single article made the
+                        # overflow safeguard itself expensive on large unions.
+                        excess = prompt_characters - self.settings.batch_max_characters
+                        removed_characters = 0
+                        removed_ids = []
+                        while optional_selected and removed_characters < excess + 512:
+                            aid = optional_selected.pop()
+                            removed_characters += len(
+                                self.corpus.articles[aid]["original_text"]
+                            )
+                            articles.pop(aid, None)
+                            selected_retrieved.remove(aid)
+                            removed_ids.append(aid)
+                        dropped_retrieved = [
+                            *reversed(removed_ids),
+                            *dropped_retrieved,
+                        ]
+                        messages = judge_messages(
+                            request,
+                            sources,
+                            cards,
+                            articles,
+                            readable,
+                            selected_retrieved,
+                        )
+                        prompt_characters = len(json.dumps(messages, ensure_ascii=False))
+
+                if prompt_characters > self.settings.batch_max_characters:
+                    # Split rules without truncating material or mandatory law text.
                     if len(cards) > 1:
                         middle = len(cards) // 2
                         combined = []
@@ -191,7 +241,9 @@ class AuditService:
                                 for aid in c["article_ids"] + c.get("supporting_article_ids", [])
                             }
                             combined.extend(
-                                await judge_batch(half, {aid: articles[aid] for aid in ids})
+                                await judge_batch(
+                                    half, {aid: self.corpus.articles[aid] for aid in ids}
+                                )
                             )
                         return combined
                     raise ModelFailure(
@@ -201,7 +253,9 @@ class AuditService:
                     {
                         "rule_ids": [c["rule_id"] for c in cards],
                         "article_ids": sorted(articles),
-                        "retrieved_article_ids": list(retrieved),
+                        "retrieved_article_ids": selected_retrieved,
+                        "dropped_retrieved_article_ids": dropped_retrieved,
+                        "prompt_characters": prompt_characters,
                     }
                 )
                 result = await structured(
@@ -327,7 +381,7 @@ class AuditService:
             meta={
                 "ruleset_hash": self.corpus.hash,
                 "prompt_version": PROMPT_VERSION,
-                "workflow_version": "1.2-diagnostics",
+                "workflow_version": "1.3-context-budget",
                 "diagnostics_version": "queue-request-v1",
                 "rule_status_counts": dict(Counter(r.status for r in ledger)),
                 "transport_retry_calls": sum(c.get("transport_retry", 0) > 0 for c in budget.calls),
@@ -335,7 +389,7 @@ class AuditService:
                     c.get("structure_attempt", 0) > 0 and c.get("transport_retry", 0) == 0
                     for c in budget.calls
                 ),
-                "retrieval_version": "segment512-rrf60-top8-v1",
+                "retrieval_version": "segment512-rrf60-budgeted-v2",
                 "index_id": digest(self.corpus.vector_manifest)
                 if self.corpus.vector_manifest
                 else None,

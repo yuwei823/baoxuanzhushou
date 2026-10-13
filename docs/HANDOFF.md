@@ -1,13 +1,14 @@
 # 实施交接记录
 
-## 当前交接摘要（2026-10-12 性能复验更新）
+## 当前交接摘要（2026-10-13 上下文预算修复）
 
 接手时以本节及最新 reports/performance-* 为准，下面 dated 记录保留历史事实。
 
 ### 当前规则与实现
 
 - 当前快照 `official-v3-2026-10-12` 已发布：4 份用户本地法规，含保险法，359 条文、46 规则。严格 validate-corpus 为 release_ready=true，0 完整性错误、0 审阅门禁。不要沿用旧“保险法暂缓”的状态。v3 与 v2 内容完全一致，仅文档顺序不同（保险法置于首位）；已发布快照不可原位覆盖，故顺序调整必须新建 ruleset。
-- 文本 `qwen3.7-plus`，视觉 `qwen3-vl-plus`；hybrid=BM25 + text-embedding-v4/1024；Prompt `audit-v1.6-citation-guidance`，workflow `1.2-diagnostics`。召回原文与全部必查规则仍进入审核，不放宽引用/证据/未知条件检查。
+- 文本 `qwen3.7-plus`，视觉 `qwen3-vl-plus`；hybrid=BM25 + text-embedding-v4/1024；Prompt `audit-v1.6-citation-guidance`，workflow `1.3-context-budget`。召回原文与全部必查规则仍进入审核，不放宽引用/证据/未知条件检查。
+- 2026-10-13 修复长、多段材料的 `context_budget_exceeded`：旧检索将每段 Top 8 的无序并集全部复制到每个判定批次；现按跨段累计 RRF 排序，强制保留规则直接/支持条文，并只在剩余预算中加入额外召回。context_trace 新增实际 Prompt 字符数和 dropped 召回 ID。用户提供的“慈铭体检+保险”原文在旧逻辑下召回 153 条、13 批超过 90,000 字符；修复后离线 46/46 台账、0 超限。真实 hybrid 复验召回 210 条，最大 Prompt 54,529 字符，completed/non_compliant、0 错误，trace_id=`a910cd8c-387d-42a6-9340-2060f294f082`。全量 114 tests passed，Ruff 通过。
 - 保留其他 agent 的法规聚类分批改动。当前本地参数为 batch=2、model_concurrency=8、attempts=40、单次45秒/总计150秒。性能比较通过独立 Settings 覆盖，不修改 .env，不自动替换上线配置。
 - 新增逐调用 queue_ms、request_ms、token_usage、reasoning_tokens（缺失为 null）、transport_retry、structure_attempt、outcome；旧 latency_ms 包含排队，保留兼容。meta.rule_status_counts 区分已检查、不适用、范围外、待上下文、待外部核验及技术失败。页面展示各状态数量和简要模式隐藏提示数量。
 
@@ -24,6 +25,7 @@
 1. 分批/并发矩阵已完成；每组仅10次，不能称生产稳定指标。后续如变更规则或 Prompt，单独复验。
 2. 本轮结论保留 batch=2/concurrency=8；模型初筛不支持换为 qwen-plus/turbo。不要通过省略条件、扩大无限重试或隐藏错误提高覆盖率。
 3. 继续收集独立标注资料；未有人工 gold，不将工程回归通过率当作准确率。
+4. 已在 `docs/decisions.md` 记录长文本改进建议：API 的 10,000 码点硬上限暂不改变；页面已限制为 5,000 码点，并按 Unicode 码点计数和截取。60 个非空段落提醒尚未实现；模型 Prompt 采用 60k 目标、75k 强制收缩/分批、90k 硬预算。预算数值仍需纳入 P3 长度梯度评测后校准。
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q

@@ -68,7 +68,12 @@ class Corpus:
                     vectors.extend(normalize(v, self.settings.embedding_dimensions) for v in rows)
             except ValueError as error:
                 raise ModelFailure("invalid_embedding_output", "查询向量未通过校验。") from error
-        found, trace = set(), []
+        # Keep a global relevance order across all material segments.  The old
+        # implementation returned an alphabetically sorted union of every
+        # segment's top eight hits.  Long, line-oriented material could therefore
+        # return most of the corpus, with the least useful articles winning the
+        # prompt budget simply because their ids sorted first.
+        aggregate_rrf, trace = {}, []
         for index, (sid, offset, text) in enumerate(queries):
             budget.remaining()
             scores = self.index.get_scores(list(jieba.cut(text)))
@@ -87,9 +92,11 @@ class Corpus:
             for ranking in (lexical, semantic):
                 for rank, article_index in enumerate(ranking, 1):
                     rrf[article_index] = rrf.get(article_index, 0) + 1 / (60 + rank)
+                    aggregate_rrf[article_index] = aggregate_rrf.get(article_index, 0) + 1 / (
+                        60 + rank
+                    )
             selected = sorted(rrf, key=lambda i: (-rrf[i], self.ids[i]))[:8]
             ids = [self.ids[i] for i in selected]
-            found.update(ids)
             trace.append(
                 {
                     "source_id": sid,
@@ -100,7 +107,8 @@ class Corpus:
                     "selected": ids,
                 }
             )
-        return sorted(found), trace
+        ranked = sorted(aggregate_rrf, key=lambda i: (-aggregate_rrf[i], self.ids[i]))
+        return [self.ids[i] for i in ranked], trace
 
     @staticmethod
     def load(path, name, key):
@@ -204,3 +212,30 @@ class Corpus:
 
     def context_articles(self, articles, retrieved):
         return {**articles, **{aid: self.articles[aid] for aid in retrieved}}
+
+    def budgeted_context_articles(self, articles, retrieved):
+        """Add ranked retrieval hits without displacing mandatory rule articles.
+
+        ``articles`` contains the direct and supporting law text required by the
+        batch.  Retrieval hits are augmentation, so they are admitted in the
+        relevance order returned by ``search`` only while the existing article
+        budget has room.  The caller records omitted ids for auditability.
+        """
+        context = dict(articles)
+        selected, dropped = [], []
+        augmentation_characters = 0
+        for aid in retrieved:
+            article = self.articles.get(aid)
+            if article is None:
+                continue
+            if aid in context:
+                selected.append(aid)
+                continue
+            length = len(article["original_text"])
+            if augmentation_characters + length <= self.article_budget:
+                context[aid] = article
+                augmentation_characters += length
+                selected.append(aid)
+            else:
+                dropped.append(aid)
+        return context, selected, dropped

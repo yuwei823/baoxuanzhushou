@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -134,6 +135,60 @@ async def test_hybrid_failure_cannot_silently_fall_back(corpus):
     assert result.status == "failed" and result.decision is None
     assert len(result.coverage.rules) == len(corpus.rules)
     assert all(r.status == "failed" for r in result.coverage.rules)
+
+
+@pytest.mark.asyncio
+async def test_long_material_prunes_optional_retrieval_context_instead_of_failing():
+    settings = Settings(
+        _env_file=None,
+        audit_mock=True,
+        retrieval_mode="bm25",
+        batch_rule_count=4,
+        batch_max_characters=90000,
+    )
+    corpus = Corpus(settings)
+
+    async def retrieve_every_article(sources, provider, budget):
+        # Reproduce the former worst case: many short material sections made
+        # the union of per-section top-eight hits approach the whole corpus.
+        return list(corpus.articles), []
+
+    corpus.search = retrieve_every_article
+    material = (
+        Path(__file__).parents[1] / "fixtures" / "context_budget_marketing.txt"
+    ).read_text(encoding="utf-8")
+    result = await AuditService(settings, corpus, MockProvider()).review(
+        AuditRequest(
+            text=material,
+            context={
+                "channel": "internet",
+                "publisher_type": "insurance_institution",
+                "product_type": "insurance",
+                "material_completeness": "complete",
+            },
+        )
+    )
+
+    assert not any(error.code == "context_budget_exceeded" for error in result.errors)
+    assert len(result.coverage.rules) == len(corpus.rules) == 46
+    assert all(
+        row["prompt_characters"] <= settings.batch_max_characters
+        for row in result.meta["context_trace"]
+    )
+    assert any(row["dropped_retrieved_article_ids"] for row in result.meta["context_trace"])
+    for row in result.meta["context_trace"]:
+        required = {
+            aid
+            for rule_id in row["rule_ids"]
+            for aid in (
+                corpus.rules[rule_id]["article_ids"]
+                + corpus.rules[rule_id].get("supporting_article_ids", [])
+            )
+        }
+        assert required <= set(row["article_ids"])
+        assert set(row["retrieved_article_ids"]) | set(
+            row["dropped_retrieved_article_ids"]
+        ) == set(corpus.articles)
 
 
 @pytest.mark.asyncio

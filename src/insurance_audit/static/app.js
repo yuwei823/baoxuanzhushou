@@ -10,17 +10,17 @@ const stateOrder = { needs_context: 0, external_verification_required: 1, failed
 const stateTone = { checked: 'ok', needs_context: 'warn', external_verification_required: 'warn', failed: 'warn' };
 const elem = (tag, text, cls) => { const e = document.createElement(tag); if (text !== undefined) e.textContent = text; if (cls) e.className = cls; return e; };
 function notice(text) { $('notice').hidden = !text; $('notice').textContent = text; }
-// The API rejects text beyond 10,000 Unicode code points. Enforce it in the
-// input itself so a long paste cannot reach the backend and fail mid-audit.
-const MAX_TEXT = 10000;
-function count() { $('counter').textContent = `${Array.from($('text').value).length.toLocaleString()} / 10,000`; }
+// The browser uses a stricter product limit than the 10,000-code-point API
+// ceiling so interactive audits stay within the recommended operating range.
+const MAX_TEXT = 5000;
+function count() { $('counter').textContent = `${Array.from($('text').value).length.toLocaleString()} / 5,000`; }
 // Counts code points (not UTF-16 units) so emoji match the server-side limit.
 function enforceTextLimit() {
     const chars = Array.from($('text').value);
     if (chars.length <= MAX_TEXT) { count(); return true; }
     $('text').value = chars.slice(0, MAX_TEXT).join('');
     count();
-    alert(`文本最多 10,000 个 Unicode 字符，已自动截取前 10,000 字。`);
+    alert(`页面单次最多输入 5,000 个 Unicode 字符，已自动截取前 5,000 字。`);
     return false;
 }
 $('text').addEventListener('input', enforceTextLimit);
@@ -90,7 +90,7 @@ function pushObservations(event) {
 }
 function clearObservations() { const host = $('observations'); if (host) { host.replaceChildren(); host.hidden = true; } }
 $('submit').onclick = async () => {
-    if (controller) return; const text = $('text').value; if (!text.trim() && !pictures.length) return notice('请输入文本或上传图片。'); if (Array.from(text).length > MAX_TEXT) return alert('文本最多 10,000 个 Unicode 字符，请删减后再提交。');
+    if (controller) return; const text = $('text').value; if (!text.trim() && !pictures.length) return notice('请输入文本或上传图片。'); if (Array.from(text).length > MAX_TEXT) return alert('页面单次最多输入 5,000 个 Unicode 字符，请删减后再提交。');
     exampleGeneration++; const submitted = pictures.map(p => ({ file: p.file, url: URL.createObjectURL(p.file) })); let rendered = false;
     const form = new FormData(); form.append('text', text); const context = {}; for (const id of ['channel', 'publisher_type', 'product_type', 'material_completeness']) context[id] = $(id).value; form.append('context', JSON.stringify(context)); form.append('depth', $('depth').value); pictures.forEach(p => form.append('images', p.file));
     controller = new AbortController(); busy(true); notice(''); const start = Date.now(); $('submit').textContent = '审核中 · 0 秒'; timer = setInterval(() => $('submit').textContent = `审核中 · ${Math.floor((Date.now() - start) / 1000)} 秒`, 1000);

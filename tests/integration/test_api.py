@@ -107,14 +107,14 @@ def test_upload_boundaries(client, text, context, files, expected):
     assert post(client, text, context, files).status_code == expected
 
 
-def test_input_page_enforces_the_same_character_limit_as_the_api(client):
-    # The API rejects text beyond 10,000 code points; the page must stop the
-    # same input client-side and pop up a reminder instead of failing mid-audit.
+def test_input_page_enforces_the_stricter_frontend_character_limit(client):
+    # The page intentionally stays below the API's 10,000-code-point ceiling
+    # and counts Unicode code points so emoji do not consume two positions.
     page = client.get("/").text
-    assert 'id="counter"' in page and "10,000" in page
+    assert 'id="counter"' in page and "5,000" in page
     script = client.get("/static/app.js").text
-    assert "const MAX_TEXT = 10000" in script
-    assert "alert(" in script and "10,000" in script
+    assert "const MAX_TEXT = 5000" in script
+    assert "alert(" in script and "5,000" in script
     # Both the paste handler and the submit guard share the limit.
     assert script.count("MAX_TEXT") >= 3
 
