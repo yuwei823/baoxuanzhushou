@@ -72,9 +72,9 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "359 条法条一次性生成 1024 维向量索引" in response.text
     assert "用户文案的 512 字查询片段需要生成查询向量" in response.text
     assert "const batches = [" in response.text
-    assert "完全模式：基线与 RAG 如何汇合" in response.text
+    assert "完全模式：规则查验与 RAG 如何汇合" in response.text
     assert "46 / 46 全部保留" in response.text
-    assert "基线 · 46 条规则全部检查" in response.text
+    assert "46 条规则全部检查" in response.text
     assert "补充搜索 · RAG 法条检索" in response.text
     retrieval_scene = response.text.split('data-scene="6"', 1)[1].split("</article>", 1)[0]
     assert retrieval_scene.index("补充搜索 · RAG 法条检索") < retrieval_scene.index(
@@ -88,13 +88,13 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "规则卡决定：</strong>必须检查什么" in response.text
     assert "每批最多 8 条、8,000 字符" in response.text
     assert "方案取舍：为什么提供初审与完全两种模式" in response.text
-    assert "只检查基线" in response.text
-    assert "只用 RAG 法条检索" in response.text
+    assert "46 条规则全部查验" in response.text
+    assert "使用 RAG 法条检索，检索出的规则进行查验" in response.text
     assert "产品化选择：两档模式" in response.text
-    assert "初审 ¥0.154" in response.text
-    assert "完全 ¥0.292" in response.text
+    assert "¥0.154" in response.text
+    assert "¥0.292" in response.text
     assert "qwen3.7-plus 输入 ¥2/百万 token" in response.text
-    assert "这次方案取舍使用了哪些案例" in response.text
+    assert "使用了哪些案例" in response.text
     assert "明显违规" in response.text and "中性科普" in response.text
     assert "grid-template-columns: repeat(5, minmax(190px, 1fr))" in response.text
     assert 'href="/batch-flow/report"' in response.text
@@ -185,7 +185,7 @@ def test_frontend_uses_initial_review_wording_and_chinese_rule_names(client):
     assert ">初审</button>" in page
     assert "简单模式" not in page and "简单模式" not in script
     assert "rule_display_names" in script
-    assert "疑似共违反${total}条规则。" in script
+    assert "疑似共违反${total}条规则" in script
 
 
 def test_uploads_are_closed_on_success_and_failure(client, monkeypatch):

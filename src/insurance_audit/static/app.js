@@ -84,7 +84,7 @@ function setProgress(event) {
     const track = elem('div', undefined, 'progress-track'); const fill = elem('div', undefined, 'progress-fill'); fill.style.width = `${Math.round(ratio * 100)}%`; track.append(fill);
     const content = [];
     if (event.stage === 'judge' && event.rule_selection_mode === 'retrieved') {
-        content.push(elem('p', `疑似共违反${total}条规则。`, 'progress-candidate'));
+        content.push(elem('p', `疑似共违反${total}条规则`, 'progress-candidate'));
     }
     content.push(elem('p', label, 'progress-label'), track);
     host.replaceChildren(...content);
