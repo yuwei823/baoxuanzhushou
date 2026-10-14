@@ -25,6 +25,12 @@ LOGGER.setLevel(logging.INFO)
 if not LOGGER.handlers:
     LOGGER.addHandler(logging.StreamHandler())
 STATIC = Path(__file__).with_name("static")
+RAG_STRATEGY_REPORT = (
+    Path(__file__).resolve().parents[2]
+    / "reports"
+    / "rag-three-strategies-2026-10-14"
+    / "report.md"
+)
 
 # Self-contained presentation pages. /intro and /batch-flow run inline script;
 # the workflow page is style-only, so it does not need script relaxed.
@@ -388,6 +394,14 @@ def create_app(settings=None, provider=None):
     async def batch_flow():
         """Animated explanation of rule batching and judge prompt assembly."""
         return FileResponse(STATIC / "audit-batch-flow.html")
+
+    @application.get("/batch-flow/report")
+    async def batch_flow_report():
+        """Development evidence behind the three-strategy comparison."""
+        return FileResponse(
+            RAG_STRATEGY_REPORT,
+            media_type="text/markdown; charset=utf-8",
+        )
 
     application.mount("/static", StaticFiles(directory=STATIC, check_dir=False), name="static")
     return application

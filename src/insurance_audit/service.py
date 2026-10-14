@@ -148,10 +148,14 @@ class AuditService:
             completed_batches=0,
         )
         retrieved, retrieval_trace, retrieval_error = [], [], None
-        try:
-            retrieved, retrieval_trace = await self.corpus.search(sources, self.provider, budget)
-        except ModelFailure as error:
-            retrieval_error = error
+        retrieval_executed = self.settings.rag_batch_context_mode != "none"
+        if retrieval_executed:
+            try:
+                retrieved, retrieval_trace = await self.corpus.search(
+                    sources, self.provider, budget
+                )
+            except ModelFailure as error:
+                retrieval_error = error
         stages["retrieval_ms"] = round((time.monotonic() - retrieval_started) * 1000)
         context_trace = []
 
@@ -418,6 +422,7 @@ class AuditService:
                 },
                 "retrieved_article_ids": retrieved,
                 "retrieval_mode": self.settings.retrieval_mode,
+                "retrieval_executed": retrieval_executed,
                 "depth": request.depth,
                 "hidden_review_items": len(reviews) - len(shown_reviews),
                 "retrieval_trace": retrieval_trace,

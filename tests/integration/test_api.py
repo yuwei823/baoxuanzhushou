@@ -70,16 +70,52 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "实时查询 · 每次用户提交文案时执行" in response.text
     assert "4 部法规按“整条法条”切成 359 个稳定块" in response.text
     assert "359 条法条一次性生成 1024 维向量索引" in response.text
-    assert "此时只为用户片段调用 Embedding，法条向量直接复用" in response.text
+    assert "用户文案的 512 字查询片段需要生成查询向量" in response.text
     assert "const batches = [" in response.text
-    assert "RAG 不决定" in response.text
+    assert "混合检索搜的是法条，不是“违规规则”" in response.text
+    assert "46 / 46 全部保留" in response.text
+    assert "基线 · 46 条规则全部检查" in response.text
+    assert "补充搜索 · RAG 法条检索" in response.text
+    retrieval_scene = response.text.split('data-scene="6"', 1)[1].split("</article>", 1)[0]
+    assert retrieval_scene.index("补充搜索 · RAG 法条检索") < retrieval_scene.index(
+        "当前材料的每个 512 字片段"
+    )
+    assert '<div class="recall-product"><b>产物</b>定向召回的补充法条</div>' in (
+        retrieval_scene
+    )
+    assert "规则直接法条 + 补充搜索产物" in retrieval_scene
+    assert "上轨" not in response.text and "下轨" not in response.text
+    assert "规则卡决定：</strong>必须检查什么" in response.text
     assert "每批最多 8 条、8,000 字符" in response.text
+    assert "方案取舍：为什么最终选择混合方案" in response.text
+    assert "只检查基线" in response.text
+    assert "只用 RAG 法条检索" in response.text
+    assert "最终选择：基线 + RAG" in response.text
+    assert "这次方案取舍使用了哪些案例" in response.text
+    assert "明显违规" in response.text and "中性科普" in response.text
+    assert "grid-template-columns: repeat(5, minmax(190px, 1fr))" in response.text
+    assert 'href="/batch-flow/report"' in response.text
+    assert response.text.count('class="step"') == 10
+    assert response.text.count('class="step active"') == 1
+    assert response.text.count('class="scene"') == 10
+    assert response.text.count('class="scene active"') == 1
+    assert "步骤 1 / 11" in response.text
 
     csp = response.headers["Content-Security-Policy"]
     assert "style-src 'self' 'unsafe-inline'" in csp
     assert "script-src 'self' 'unsafe-inline'" in csp
     assert "object-src 'none'" in csp
     assert "frame-ancestors 'none'" in csp
+
+
+def test_batch_flow_report_route_serves_the_three_strategy_evidence(client):
+    response = client.get("/batch-flow/report")
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/markdown")
+    assert "# 三种法规上下文策略真实对照" in response.text
+    assert "仅基线 `baseline-only`" in response.text
+    assert "仅 RAG `rag-only`" in response.text
+    assert "两者都开 `combined`" in response.text
 
 
 def test_only_the_presentation_pages_relax_the_csp(client):

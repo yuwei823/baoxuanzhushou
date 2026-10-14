@@ -1,0 +1,44 @@
+{
+  "created_at_utc": "2026-10-14T04:35:45.147238+00:00",
+  "ruleset_id": "official-v3-2026-10-12",
+  "ruleset_hash": "9bab835b52fc70a3736b565959bea901555d02c992cd7ec16ac470fe67f4961c",
+  "rule_count": 46,
+  "prompt_version": "audit-v1.6-citation-guidance",
+  "label_status": "provisional",
+  "scope": "exposed development cases; not formal accuracy evaluation",
+  "thinking": false,
+  "attempt_limit": 40,
+  "audit_timeout": 150.0,
+  "model_timeout": 45.0,
+  "retrieval": "hybrid",
+  "embedding": "text-embedding-v4",
+  "dimensions": 1024,
+  "batch_context_modes": [
+    "targeted",
+    "none"
+  ],
+  "repeats": 1,
+  "configurations": [
+    [
+      "qwen3.7-plus",
+      4,
+      8,
+      "targeted"
+    ],
+    [
+      "qwen3.7-plus",
+      4,
+      8,
+      "none"
+    ]
+  ],
+  "case_sha256": "8606a56e517dd005c2ebb5022e92cd616dc157a5c15fd2250b716d8dd5517262",
+  "code_sha256": {
+    "src\\insurance_audit\\config.py": "21f6253579f7bfdbff19a862f660a243b80fee9bc287480f463f9d74eb2796a2",
+    "src\\insurance_audit\\workflow.py": "7dc0bb2e2826d41efca40516406b029a06671588441c461c9eb8a0a2b345e33a",
+    "src\\insurance_audit\\retrieval.py": "1444121c2806075ff5c7d09d7edfe5a5adeb9e11b4b5a7019d1a3f626df77eef",
+    "src\\insurance_audit\\service.py": "fdb75141207fe20d9576edf7e5a207919d74cd338b92e02d87174adf4d602480",
+    "src\\insurance_audit\\models\\bailian.py": "fb372b180a7695d8b8e534d2bb651fe83c4ae74dba0e175e6304437182800ecd"
+  },
+  "completed": true
+}

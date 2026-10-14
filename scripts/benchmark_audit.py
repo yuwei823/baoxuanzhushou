@@ -22,6 +22,26 @@ from insurance_audit.service import AuditService
 from insurance_audit.workflow import PROMPT_VERSION
 
 
+def benchmark_checks(response, expected, corpus, context_mode):
+    """Adapt G1 checks to an explicit retrieval-on/off comparison."""
+    result = checks(response, expected, corpus)
+    meta = response["meta"]
+    if context_mode == "none":
+        context_empty = all(
+            not row["retrieved_article_ids"] and not row["dropped_retrieved_article_ids"]
+            for row in meta["context_trace"]
+        )
+        result["real_hybrid"] = not response["mock"] and not meta["retrieval_executed"]
+        result["retrieval_context_accounted"] = (
+            not meta["retrieved_article_ids"]
+            and not meta["retrieval_trace"]
+            and context_empty
+        )
+    else:
+        result["real_hybrid"] = result["real_hybrid"] and meta["retrieval_executed"]
+    return result
+
+
 def summarize(rows):
     groups = {}
     for row in rows:
@@ -147,7 +167,7 @@ async def main(args):
                     "sample_id": name,
                     "configuration": config,
                     "expected": expected,
-                    "checks": checks(response, expected, corpus),
+                    "checks": benchmark_checks(response, expected, corpus, context_mode),
                     "response": response,
                 }
                 rows.append(row)

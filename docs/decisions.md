@@ -14,6 +14,14 @@
 
 5 条已暴露 provisional 开发案例各跑 1 次真实 A/B：global 与 targeted 都为 4/5；targeted Prompt token -14.7%、总 token -14.0%、P50 -18.4%、结构修复 3→1。共同失败为教育反例的证据原句校验，不能据此宣称准确率提升。默认启用 targeted，同时保留 global/none 供后续 P3 对照，证据见 `reports/rag-batch-context-ab-2026-10-13/`。
 
+## 严格关闭 RAG 的对照（2026-10-14）
+
+修正 `none` 语义：关闭时跳过查询向量、BM25、RRF和检索排序，而不是仅禁止召回原文进入 Prompt；响应以 `meta.retrieval_executed=false` 明示。相同 5 条 provisional 开发案例单次真实对照中，targeted 5/5、none 4/5；none Prompt token -19.5%、总 token -18.1%、P50 -3.0%，但中性科普因证据原句校验失败未形成结论。继续以 targeted 为默认；该小样本只能作为工程诊断，不能证明正式准确率收益。证据见 `reports/rag-on-off-ab-v2-2026-10-14/`。
+
+## 仅基线、仅 RAG、组合策略对照（2026-10-14）
+
+新增隔离的开发基准策略 `rag-only`：先检索法规原文，再只审核与命中法条存在直接或支持关系的规则卡；它不会进入正式 API，因为未命中规则不会被检查。三种策略在相同 5 条 provisional 案例上交错运行，各为 4/5，共同失败是中性科普的证据输出校验。仅 RAG 平均检查 19.2/46 条规则，较仅基线少 33.4% Prompt token、P50 少 39.4%，但两个违规案例的规则级违规发现合计从 14 项降为 7 项。因此继续采用“46 条规则基线全覆盖 + targeted RAG 补充法条”，不以检索结果裁剪规则全集。证据见 `reports/rag-three-strategies-2026-10-14/`。
+
 ## 文本调用参数
 
 BAILIAN_TEXT_ENABLE_THINKING 可选布尔值；未设时不传该参数，使用服务默认行为。本地 qwen3.7-plus 设置 false，避免默认思考过程增加完整 JSON 响应等待。该参数仅作用于文本调用。依据：[百炼官方思考模式说明](https://help.aliyun.com/zh/model-studio/deep-thinking)。保留并发 2、单调用 45 秒、整体 150 秒及最多 16 次尝试限制。

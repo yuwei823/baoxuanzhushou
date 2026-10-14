@@ -15,6 +15,9 @@
 ### 验收与效果边界
 
 - targeted/global 真实 A/B 已完成：同一 qwen3.7-plus、batch=4、concurrency=8、5 条 provisional 开发案例各 1 次，两组均 4/5；targeted Prompt token 625,312→533,436（-14.7%），P50 32.609→26.609 秒（-18.4%），结构修复 3→1。共同失败是教育案例 `disclose_material_policy_terms_and_restrictions` 的证据原句校验；不宣称准确率提升。详见 `reports/rag-batch-context-ab-2026-10-13/report.md`。
+- 2026-10-14 完成 targeted/严格 none 真实开关对照。`none` 现跳过查询向量、BM25、RRF及检索排序，并以 `meta.retrieval_executed=false` 明示；46 条规则和直接/支持法条仍完整保留。5 条 provisional 单次结果 targeted 5/5、none 4/5；none Prompt token -19.5%、总 token -18.1%、P50 -3.0%，中性科普发生一次最终证据校验失败。继续默认 targeted，但不把小样本单次差异宣传为正式准确率提升。详见 `reports/rag-on-off-ab-v2-2026-10-14/report.md`。
+- 2026-10-14 完成仅基线/仅 RAG/两者都开三策略交错实测，各 5 次。三组均 4/5，共同失败是中性科普证据输出校验。仅 RAG 平均检查 19.2/46 条规则，较仅基线 Prompt token -33.4%、P50 -39.4%，但两个违规案例的规则级违规发现从 14 项降至 7 项。仅 RAG 隔离在 `scripts/benchmark_rag_strategies.py`，不进入正式 API；正式默认继续全规则覆盖 + targeted RAG。详见 `reports/rag-three-strategies-2026-10-14/report.md`。
+- `batch-flow` 已新增“方案取舍”和“测试案例”两步，页面直接展示三方案机制、实测指标、5 条开发案例及混合方案的选择依据，并通过 `/batch-flow/report` 提供完整三策略报告。当前共 11 个可播放步骤。
 - “慈铭体检+保险”长材料 targeted 真实复验 completed/non_compliant、0 错误、全局召回 210、13 批、最大 Prompt 44,442 字符、38.391 秒，trace_id=`68b51f73-b8d0-4f3f-a332-a69980f6b99c`。相较旧记录最大 Prompt 54,529 更小，但单次时延更高，不能把时延波动归因于 RAG。
 
 - v1 的 G1/G2 已通过合成开发案例工程验收，证据 reports/g1-acceptance-2026-10-12.md、reports/p2-stress-reverify.json；该结论不能自动覆盖 v2。

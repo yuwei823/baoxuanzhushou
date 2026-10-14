@@ -138,6 +138,25 @@ async def test_hybrid_failure_cannot_silently_fall_back(corpus):
 
 
 @pytest.mark.asyncio
+async def test_none_context_mode_skips_rag_search_entirely(corpus):
+    corpus.settings.rag_batch_context_mode = "none"
+
+    async def unexpected_search(*args, **kwargs):
+        pytest.fail("RAG search must not run when context mode is none")
+
+    corpus.search = unexpected_search
+    result = await AuditService(corpus.settings, corpus, MockProvider()).review(
+        AuditRequest(text="普通保险知识介绍")
+    )
+
+    assert result.meta["retrieval_executed"] is False
+    assert result.meta["retrieval_trace"] == []
+    assert result.meta["retrieved_article_ids"] == []
+    assert all(not row["retrieved_article_ids"] for row in result.meta["context_trace"])
+    assert all(not row["dropped_retrieved_article_ids"] for row in result.meta["context_trace"])
+
+
+@pytest.mark.asyncio
 async def test_long_material_prunes_optional_retrieval_context_instead_of_failing():
     settings = Settings(
         _env_file=None,
