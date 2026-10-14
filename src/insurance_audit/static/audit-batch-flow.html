@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>待审核文本如何进入模型</title>
+    <title>法规准备与审核批次流程</title>
     <style>
         :root {
             color-scheme: light;
@@ -46,12 +46,16 @@
         .snapshot { flex: 0 0 auto; padding: 12px 16px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.78); color: var(--muted); font-size: 13px; }
         .snapshot strong { color: var(--ink); }
 
-        .stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin: 22px 0 18px; }
+        .stats { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin: 22px 0 18px; }
         .stat { padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.82); }
         .stat b { display: block; font-size: 24px; }
         .stat span { color: var(--muted); font-size: 12px; }
 
-        .steps { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 14px; }
+        .phase-map { display: grid; grid-template-columns: 3fr 6fr; gap: 8px; margin-bottom: 8px; }
+        .phase-label { padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+        .phase-label.prep { color: #176958; background: var(--green-soft); }
+        .phase-label.live { color: #214b98; background: var(--blue-soft); }
+        .steps { display: grid; grid-template-columns: repeat(9, 1fr); gap: 8px; margin-bottom: 14px; }
         .step {
             position: relative; min-height: 64px; padding: 10px 10px 10px 38px;
             border: 1px solid var(--line); border-radius: 13px; background: rgba(255,255,255,.68);
@@ -61,6 +65,8 @@
         .step.active { color: var(--ink); background: var(--panel); border-color: var(--blue); box-shadow: 0 7px 22px rgba(49,105,216,.12); }
         .step .n { position: absolute; left: 10px; top: 11px; width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; background: #e7ebf2; color: var(--muted); font-size: 11px; }
         .step.active .n { color: #fff; background: var(--blue); }
+        .step[data-phase="prep"].active { border-color: var(--green); box-shadow: 0 7px 22px rgba(35,131,111,.12); }
+        .step[data-phase="prep"].active .n { background: var(--green); }
         .step strong { display: block; color: inherit; font-size: 13px; }
         .step small { display: block; margin-top: 4px; line-height: 1.3; }
 
@@ -83,6 +89,14 @@
         .arrow { color: #9aa6ba; text-align: center; font-size: 30px; animation: arrowPulse 1.1s ease-in-out 2; }
         @keyframes arrowPulse { 50% { color: var(--blue); transform: translateX(4px); } }
         .stack { display: grid; gap: 7px; }
+        .corpus-flow { display: grid; grid-template-columns: 1fr 54px 1.1fr 54px 1fr; gap: 10px; align-items: center; min-height: 380px; }
+        .file-list { display: grid; gap: 7px; }
+        .file-item { padding: 9px 11px; border-radius: 8px; background: var(--panel); border: 1px solid var(--line); font-size: 12px; }
+        .vector-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; margin: 14px 0; }
+        .vector-grid i { height: 30px; border-radius: 5px; background: linear-gradient(180deg, rgba(120,87,214,.85), rgba(49,105,216,.32)); animation: vectorPulse 1.5s ease-in-out infinite alternate; }
+        .vector-grid i:nth-child(2n) { animation-delay: -.4s; }
+        .vector-grid i:nth-child(3n) { animation-delay: -.8s; }
+        @keyframes vectorPulse { to { transform: scaleY(.45); opacity: .65; } }
         .block { padding: 10px 12px; border-radius: 9px; font-size: 13px; line-height: 1.35; transition: .25s ease; }
         .block.evidence { color: #214b98; background: var(--blue-soft); }
         .block.rule { color: #8a4618; background: var(--orange-soft); }
@@ -170,8 +184,9 @@
             .hero { align-items: flex-start; flex-direction: column; }
             .stats { grid-template-columns: repeat(3, 1fr); }
             .steps { grid-template-columns: repeat(3, 1fr); }
-            .flow3, .flow4, .batch-layout, .packet-layout, .dispatch { grid-template-columns: 1fr; min-height: 0; }
-            .flow4 .arrow, .flow3 .arrow, .packet-layout .arrow { transform: rotate(90deg); }
+            .phase-map { grid-template-columns: 1fr; }
+            .flow3, .flow4, .corpus-flow, .batch-layout, .packet-layout, .dispatch { grid-template-columns: 1fr; min-height: 0; }
+            .flow4 .arrow, .flow3 .arrow, .corpus-flow .arrow, .packet-layout .arrow { transform: rotate(90deg); }
             .batch-grid { grid-template-columns: repeat(3, 1fr); }
             .scene, .stage { min-height: 0; }
         }
@@ -193,35 +208,98 @@
 <main class="shell">
     <header class="hero">
         <div>
-            <div class="eyebrow">AUDIT PIPELINE · CURRENT IMPLEMENTATION</div>
-            <h1>一段文案，如何变成 13 个模型批次</h1>
-            <p class="lead">重点观察三类文字块：待审证据、46 张规则卡、法规原文。后端先检索和聚类，再为每个批次拼出一份完整的 system + user 消息。</p>
+            <div class="eyebrow">KNOWLEDGE PREPARATION + AUDIT PIPELINE</div>
+            <h1>法规如何入库，文案如何进入模型</h1>
+            <p class="lead">整条链路分为两个阶段：法规发布时一次性完成离线切分和向量化；用户提交文案时复用这些产物，实时检索相关法条并完成 46 条规则的分批审核。</p>
         </div>
         <div class="snapshot"><strong>当前本地配置快照</strong><br>official-v3 · batch=4 · concurrency=8</div>
     </header>
 
     <section class="stats" aria-label="当前配置">
-        <div class="stat"><b>46</b><span>规则卡全部覆盖</span></div>
+        <div class="stat"><b>4</b><span>当前法规文件</span></div>
+        <div class="stat"><b>359</b><span>整条法条切块</span></div>
+        <div class="stat"><b>1024</b><span>每条法规向量维度</span></div>
+        <div class="stat"><b>46</b><span>实时规则全部覆盖</span></div>
         <div class="stat"><b>13</b><span>当前计划批次</span></div>
-        <div class="stat"><b>4</b><span>单批最多规则</span></div>
         <div class="stat"><b>8</b><span>模型并发上限</span></div>
-        <div class="stat"><b>8 / 8k</b><span>每批可选 RAG 条文上限</span></div>
     </section>
 
+    <div class="phase-map" aria-label="阶段划分">
+        <div class="phase-label prep">前期准备 · 法规或规则集变更时执行一次 · 产物持久化复用</div>
+        <div class="phase-label live">实时查询 · 每次用户提交文案时执行 · 结果随材料变化</div>
+    </div>
     <nav class="steps" aria-label="处理步骤">
-        <button class="step active" data-step="0"><span class="n">1</span><strong>证据分块</strong><small>按非空行保留位置</small></button>
-        <button class="step" data-step="1"><span class="n">2</span><strong>混合检索</strong><small>排序条文，不删除规则</small></button>
-        <button class="step" data-step="2"><span class="n">3</span><strong>规则聚类</strong><small>共享法条的规则成组</small></button>
-        <button class="step" data-step="3"><span class="n">4</span><strong>批次装箱</strong><small>当前 46 → 13 批</small></button>
-        <button class="step" data-step="4"><span class="n">5</span><strong>Prompt 合并</strong><small>system + user JSON</small></button>
-        <button class="step" data-step="5"><span class="n">6</span><strong>并发发送</strong><small>8 路进入模型</small></button>
+        <button class="step active" data-step="0" data-phase="prep"><span class="n">1</span><strong>法规发布</strong><small>核验并冻结快照</small></button>
+        <button class="step" data-step="1" data-phase="prep"><span class="n">2</span><strong>整条切分</strong><small>4 部 → 359 条</small></button>
+        <button class="step" data-step="2" data-phase="prep"><span class="n">3</span><strong>向量建库</strong><small>1024 维持久化</small></button>
+        <button class="step" data-step="3" data-phase="live"><span class="n">4</span><strong>证据分块</strong><small>按非空行保留位置</small></button>
+        <button class="step" data-step="4" data-phase="live"><span class="n">5</span><strong>混合检索</strong><small>排序条文，不删除规则</small></button>
+        <button class="step" data-step="5" data-phase="live"><span class="n">6</span><strong>规则聚类</strong><small>共享法条的规则成组</small></button>
+        <button class="step" data-step="6" data-phase="live"><span class="n">7</span><strong>批次装箱</strong><small>当前 46 → 13 批</small></button>
+        <button class="step" data-step="7" data-phase="live"><span class="n">8</span><strong>Prompt 合并</strong><small>system + user JSON</small></button>
+        <button class="step" data-step="8" data-phase="live"><span class="n">9</span><strong>并发发送</strong><small>8 路进入模型</small></button>
     </nav>
 
     <section class="stage" aria-live="polite">
         <article class="scene active" data-scene="0">
             <header class="scene-head">
-                <div><h2>① 文案先变成可引用的证据块</h2><p>每个非空行成为一个 Source，保存 source_id、原文和 Unicode 起点；每个 Source 再按最多 512 字生成检索查询。</p></div>
-                <span class="pill">不先压成摘要</span>
+                <div><h2>① 法规文件先经过核验，再发布为不可变规则快照</h2><p>原始文件不会在用户提交审核时临时解析。前期流程统一登记来源、文件哈希、抽取工具与验证状态，通过门禁后才发布为一个版本化规则集。</p></div>
+                <span class="pill">前期准备 · 非每次请求</span>
+            </header>
+            <div class="corpus-flow">
+                <div class="box">
+                    <h3>法律法规目录</h3>
+                    <div class="file-list"><div class="file-item">中华人民共和国保险法</div><div class="file-item">保险销售行为管理办法</div><div class="file-item">互联网保险业务监管办法</div><div class="file-item">金融产品网络营销管理办法</div></div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="box">
+                    <h3>集中登记与完整性校验</h3>
+                    <div class="stack"><div class="block contract">source_path · SHA-256 · extraction_method</div><div class="block contract">document_status · verified · source_locator</div><div class="block contract">条号连续性 · 原文完整性 · 规则映射</div></div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="box">
+                    <h3>发布快照</h3>
+                    <div class="block law">official-v3-2026-10-12</div>
+                    <p class="mini">manifest.json 将文档、条文、规则卡和哈希绑定。新法规或原文修改会形成新快照，不覆盖当前已发布版本。</p>
+                </div>
+            </div>
+            <div class="notes"><div class="note">这是知识库构建流程，只在新增法规、修订原文或调整规则映射后重新执行。</div><div class="note">审核服务启动时只加载已发布且通过校验的快照。</div></div>
+        </article>
+
+        <article class="scene" data-scene="1">
+            <header class="scene-head">
+                <div><h2>② 4 部法规按“整条法条”切成 359 个稳定块</h2><p>每个块保留文档、章、条号、原文、规范化文本与稳定 article_id；46 张规则卡另行建立，并用 article_ids 指向可引用原文。</p></div>
+                <span class="pill">whole-article-v1</span>
+            </header>
+            <div class="corpus-flow">
+                <div class="box"><h3>法规全文</h3><div class="stack"><div class="block law">第一章　总则……</div><div class="block law glow">第十八条　……</div><div class="block law">第十九条　……</div></div></div>
+                <div class="arrow">→</div>
+                <div class="box"><h3>articles.jsonl · 359 条</h3><div class="stack"><div class="block law"><span class="mono">article_id</span> + 条号</div><div class="block law"><span class="mono">original_text</span> 原文</div><div class="block law"><span class="mono">chapter / source_locator</span></div></div><p class="mini">当前最长条文未超过整条索引限制，因此没有把每款再拆成独立向量块。</p></div>
+                <div class="arrow">+</div>
+                <div class="box"><h3>rule_cards.jsonl · 46 张</h3><div class="stack"><div class="block rule">适用主体与渠道</div><div class="block rule">触发条件、例外、缺失事实</div><div class="block rule">direct / supporting article_ids</div></div><p class="mini">法条块负责提供可核验原文；规则卡负责把抽象法律语言变成逐项判断条件。</p></div>
+            </div>
+            <div class="notes"><div class="note">359 个法条块是检索对象；46 张规则卡是完整审核清单，两者不能互相替代。</div><div class="note">所有正式引用最终按 article_id 从本地原文回填，不接受模型自行编写条文。</div></div>
+        </article>
+
+        <article class="scene" data-scene="2">
+            <header class="scene-head">
+                <div><h2>③ 359 条法条一次性生成 1024 维向量索引</h2><p>每条检索文本由“法规名称 + 章节 + 条号 + 完整原文”组成，调用 text-embedding-v4 后做 L2 归一化，并与规则集哈希一起持久化。</p></div>
+                <span class="pill">离线构建 · 后续复用</span>
+            </header>
+            <div class="corpus-flow">
+                <div class="box"><h3>359 条检索文本</h3><div class="block law">《法规名》<br>第三章<br>第二十三条<br>完整原文……</div><p class="mini">每次最多 10 条送入 Embedding 接口；不截断条文例外。</p></div>
+                <div class="arrow">→</div>
+                <div class="box"><h3>text-embedding-v4</h3><div class="vector-grid" aria-label="1024维向量示意"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="block rag">每条法条 → 1024 个数值</div><p class="mini">图中仅显示 8 个维度作为示意；实际保存 1024 维。</p></div>
+                <div class="arrow">→</div>
+                <div class="box"><h3>data/indexes/&lt;hash&gt;.json</h3><div class="stack"><div class="block contract">359 个归一化向量</div><div class="block contract">ruleset_hash · model · dimensions</div><div class="block contract">article_ids · text_hashes · chunker_version</div></div></div>
+            </div>
+            <div class="notes"><div class="note"><strong>不会每次重算：</strong>法条向量在发布快照时构建一次，实时审核直接加载。</div><div class="note"><strong>会在实时计算：</strong>用户文案的 512 字查询片段需要生成查询向量，才能与法条向量计算余弦相似度。</div><div class="note">BM25 词项索引在服务加载同一批法条时于本地构造；不调用外部模型。</div><div class="note">规则集、Embedding 模型、维度或检索文本变化时，旧索引校验失败，必须重建。</div></div>
+        </article>
+
+        <article class="scene" data-scene="3">
+            <header class="scene-head">
+                <div><h2>④ 文案实时变成可引用的证据块</h2><p>从这里开始，每次审核请求都会重新执行。每个非空行成为一个 Source，保存 source_id、原文和 Unicode 起点；每个 Source 再按最多 512 字生成检索查询。</p></div>
+                <span class="pill">实时查询 · 不先压成摘要</span>
             </header>
             <div class="flow3">
                 <div class="box">
@@ -232,7 +310,7 @@
                         <div class="block evidence">案例、用户原话与行动引导……</div>
                         <div class="block evidence">风险提示与补充说明……</div>
                     </div>
-                    <p class="mini">页面目前最多 5,000 个 Unicode 字符；API 上限仍为 10,000。</p>
+                    <p class="mini">页面上限为 5,000 个 Unicode 字符</p>
                 </div>
                 <div class="arrow" aria-hidden="true">→</div>
                 <div class="box">
@@ -248,16 +326,16 @@
             </div>
         </article>
 
-        <article class="scene" data-scene="1">
+        <article class="scene" data-scene="4">
             <header class="scene-head">
-                <div><h2>② 每个检索片段走两路召回</h2><p>每段分别取 BM25 Top 8 与向量 Top 8，再用 RRF(k=60) 融合；最后跨全部文本段累计分数，形成一个全局法规条文顺序。</p></div>
+                <div><h2>⑤ 查询片段与离线法条索引进行两路匹配</h2><p>BM25 使用实时文本词项匹配 359 条法条；向量路将实时查询向量与已保存的 359 个法条向量计算余弦相似度。两路各取 Top 8，再用 RRF(k=60) 融合。</p></div>
                 <span class="pill">结果随文案变化</span>
             </header>
             <div class="flow4">
                 <div class="box">
                     <h3>一个 512 字查询片段</h3>
                     <div class="block evidence">“体检结果直接作为理赔依据……”</div>
-                    <p class="mini">所有片段都会参与，不只看开头 512 字。</p>
+                    <p class="mini">所有片段都会参与，不只看开头 512 字；此时只为用户片段调用 Embedding，法条向量直接复用。</p>
                 </div>
                 <div class="arrow">→</div>
                 <div class="retrieval">
@@ -275,9 +353,9 @@
             <div class="notes"><div class="note"><strong>RAG 决定：</strong>哪些辅助法条优先进入当前批次，以及哪些规则组先执行。</div><div class="note"><strong>RAG 不决定：</strong>是否跳过某条规则。规则覆盖与检索召回分开处理。</div><div class="note"><strong>原因：</strong>检索可能漏召回；若用它直接删规则，漏召回就会变成漏审。</div></div>
         </article>
 
-        <article class="scene" data-scene="2">
+        <article class="scene" data-scene="5">
             <header class="scene-head">
-                <div><h2>③ 46 条规则不会简单地每 4 条切一刀</h2><p>先用“是否共享直接引用条文”构建规则簇。共享法条的规则留在一起，减少同一法条在多个调用中的重复。</p></div>
+                <div><h2>⑥ 46 条规则不会简单地每 4 条切一刀</h2><p>先用“是否共享直接引用条文”构建规则簇。共享法条的规则留在一起，减少同一法条在多个调用中的重复。</p></div>
                 <span class="pill">规则仍全部检查</span>
             </header>
             <div class="flow3">
@@ -304,9 +382,9 @@
             <div class="notes"><div class="note">同一规则的直接条文和 supporting 条文属于必需内容。</div><div class="note">相似度只影响顺序和辅助上下文，不取消任何规则。</div><div class="note">规则簇边界会造成不足 4 条的批次，因此不是简单的 12 批。</div></div>
         </article>
 
-        <article class="scene" data-scene="3">
+        <article class="scene" data-scene="6">
             <header class="scene-head">
-                <div><h2>④ 当前配置把 46 条规则装成 13 个批次</h2><p>单批最多 4 条规则；同时控制必需法规原文集合。点击任一批次，查看它携带的规则与必需条文规模。</p></div>
+                <div><h2>⑦ 当前配置把 46 条规则装成 13 个批次</h2><p>单批最多 4 条规则；同时控制必需法规原文集合。点击任一批次，查看它携带的规则与必需条文规模。</p></div>
                 <span class="pill">batch_rule_count = 4</span>
             </header>
             <div class="batch-layout">
@@ -315,9 +393,9 @@
             </div>
         </article>
 
-        <article class="scene" data-scene="4">
+        <article class="scene" data-scene="7">
             <header class="scene-head">
-                <div><h2>⑤ 每批合并成一份完整模型消息</h2><p>模型收到两条消息：固定 system 指令与 JSON Schema，以及一份包含证据、规则、法条和白名单的 user JSON。</p></div>
+                <div><h2>⑧ 每批合并成一份完整模型消息</h2><p>模型收到两条消息：固定 system 指令与 JSON Schema，以及一份包含证据、规则、法条和白名单的 user JSON。</p></div>
                 <span class="pill">不是“文案 + 46 条规则”一次全塞</span>
             </header>
             <div class="packet-layout">
@@ -339,9 +417,9 @@
             <div class="notes"><div class="note">直接引用条文放在 rule_articles，不在 articles 中重复一份。</div><div class="note">先取文案全局 RRF 前列，再与本批直接法条的 BM25/向量相似前列融合；每批最多 8 条、8,000 字符。</div><div class="note">若整包仍超 90k：从排名末尾移除可选 RAG；仍超限则递归拆分规则，绝不截断必需材料。</div><div class="note">5 条开发案例单次 A/B：通过数持平 4/5，Prompt token -14.7%，P50 -18.4%；尚不能证明准确率提升。</div></div>
         </article>
 
-        <article class="scene" data-scene="5">
+        <article class="scene" data-scene="8">
             <header class="scene-head">
-                <div><h2>⑥ 13 个批次进入最多 8 路模型并发</h2><p>后端用 asyncio 同时调度全部批次，模型客户端的 Semaphore 控制最多 8 个请求在途；其余批次排队。</p></div>
+                <div><h2>⑨ 13 个批次进入最多 8 路模型并发</h2><p>后端用 asyncio 同时调度全部批次，模型客户端的 Semaphore 控制最多 8 个请求在途；其余批次排队。</p></div>
                 <span class="pill">model_concurrency = 8</span>
             </header>
             <div class="dispatch">
@@ -357,7 +435,7 @@
 
     <footer class="controls">
         <div class="controls-left"><button id="prev" class="control" type="button">上一步</button><button id="play" class="control primary" type="button">自动播放</button><button id="next" class="control" type="button">下一步</button></div>
-        <div id="status">步骤 1 / 6 · 证据分块</div>
+        <div id="status">前期准备 · 步骤 1 / 9 · 法规发布</div>
     </footer>
 </main>
 
@@ -377,17 +455,18 @@
         {n:4,a:15,c:3212,r:['regulated_account_names_and_trademarks','paid_education_disguised_marketing','nonbank_payment_marketing_options','internet_platform_operating_conditions']},
         {n:3,a:5,c:1122,r:['insurer_format_clause_explanation_duty','insurer_prohibited_unfair_competition','intermediary_qualification_requirement']}
     ];
-    const titles = ['证据分块','混合检索','规则聚类','批次装箱','Prompt 合并','并发发送'];
+    const titles = ['法规发布','整条切分','向量建库','证据分块','混合检索','规则聚类','批次装箱','Prompt 合并','并发发送'];
     let current = 0, timer = null, dispatchTimer = null;
 
     function showStep(index) {
-        current = Math.max(0, Math.min(5, index));
+        current = Math.max(0, Math.min(8, index));
         document.querySelectorAll('.step').forEach((node, i) => node.classList.toggle('active', i === current));
         document.querySelectorAll('.scene').forEach((node, i) => node.classList.toggle('active', i === current));
         document.getElementById('prev').disabled = current === 0;
-        document.getElementById('next').disabled = current === 5;
-        document.getElementById('status').textContent = `步骤 ${current + 1} / 6 · ${titles[current]}`;
-        if (current === 5) animateDispatch(); else stopDispatch();
+        document.getElementById('next').disabled = current === 8;
+        const phase = current < 3 ? '前期准备' : '实时查询';
+        document.getElementById('status').textContent = `${phase} · 步骤 ${current + 1} / 9 · ${titles[current]}`;
+        if (current === 8) animateDispatch(); else stopDispatch();
     }
 
     function stopAuto() {
@@ -398,9 +477,9 @@
     function toggleAuto() {
         if (timer) { stopAuto(); return; }
         document.getElementById('play').textContent = '暂停';
-        if (current === 5) showStep(0);
+        if (current === 8) showStep(0);
         timer = setInterval(() => {
-            if (current === 5) { stopAuto(); return; }
+            if (current === 8) { stopAuto(); return; }
             showStep(current + 1);
         }, 2400);
     }

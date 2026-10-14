@@ -65,7 +65,12 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     response = client.get("/batch-flow")
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("text/html")
-    assert "一段文案，如何变成 13 个模型批次" in response.text
+    assert "法规如何入库，文案如何进入模型" in response.text
+    assert "前期准备 · 法规或规则集变更时执行一次" in response.text
+    assert "实时查询 · 每次用户提交文案时执行" in response.text
+    assert "4 部法规按“整条法条”切成 359 个稳定块" in response.text
+    assert "359 条法条一次性生成 1024 维向量索引" in response.text
+    assert "此时只为用户片段调用 Embedding，法条向量直接复用" in response.text
     assert "const batches = [" in response.text
     assert "RAG 不决定" in response.text
     assert "每批最多 8 条、8,000 字符" in response.text
