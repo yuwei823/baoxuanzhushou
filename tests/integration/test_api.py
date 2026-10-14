@@ -113,6 +113,8 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "API 返回前端" in response.text
     assert "前端收到的是后端校验和聚合后的统一响应" in response.text
     assert "function animateReturn()" in response.text
+    assert "grid-template-columns: minmax(420px, 1fr) minmax(0, 2fr)" in response.text
+    assert ".queue { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))" in response.text
     assert 'href="/batch-flow/report"' in response.text
     assert response.text.count('class="step"') == 10
     assert response.text.count('class="step active"') == 1

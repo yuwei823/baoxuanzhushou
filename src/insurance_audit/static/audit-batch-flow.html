@@ -199,8 +199,8 @@
         .budget-bar i:nth-child(5) { flex: 1; background: rgba(255,255,255,.16); }
         .budget small { display: block; margin-top: 7px; color: #c8d2e8; }
 
-        .dispatch { display: grid; grid-template-columns: 250px 1fr; gap: 22px; align-items: start; }
-        .queue { display: grid; gap: 7px; }
+        .dispatch { display: grid; grid-template-columns: minmax(420px, 1fr) minmax(0, 2fr); gap: 22px; align-items: start; }
+        .queue { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
         .queue-item { display: flex; justify-content: space-between; padding: 9px 11px; border-radius: 9px; background: #f0f3f8; color: var(--muted); font-size: 12px; transition: .25s ease; }
         .queue-item.sent { color: #fff; background: var(--blue); transform: translateX(7px); }
         .lanes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
@@ -286,6 +286,7 @@
             .decision-callout, .report-strip { display: grid; grid-template-columns: 1fr; }
             .terms { grid-template-columns: 1fr; }
             .batch-grid, .lanes { grid-template-columns: repeat(2, 1fr); }
+            .queue { grid-template-columns: 1fr; }
             .controls { align-items: stretch; flex-direction: column; }
         }
         @media (prefers-reduced-motion: reduce) {
