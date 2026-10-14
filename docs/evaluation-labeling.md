@@ -28,6 +28,6 @@ Macro-F1 为有定义类别 F1 的均值，无定义类别为 null；类型 Micr
 .\.venv\Scripts\python.exe -m insurance_audit.cli evaluate --split dev --variant hybrid --out reports/my-live-dev
 ```
 
-离线流程验证使用 `--mock --variant bm25`。不读取或输出密钥。已存在的非空报告目录拒绝覆盖；每个样本后保存 results.jsonl、metrics.json 和 report.md，运行结束才标 run_complete=true。响应中保留实际模型、prompt、规则哈希和检索上下文，历史重放不是重新验证当前模型。
+离线流程验证使用 `--mock --variant bm25`。不读取或输出密钥。已存在的非空报告目录拒绝覆盖；每个样本后保存 results.jsonl、metrics.json 和 report.md，运行结束才标 run_complete=true。响应中保留实际模型、prompt、规则哈希和检索上下文，历史重放不是重新验证当前模型。其中 results.jsonl 是逐样本完整响应，体积大，已列入 `.gitignore` 仅本地留存；report.md、metrics.json、manifest.json、summary.json 仍纳入版本控制。
 
 目前 `--split test` 明确拒绝执行：G2 和人工标签仍未就绪；正式放行时需完成数据冻结及基线比较。当前仅支持 bm25/hybrid，全文基线与共享图像提取的 A/B 尚未实现。

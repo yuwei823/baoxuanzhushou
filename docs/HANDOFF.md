@@ -75,6 +75,17 @@
 
 ---
 
+## 2026-10-15 — 停止跟踪逐次原始响应（用户指示）
+
+- 用户指示：处理各 run 目录下的 results.jsonl / summary.json / metrics.json 等生成产物。经确认，选择“保留全部，仅把大文件改为 .gitignore 不再跟踪（本地留存）”。
+- 结论：这些文件均为 git 已提交内容，且每个 report.md 明确将其列为“原始证据”，是一次性真实 API 运行的原始响应，重跑无法复现同一结果。因此不删除任何文件，仅调整跟踪范围。
+- 具体改动：7 个 `reports/**/results.jsonl`（p3-dev-replay-v1.0、p3-mock-runner-v1.0、performance-batch-matrix-v2、performance-model-pilot-v2、rag-batch-context-ab-2026-10-13、rag-on-off-ab-v2-2026-10-14、rag-three-strategies-2026-10-14，合计约 7.4 MB）执行 `git rm --cached`，并在 `.gitignore` 增加 `reports/**/results.jsonl`。文件仍保留在本地磁盘。
+- 保持跟踪：report.md、manifest.json、summary.json、metrics.json、package-check/verification.json、全部 PNG 截图，以及 g1-next-live-v2.json（多处验收引用）与 g1-next-live-v5.json（tests/unit/test_evaluation.py 直接读取）。
+- 同步文档：上述 7 个 run 的 report.md 证据小节、docs/evaluation-labeling.md 报告产物说明，均标注 results.jsonl 仅本地留存。
+- 验证：无任何代码或测试读取 results.jsonl（已全库确认）；`git check-ignore` 命中新增规则；其余报告文件未被忽略。
+
+---
+
 ## 2026-10-12 — G1/G2 修复与真实验收（本轮）
 
 - 任务：修复 G1 科普改写过度复核与 G2 逐规则引用失败，按 PLAN 顺序复验。

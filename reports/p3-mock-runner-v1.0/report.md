@@ -24,7 +24,7 @@
 | unknown_articles | 0 |
 | mock_samples | 5 |
 
-完整混淆矩阵、标签状态、延迟及 token 用量见 metrics.json。
+完整混淆矩阵、标签状态、延迟及 token 用量见 metrics.json。逐样本完整响应见 results.jsonl（体积大，已列入 `.gitignore`，仅本地留存）。
 
 ## 未匹配或技术失败案例
 

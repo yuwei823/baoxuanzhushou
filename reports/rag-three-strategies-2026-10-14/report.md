@@ -68,6 +68,6 @@
 ## 原始证据
 
 - `manifest.json`：模型、规则集、三种策略定义、案例哈希和代码哈希。
-- `results.jsonl`：15 次完整响应、逐项检查、所选及遗漏规则 ID。
+- `results.jsonl`：15 次完整响应、逐项检查、所选及遗漏规则 ID（体积大，已列入 `.gitignore`，仅本地留存）。
 - `summary.json`：聚合指标。
 - `scripts/benchmark_rag_strategies.py`：可重复运行的三策略基准脚本。

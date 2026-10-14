@@ -12,4 +12,4 @@
 
 三个模型的实际完整审核输出量相近，不能沿用旧单规则实验“输出差九倍”的结论。reasoning_tokens 未返回的调用保持 null，没有据此证明或否认实际推理用量。
 
-manifest.json 固定源码/规则/案例哈希和配置，results.jsonl 保存全部响应及校验，summary.json 是数值摘要。
+manifest.json 固定源码/规则/案例哈希和配置，summary.json 是数值摘要。results.jsonl 保存全部响应及校验，体积大，已列入 `.gitignore`，仅本地留存。

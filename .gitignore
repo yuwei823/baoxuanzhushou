@@ -17,3 +17,6 @@ data/uploads/
 data/extracted/extraction-registry.json
 # Evaluation run output; the extracted .json fixture is what tests replay.
 reports/g1-next-live-*/
+# Per-run raw model responses. Kept locally as evidence but too large to track;
+# each run's report.md, manifest.json, summary.json and metrics.json stay tracked.
+reports/**/results.jsonl

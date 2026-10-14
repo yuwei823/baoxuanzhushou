@@ -47,4 +47,4 @@
 
 当前小样本支持启用 `targeted` 作为默认工程配置：它保持相同的开发案例通过数，并减少 Prompt、token、可选条文重复和结构修复次数。现有证据只证明成本和上下文规模改善，尚不能证明审核准确率提升。P3 仍需在人工核对的 20 条开发集和 40 条冻结测试集上比较违规召回、误报、引用准确率和三态 Macro-F1。
 
-原始证据：`manifest.json`、`results.jsonl`、`summary.json`；长材料摘要：`../rag-batch-context-long-targeted-2026-10-13.json`。
+原始证据：`manifest.json`、`summary.json`；长材料摘要：`../rag-batch-context-long-targeted-2026-10-13.json`。`results.jsonl`（逐次完整响应）体积大，已列入 `.gitignore`，仅本地留存。
