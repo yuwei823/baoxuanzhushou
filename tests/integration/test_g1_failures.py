@@ -26,6 +26,8 @@ def test_text_api_failure_matrix_and_sanitized_metadata(code, http_status, caplo
         total = len(client.app.state.corpus.rules)
     assert response.status_code == http_status
     assert response.json()["decision"] is None
+    if code == "invalid_model_output":
+        assert response.json()["summary"] == "模型结果未通过结构或证据校验，相关规则未完成审核。"
     assert response.json()["coverage"]["total"] == total
     assert "private_marker_87321" not in caplog.text
     assert response.json()["trace_id"] in caplog.text

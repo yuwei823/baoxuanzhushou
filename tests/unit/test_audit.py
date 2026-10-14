@@ -15,6 +15,7 @@ from insurance_audit.retrieval import Corpus
 from insurance_audit.schemas import (
     AuditContext,
     AuditRequest,
+    EvidenceRef,
     JudgeOutput,
     ReviewItem,
     VisionOutput,
@@ -179,6 +180,30 @@ async def test_fabricated_citation_and_evidence_are_rejected(settings, corpus):
     output.findings[0].evidence[0].quote = "伪造的证据"
     with pytest.raises(ValueError, match="Evidence"):
         validate_findings(output, cards, sources)
+
+
+@pytest.mark.asyncio
+async def test_non_violation_paraphrase_is_discarded_before_exact_evidence_validation(
+    settings, corpus
+):
+    card = corpus.rules["disclose_material_policy_terms_and_restrictions"]
+    sources = text_sources(
+        "📕保险知识科普📕：任何人都不应宣称“监管部门担保收益”。"
+        "分红属于非保证利益，实际收益可能低于演示水平。本文不介绍或销售具体产品。"
+    )
+    messages = judge_messages(
+        AuditRequest(text=sources[0].text), sources, [card], corpus.articles, True, []
+    )
+    output = JudgeOutput.model_validate_json(await MockProvider().call("text", messages, Budget()))
+    finding = output.findings[0]
+    finding.finding = "no_violation"
+    finding.applicability = "not_applicable"
+    finding.evidence = [EvidenceRef(source_id=sources[0].source_id, quote="分红属于非保证利益")]
+
+    resolve_condition_ids(output, [card], sources)
+
+    assert finding.evidence == []
+    assert finding.absence_disclosure is None
 
 
 @pytest.mark.asyncio

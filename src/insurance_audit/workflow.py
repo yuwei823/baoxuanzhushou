@@ -13,7 +13,7 @@ from insurance_audit.schemas import (
     Violation,
 )
 
-PROMPT_VERSION = "audit-v1.6-citation-guidance"
+PROMPT_VERSION = "audit-v1.7-nonviolation-evidence-canonicalization"
 
 # Prompt-layer clarification of terse trigger conditions. The published rule cards are
 # immutable; these notes tell the judge model what activity each condition keys on so
@@ -271,10 +271,19 @@ class FindingValidationError(ValueError):
 
 
 def resolve_condition_ids(output, cards, sources):
-    """Resolve only explicit per-rule IDs; never infer or repair a changed condition."""
+    """Resolve condition IDs and discard evidence unused by non-violations.
+
+    Models sometimes paraphrase an explanatory quote after correctly deciding
+    ``no_violation``. That evidence is not rendered or used by aggregation, so
+    retaining it can only make a harmless result fail the exact-quote check.
+    Violation evidence remains untouched and must still pass strict validation.
+    """
     by_id = {c["rule_id"]: c for c in cards}
     for finding in output.findings:
         card = by_id.get(finding.rule_id)
+        if finding.finding != "violation":
+            finding.evidence = []
+            finding.absence_disclosure = None
         if card:
             bindings = {f"c{i}": text for i, text in enumerate(card["trigger_conditions"], 1)}
             for condition in finding.condition_results:
