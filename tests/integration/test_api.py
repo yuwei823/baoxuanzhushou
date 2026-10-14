@@ -68,7 +68,7 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "法规如何入库，文案如何进入模型" in response.text
     assert "前期准备 · 法规或规则集变更时执行一次" in response.text
     assert "实时查询 · 每次用户提交文案时执行" in response.text
-    assert "4 部法规按“整条法条”切成 359 个稳定块" in response.text
+    assert "法规切成法条，规则卡再按共享法条形成规则簇" in response.text
     assert "359 条法条一次性生成 1024 维向量索引" in response.text
     assert "用户文案的 512 字查询片段需要生成查询向量" in response.text
     assert "const batches = [" in response.text
@@ -76,7 +76,7 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "46 / 46 全部保留" in response.text
     assert "46 条规则全部检查" in response.text
     assert "补充搜索 · RAG 法条检索" in response.text
-    retrieval_scene = response.text.split('data-scene="7"', 1)[1].split("</article>", 1)[0]
+    retrieval_scene = response.text.split('data-scene="6"', 1)[1].split("</article>", 1)[0]
     assert retrieval_scene.index("补充搜索 · RAG 法条检索") < retrieval_scene.index(
         "当前材料的每个 512 字片段"
     )
@@ -100,11 +100,13 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "使用了哪些案例" in response.text
     assert "明显违规" in response.text and "中性科普" in response.text
     assert "grid-template-columns: repeat(5, minmax(190px, 1fr))" in response.text
-    assert "grid-template-columns: 4fr 7fr" in response.text
-    assert response.text.index("规则集发布时，按“是否共享直接引用条文”") < response.text.index(
+    assert "grid-template-columns: 3fr 7fr" in response.text
+    assert response.text.index("按共享法条形成连通组") < response.text.index(
         "被审核文案变成可引用的证据块"
     )
-    assert 'data-step="3" data-phase="prep"' in response.text
+    assert "条文与规则组织" in response.text
+    assert "规则簇在规则集发布时形成，不会在每次用户请求中重新聚类" in response.text
+    assert "<strong>规则聚类</strong>" not in response.text
     assert "${ruleNames[x] || '未命名规则'}" in response.text
     assert "批次并发审核，取回结果并返回前端" in response.text
     assert "取回批次结果" in response.text
@@ -116,11 +118,11 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "grid-template-columns: minmax(420px, 1fr) minmax(0, 2fr)" in response.text
     assert ".queue { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))" in response.text
     assert 'href="/batch-flow/report"' in response.text
-    assert response.text.count('class="step"') == 10
+    assert response.text.count('class="step"') == 9
     assert response.text.count('class="step active"') == 1
-    assert response.text.count('class="scene"') == 10
+    assert response.text.count('class="scene"') == 9
     assert response.text.count('class="scene active"') == 1
-    assert "步骤 1 / 11" in response.text
+    assert "步骤 1 / 10" in response.text
 
     csp = response.headers["Content-Security-Policy"]
     assert "style-src 'self' 'unsafe-inline'" in csp
