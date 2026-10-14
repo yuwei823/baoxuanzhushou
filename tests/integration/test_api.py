@@ -91,8 +91,9 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "46 条规则全部查验" in response.text
     assert "使用 RAG 法条检索，检索出的规则进行查验" in response.text
     assert "产品化选择：两档模式" in response.text
-    assert ".strategy-grid { display: grid; grid-template-columns: 1.3fr repeat(3, 1fr); gap: 0; }" in response.text
-    assert ".strategy-grid::before { content: \"\"; }" in response.text
+    assert 'class="head strategy-head"' in response.text
+    assert 'class="head strategy-head chosen"' in response.text
+    assert 'class="strategy-grid"' not in response.text
     assert "¥0.154" in response.text
     assert "¥0.292" in response.text
     assert "qwen3.7-plus 输入 ¥2/百万 token" in response.text

@@ -223,19 +223,19 @@
 
         .notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 18px; }
         .note { padding: 12px 14px; border-left: 3px solid var(--yellow); background: #fffaf0; font-size: 12px; line-height: 1.55; }
-        .strategy-grid { display: grid; grid-template-columns: 1.3fr repeat(3, 1fr); gap: 0; }
-        .strategy-grid::before { content: ""; }
-        .strategy-card { position: relative; margin: 0 6px; padding: 16px; border: 1px solid var(--line); border-radius: 16px; background: #f8fafe; }
-        .strategy-card h3 { margin: 0 0 5px; font-size: 17px; }
-        .strategy-card .strategy-flow { min-height: 48px; margin: 12px 0; padding: 10px; border-radius: 9px; background: var(--panel); color: var(--muted); font-size: 12px; line-height: 1.5; }
-        .strategy-card ul { margin: 10px 0 0; padding-left: 18px; color: var(--muted); font-size: 12px; line-height: 1.65; }
-        .strategy-card.winner { border: 2px solid var(--blue); background: var(--blue-soft); box-shadow: 0 12px 28px rgba(49,105,216,.14); }
-        .strategy-card.winner::after { content: "最终选择"; position: absolute; right: 13px; top: 13px; padding: 4px 7px; border-radius: 999px; color: #fff; background: var(--blue); font-size: 11px; font-weight: 700; }
-        .strategy-metric { display: grid; grid-template-columns: 1.3fr repeat(3, 1fr); margin-top: 14px; overflow: hidden; border: 1px solid var(--line); border-radius: 13px; background: var(--panel); font-size: 12px; }
+        .strategy-metric { display: grid; grid-template-columns: 1.3fr repeat(3, 1fr); overflow: hidden; border: 1px solid var(--line); border-radius: 13px; background: var(--panel); font-size: 12px; }
         .strategy-metric > div { padding: 9px 11px; border-bottom: 1px solid var(--line); }
+        .strategy-metric > div:not(:nth-child(4n + 1)) { border-left: 1px solid var(--line); }
         .strategy-metric > div:nth-last-child(-n+4) { border-bottom: 0; }
         .strategy-metric .head { color: var(--muted); background: #f2f5fa; font-weight: 700; }
         .strategy-metric .chosen { color: #214b98; background: var(--blue-soft); font-weight: 700; }
+        .strategy-metric .metric-label { display: flex; align-items: center; font-size: 16px; }
+        .strategy-head { position: relative; padding: 15px !important; }
+        .strategy-head h3 { margin: 0 0 6px; color: var(--ink); font-size: 17px; line-height: 1.35; }
+        .strategy-head .strategy-flow { min-height: 48px; margin: 11px 0; padding: 9px; border-radius: 8px; background: var(--panel); font-weight: 400; line-height: 1.5; }
+        .strategy-head ul { margin: 8px 0 0; padding-left: 17px; font-weight: 400; line-height: 1.6; }
+        .strategy-head.chosen { padding-right: 72px !important; }
+        .strategy-head.chosen::after { content: "最终选择"; position: absolute; right: 12px; top: 12px; padding: 4px 7px; border-radius: 999px; color: #fff; background: var(--blue); font-size: 11px; font-weight: 700; }
         .decision-callout { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; margin-top: 14px; padding: 14px 16px; border-radius: 14px; color: #214b98; background: var(--blue-soft); }
         .decision-callout b { font-size: 18px; white-space: nowrap; }
         .decision-callout span { font-size: 12px; line-height: 1.55; }
@@ -260,9 +260,7 @@
             .stats { grid-template-columns: repeat(3, 1fr); }
             .steps { grid-template-columns: repeat(3, 1fr); }
             .phase-map { grid-template-columns: 1fr; }
-            .flow3, .flow4, .corpus-flow, .batch-layout, .packet-layout, .dispatch, .track, .branch-merge, .strategy-grid, .return-flow { grid-template-columns: 1fr; min-height: 0; }
-            .strategy-grid::before { display: none; }
-            .strategy-card { margin: 0; }
+            .flow3, .flow4, .corpus-flow, .batch-layout, .packet-layout, .dispatch, .track, .branch-merge, .return-flow { grid-template-columns: 1fr; min-height: 0; }
             .flow4 .arrow, .flow3 .arrow, .corpus-flow .arrow, .packet-layout .arrow { transform: rotate(90deg); }
             .track .arrow { transform: rotate(90deg); }
             .branch-merge > .track, .branch-merge > .track.coverage, .branch-merge > .track.recall, .converge, .merge-box.merge-target, .equation, .merge-box.decision-target { grid-column: 1; grid-row: auto; }
@@ -284,6 +282,7 @@
             .scene-head { flex-direction: column; }
             .retrieval, .payload, .notes { grid-template-columns: 1fr; }
             .strategy-metric > div { padding: 7px 5px; font-size: 11px; overflow-wrap: anywhere; }
+            .strategy-metric { grid-template-columns: 130px repeat(3, 250px); overflow-x: auto; }
             .decision-callout, .report-strip { display: grid; grid-template-columns: 1fr; }
             .terms { grid-template-columns: 1fr; }
             .batch-grid, .lanes { grid-template-columns: repeat(2, 1fr); }
@@ -478,28 +477,11 @@
                 <div><h2>⑦ 方案取舍：为什么提供初审与完全两种模式</h2><p>比较标准不只是速度，还包括规则覆盖、违规依据完整性和引用可追溯性。以下数据来自同一轮 15 次真实百炼调用。</p></div>
                 <span class="pill">5 案例 × 3 方案 × 1 次</span>
             </header>
-            <div class="strategy-grid" aria-label="三种审核策略比较">
-                <section class="strategy-card">
-                    <h3>46 条规则全部查验</h3>
-                    <div class="mini">46 条规则全部检查 · 不执行 RAG</div>
-                    <div class="strategy-flow">被审核文字 → 46 张规则卡 + 规则直接法条 → 模型</div>
-                    <ul><li>优势：覆盖完整，Prompt 比混合方案更小。</li><li>取舍：不补充与本次材料相关的其它法条。</li></ul>
-                </section>
-                <section class="strategy-card">
-                    <h3>使用 RAG 法条检索，检索出的规则进行查验</h3>
-                    <div class="mini">召回法条 → 反向筛选关联规则</div>
-                    <div class="strategy-flow">被审核文字 → BM25 + 向量 → 相关法条 → 平均 19.2 条规则</div>
-                    <ul><li>优势：批次、token 和用时最低。</li><li>取舍：未召回的规则不检查；规则级违规发现 14 → 7。</li></ul>
-                </section>
-                <section class="strategy-card winner">
-                    <h3>全部查验 + RAG</h3>
-                    <div class="mini">46 条全查 · RAG 定向补充法条</div>
-                    <div class="strategy-flow">被审核文字 → 46 张规则卡 + 直接法条 + 相关补充法条 → 模型</div>
-                    <ul><li>优势：保留完整规则覆盖，同时增强材料相关法规上下文。</li><li>取舍：本轮 Prompt token 最高，需要持续评估增益。</li></ul>
-                </section>
-            </div>
             <div class="strategy-metric" role="table" aria-label="三种方案实测指标">
-                <div class="head">指标</div><div class="head">全部查验</div><div class="head">RAG</div><div class="head chosen">全部查验 + RAG 补充</div>
+                <div class="head metric-label">指标</div>
+                <div class="head strategy-head"><h3>46 条规则全部查验</h3><div class="mini">46 条规则全部检查 · 不执行 RAG</div><div class="strategy-flow">被审核文字 → 46 张规则卡 + 规则直接法条 → 模型</div><ul><li>优势：覆盖完整，Prompt 比混合方案更小。</li><li>取舍：不补充与本次材料相关的其它法条。</li></ul></div>
+                <div class="head strategy-head"><h3>使用 RAG 法条检索，检索出的规则进行查验</h3><div class="mini">召回法条 → 反向筛选关联规则</div><div class="strategy-flow">被审核文字 → BM25 + 向量 → 相关法条 → 平均 19.2 条规则</div><ul><li>优势：批次、token 和用时最低。</li><li>取舍：未召回的规则不检查；规则级违规发现 14 → 7。</li></ul></div>
+                <div class="head strategy-head chosen"><h3>全部查验 + RAG</h3><div class="mini">46 条全查 · RAG 定向补充法条</div><div class="strategy-flow">被审核文字 → 46 张规则卡 + 直接法条 + 相关补充法条 → 模型</div><ul><li>优势：保留完整规则覆盖，同时增强材料相关法规上下文。</li><li>取舍：本轮 Prompt token 最高，需要持续评估增益。</li></ul></div>
                 <div>开发案例通过</div><div>5 / 5</div><div>5 / 5</div><div class="chosen">5 / 5</div>
                 <div>平均检查规则</div><div>46</div><div>19.2</div><div class="chosen">46</div>
                 <div>Prompt token</div><div>450,082</div><div>299,831</div><div class="chosen">541,903</div>
