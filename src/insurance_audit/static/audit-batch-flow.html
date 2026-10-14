@@ -90,6 +90,7 @@
         @keyframes arrowPulse { 50% { color: var(--blue); transform: translateX(4px); } }
         .stack { display: grid; gap: 7px; }
         .corpus-flow { display: grid; grid-template-columns: 1fr 54px 1.1fr 54px 1fr; gap: 10px; align-items: center; min-height: 380px; }
+        .rule-cluster-flow { grid-template-columns: .82fr 48px 1.12fr 96px 1.12fr; }
         .file-list { display: grid; gap: 7px; }
         .file-item { padding: 9px 11px; border-radius: 8px; background: var(--panel); border: 1px solid var(--line); font-size: 12px; }
         .vector-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; margin: 14px 0; }
@@ -220,10 +221,23 @@
         .return-card strong { margin-bottom: 5px; color: var(--blue); font-size: 18px; }
         .return-card span { font-size: 11px; line-height: 1.5; }
         .return-arrow { display: grid; place-items: center; color: var(--blue); font-size: 25px; font-weight: 800; }
-        .cluster-summary { display: grid; grid-template-columns: 1fr 36px 1fr 36px 1fr; gap: 8px; align-items: center; margin-top: 14px; }
-        .cluster-node { min-height: 66px; padding: 11px 13px; border: 1px solid var(--line); border-radius: 11px; background: #f8fafe; font-size: 12px; line-height: 1.5; }
-        .cluster-node b { display: block; margin-bottom: 3px; color: var(--ink); font-size: 14px; }
-        .cluster-arrow { color: var(--blue); font-size: 24px; font-weight: 800; text-align: center; }
+        .relation-box { min-height: 305px; }
+        .relation-meta { margin: -4px 0 12px; color: var(--muted); font-size: 11px; line-height: 1.45; }
+        .relation-list { display: grid; gap: 9px; }
+        .relation-item { position: relative; min-height: 38px; padding: 10px 12px; border-radius: 9px; font-size: 13px; line-height: 1.35; }
+        .relation-item.law { color: #176958; background: var(--green-soft); }
+        .relation-item.rule { color: #8a4618; background: var(--orange-soft); }
+        .relation-item.shared { border: 2px solid #e0b33a; box-shadow: 0 0 0 4px rgba(239,196,73,.13); }
+        .relation-item small { display: block; margin-top: 2px; color: var(--muted); font-size: 10px; }
+        .relation-title { margin: 14px 0 8px; color: var(--ink); font-size: 13px; font-weight: 800; }
+        .cluster-result { margin-top: 12px; padding: 11px 12px; border: 1px solid #9db7ee; border-radius: 10px; color: #214b98; background: var(--blue-soft); font-size: 12px; line-height: 1.5; }
+        .cluster-result b { display: block; margin-bottom: 3px; color: var(--ink); font-size: 13px; }
+        .article-rule-link { position: relative; height: 230px; align-self: center; }
+        .article-rule-link svg { width: 100%; height: 100%; overflow: visible; }
+        .article-rule-link path { fill: none; stroke: #78a995; stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 7 6; animation: relationFlow 1.35s linear infinite; }
+        .article-rule-link path.shared-link { stroke: #d3a51f; stroke-width: 3.5; animation-duration: .9s; }
+        .article-rule-link .shared-label { position: absolute; left: 50%; top: 50%; width: 82px; padding: 4px 5px; border-radius: 999px; color: #715800; background: var(--yellow-soft); font-size: 10px; font-weight: 800; text-align: center; transform: translate(-50%, -50%); }
+        @keyframes relationFlow { to { stroke-dashoffset: -26; } }
 
         .notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 18px; }
         .note { padding: 12px 14px; border-left: 3px solid var(--yellow); background: #fffaf0; font-size: 12px; line-height: 1.55; }
@@ -274,8 +288,8 @@
             .converge span { display: block; color: var(--blue); font-size: 28px; text-align: center; }
             .equation { transform: rotate(90deg); }
             .return-arrow { transform: rotate(90deg); }
-            .cluster-summary { grid-template-columns: 1fr; }
-            .cluster-arrow { transform: rotate(90deg); }
+            .article-rule-link { width: 100%; height: 72px; }
+            .article-rule-link svg { transform: rotate(90deg); }
             .terms { grid-template-columns: repeat(2, 1fr); }
             .batch-grid { grid-template-columns: repeat(3, 1fr); }
             .strategy-metric { grid-template-columns: 1.25fr repeat(3, 1fr); }
@@ -373,19 +387,39 @@
                 <div><h2>② 法规切成法条，规则卡再按共享法条形成规则簇</h2><p>4 部法规先按整条法条切成 359 个稳定块；46 张规则卡通过 article_ids 关联原文，并按共享的直接引用条文预先分组。</p></div>
                 <span class="pill">条文切分 + 规则分组</span>
             </header>
-            <div class="corpus-flow">
+            <div class="corpus-flow rule-cluster-flow">
                 <div class="box"><h3>法规全文</h3><div class="stack"><div class="block law">第一章　总则……</div><div class="block law glow">第十八条　……</div><div class="block law">第十九条　……</div></div></div>
                 <div class="arrow">→</div>
-                <div class="box"><h3>articles.jsonl · 359 条</h3><div class="stack"><div class="block law"><span class="mono">article_id</span> + 条号</div><div class="block law"><span class="mono">original_text</span> 原文</div><div class="block law"><span class="mono">chapter / source_locator</span></div></div><p class="mini">当前最长条文未超过整条索引限制，因此没有把每款再拆成独立向量块。</p></div>
-                <div class="arrow">+</div>
-                <div class="box"><h3>rule_cards.jsonl · 46 张</h3><div class="stack"><div class="block rule">适用主体与渠道</div><div class="block rule">触发条件、例外、缺失事实</div><div class="block rule">direct / supporting article_ids</div></div><p class="mini">法条块负责提供可核验原文；规则卡负责把抽象法律语言变成逐项判断条件。</p></div>
-            </div>
-            <div class="cluster-summary" aria-label="规则卡形成规则簇">
-                <div class="cluster-node"><b>规则卡引用法条</b>规则 A → 法条 18、22<br>规则 B → 法条 22、23</div>
-                <div class="cluster-arrow">→</div>
-                <div class="cluster-node"><b>按共享法条形成连通组</b>A 与 B 共享法条 22，因此进入同一规则簇</div>
-                <div class="cluster-arrow">→</div>
-                <div class="cluster-node"><b>发布时固化，审核时复用</b>实时审核只调整规则簇顺序，再完成批次装箱</div>
+                <div class="box relation-box">
+                    <h3>articles.jsonl · 359 条</h3>
+                    <p class="relation-meta"><span class="mono">article_id</span>、条号、原文与来源定位</p>
+                    <div class="relation-title">可被规则卡引用的法规原文</div>
+                    <div class="relation-list">
+                        <div class="relation-item law">法条 18</div>
+                        <div class="relation-item law shared"><b>法条 22</b><small>同时连接规则 A 与规则 B</small></div>
+                        <div class="relation-item law">法条 23</div>
+                    </div>
+                    <p class="mini">359 个法条块提供可核验的编号与原文。</p>
+                </div>
+                <div class="article-rule-link" aria-label="法条与规则卡的引用连线">
+                    <svg viewBox="0 0 96 230" preserveAspectRatio="none" aria-hidden="true">
+                        <path d="M0 48 C34 48 58 57 96 57"></path>
+                        <path class="shared-link" d="M0 115 C36 115 58 57 96 57"></path>
+                        <path class="shared-link" d="M0 115 C36 115 58 121 96 121"></path>
+                        <path d="M0 182 C34 182 58 121 96 121"></path>
+                    </svg>
+                    <span class="shared-label">共享法条 22</span>
+                </div>
+                <div class="box relation-box">
+                    <h3>rule_cards.jsonl · 46 张</h3>
+                    <p class="relation-meta">适用范围、触发条件、例外与 <span class="mono">article_ids</span></p>
+                    <div class="relation-title">规则卡引用法条</div>
+                    <div class="relation-list">
+                        <div class="relation-item rule"><b>规则 A</b> → 法条 18、<strong>22</strong></div>
+                        <div class="relation-item rule"><b>规则 B</b> → 法条 <strong>22</strong>、23</div>
+                    </div>
+                    <div class="cluster-result"><b>按共享法条形成连通组</b>A 与 B 共享法条 22，因此进入同一规则簇。规则簇随规则集发布并在实时审核中直接复用。</div>
+                </div>
             </div>
             <div class="notes"><div class="note">359 个法条块是检索对象；46 张规则卡是完整审核清单，两者不能互相替代。</div><div class="note">同一规则的直接条文和 supporting 条文属于必需内容；正式引用按 article_id 从本地原文回填。</div><div class="note">规则簇在规则集发布时形成，不会在每次用户请求中重新聚类。</div></div>
         </article>

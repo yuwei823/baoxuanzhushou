@@ -104,6 +104,10 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert response.text.index("按共享法条形成连通组") < response.text.index(
         "被审核文案变成可引用的证据块"
     )
+    assert "规则卡引用法条" in response.text
+    assert "A 与 B 共享法条 22，因此进入同一规则簇" in response.text
+    assert 'class="cluster-summary"' not in response.text
+    assert 'class="article-rule-link"' in response.text
     assert "条文与规则组织" in response.text
     assert "规则簇在规则集发布时形成，不会在每次用户请求中重新聚类" in response.text
     assert "<strong>规则聚类</strong>" not in response.text
