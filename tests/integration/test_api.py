@@ -103,6 +103,13 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     )
     assert 'data-step="3" data-phase="prep"' in response.text
     assert "${ruleNames[x] || '未命名规则'}" in response.text
+    assert "批次并发审核，取回结果并返回前端" in response.text
+    assert "取回批次结果" in response.text
+    assert "程序校验" in response.text
+    assert "确定性聚合" in response.text
+    assert "API 返回前端" in response.text
+    assert "前端收到的是后端校验和聚合后的统一响应" in response.text
+    assert "function animateReturn()" in response.text
     assert 'href="/batch-flow/report"' in response.text
     assert response.text.count('class="step"') == 10
     assert response.text.count('class="step active"') == 1

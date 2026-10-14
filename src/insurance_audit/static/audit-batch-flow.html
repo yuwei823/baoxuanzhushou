@@ -211,6 +211,15 @@
         .model { grid-column: 1 / -1; margin-top: 8px; padding: 17px; border-radius: 14px; text-align: center; color: #fff; background: var(--navy); }
         .model b { display: block; font-size: 19px; }
         .model span { color: #c9d3e8; font-size: 12px; }
+        .return-flow { display: grid; grid-template-columns: 1fr 34px 1fr 34px 1fr 34px 1fr; gap: 8px; align-items: stretch; margin-top: 16px; }
+        .return-card { min-height: 92px; padding: 13px 14px; border: 1px solid var(--line); border-radius: 13px; color: var(--muted); background: #f3f5f9; opacity: .48; transform: translateY(7px); transition: .35s ease; }
+        .return-card.active { color: var(--ink); border-color: #9db7ee; background: var(--blue-soft); box-shadow: 0 9px 22px rgba(49,105,216,.12); opacity: 1; transform: translateY(0); }
+        .return-card.frontend.active { border-color: #82c9b7; background: var(--green-soft); }
+        .return-card b, .return-card strong, .return-card span { display: block; }
+        .return-card b { margin-bottom: 6px; font-size: 14px; }
+        .return-card strong { margin-bottom: 5px; color: var(--blue); font-size: 18px; }
+        .return-card span { font-size: 11px; line-height: 1.5; }
+        .return-arrow { display: grid; place-items: center; color: var(--blue); font-size: 25px; font-weight: 800; }
 
         .notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 18px; }
         .note { padding: 12px 14px; border-left: 3px solid var(--yellow); background: #fffaf0; font-size: 12px; line-height: 1.55; }
@@ -250,7 +259,7 @@
             .stats { grid-template-columns: repeat(3, 1fr); }
             .steps { grid-template-columns: repeat(3, 1fr); }
             .phase-map { grid-template-columns: 1fr; }
-            .flow3, .flow4, .corpus-flow, .batch-layout, .packet-layout, .dispatch, .track, .branch-merge, .strategy-grid { grid-template-columns: 1fr; min-height: 0; }
+            .flow3, .flow4, .corpus-flow, .batch-layout, .packet-layout, .dispatch, .track, .branch-merge, .strategy-grid, .return-flow { grid-template-columns: 1fr; min-height: 0; }
             .flow4 .arrow, .flow3 .arrow, .corpus-flow .arrow, .packet-layout .arrow { transform: rotate(90deg); }
             .track .arrow { transform: rotate(90deg); }
             .branch-merge > .track, .branch-merge > .track.coverage, .branch-merge > .track.recall, .converge, .merge-box.merge-target, .equation, .merge-box.decision-target { grid-column: 1; grid-row: auto; }
@@ -259,6 +268,7 @@
             .converge svg { display: none; }
             .converge span { display: block; color: var(--blue); font-size: 28px; text-align: center; }
             .equation { transform: rotate(90deg); }
+            .return-arrow { transform: rotate(90deg); }
             .terms { grid-template-columns: repeat(2, 1fr); }
             .batch-grid { grid-template-columns: repeat(3, 1fr); }
             .strategy-metric { grid-template-columns: 1.25fr repeat(3, 1fr); }
@@ -487,7 +497,7 @@
             </div>
             <div class="strategy-metric" role="table" aria-label="三种方案实测指标">
                 <div class="head">指标</div><div class="head">全部查验</div><div class="head">RAG</div><div class="head chosen">全部查验 + RAG 补充</div>
-                <div>开发案例通过</div><div>4 / 5</div><div>4 / 5</div><div class="chosen">4 / 5</div>
+                <div>开发案例通过</div><div>5 / 5</div><div>5 / 5</div><div class="chosen">5 / 5</div>
                 <div>平均检查规则</div><div>46</div><div>19.2</div><div class="chosen">46</div>
                 <div>Prompt token</div><div>450,082</div><div>299,831</div><div class="chosen">541,903</div>
                 <div>P50 用时</div><div>32.24 秒</div><div>19.53 秒</div><div class="chosen">29.83 秒</div>
@@ -566,7 +576,7 @@
 
         <article class="scene" data-scene="10">
             <header class="scene-head">
-                <div><h2>⑪ 13 个批次进入最多 8 路模型并发</h2><p>后端用 asyncio 同时调度全部批次，模型客户端的 Semaphore 控制最多 8 个请求在途；其余批次排队。</p></div>
+                <div><h2>⑪ 批次并发审核，取回结果并返回前端</h2><p>后端最多并发发送 8 个模型请求；所有批次结果返回后，程序统一校验、聚合，再将完整审核响应交给前端展示。</p></div>
                 <span class="pill">model_concurrency = 8</span>
             </header>
             <div class="dispatch">
@@ -576,7 +586,16 @@
                     <div class="model"><b>百炼 qwen3.7-plus</b><span>每个请求返回：本批每条规则恰好一个 Finding；结构不合约时本批可修复一次</span></div>
                 </div>
             </div>
-            <div class="notes"><div class="note">第一波最多 8 批同时调用，剩余批次等待空闲槽位。</div><div class="note">每批输出通过规则 ID、条件、证据和引用白名单校验。</div><div class="note">所有批次完成后，后端才汇总 46 条规则台账并确定最终三态结论。</div></div>
+            <div id="return-flow" class="return-flow" aria-label="模型结果返回前端流程">
+                <div id="result-collect" class="return-card"><b>取回批次结果</b><strong id="result-count">0 / 13 批</strong><span>接收每批逐规则判断、证据引用和待补充信息</span></div>
+                <div class="return-arrow">→</div>
+                <div id="result-verify" class="return-card"><b>程序校验</b><strong>证据 + 引用 + 结构</strong><span>无效结果修复或标记失败，不把技术异常当作合规</span></div>
+                <div class="return-arrow">→</div>
+                <div id="result-aggregate" class="return-card"><b>确定性聚合</b><strong>46 条规则台账</strong><span>生成违规项、待核验项、覆盖状态和最终三态结论</span></div>
+                <div class="return-arrow">→</div>
+                <div id="result-frontend" class="return-card frontend"><b>API 返回前端</b><strong>审核结果页面</strong><span>展示结论、证据、法规原文、待核验事项并支持 JSON 下载</span></div>
+            </div>
+            <div class="notes"><div class="note">第一波最多 8 批同时调用，剩余批次等待空闲槽位。</div><div class="note">返回结果必须通过规则、条件、证据和引用白名单校验。</div><div class="note">前端收到的是后端校验和聚合后的统一响应，不直接展示模型原始输出。</div></div>
         </article>
     </section>
 
@@ -651,7 +670,7 @@
         {n:3,a:5,c:1122,r:['insurer_format_clause_explanation_duty','insurer_prohibited_unfair_competition','intermediary_qualification_requirement']}
     ];
     const titles = ['法规发布','整条切分','向量建库','规则聚类','证据分块','开发案例','方案取舍','检索与覆盖','批次装箱','Prompt 合并','并发发送'];
-    let current = 0, timer = null, dispatchTimer = null;
+    let current = 0, timer = null, dispatchTimer = null, resultTimer = null;
 
     function showStep(index) {
         current = Math.max(0, Math.min(10, index));
@@ -697,8 +716,13 @@
 
     const queue = document.getElementById('dispatch-queue');
     const lanes = document.getElementById('lanes');
+    const resultCards = ['result-collect', 'result-verify', 'result-aggregate', 'result-frontend'];
+    function resetReturnFlow() {
+        resultCards.forEach(id => document.getElementById(id).classList.remove('active'));
+        document.getElementById('result-count').textContent = `0 / ${batches.length} 批`;
+    }
     function buildDispatch() {
-        queue.replaceChildren(); lanes.replaceChildren();
+        queue.replaceChildren(); lanes.replaceChildren(); resetReturnFlow();
         batches.forEach((b, i) => {
             const row = document.createElement('div'); row.className = 'queue-item'; row.dataset.batch = i;
             row.innerHTML = `<span>批次 ${String(i + 1).padStart(2,'0')}</span><span>${b.n} 条规则</span>`;
@@ -709,11 +733,31 @@
             lane.innerHTML = `<b>并发槽 ${i + 1}</b>`; lanes.appendChild(lane);
         }
     }
-    function stopDispatch() { if (dispatchTimer) clearInterval(dispatchTimer); dispatchTimer = null; }
+    function stopDispatch() {
+        if (dispatchTimer) clearInterval(dispatchTimer);
+        if (resultTimer) clearInterval(resultTimer);
+        dispatchTimer = null; resultTimer = null;
+    }
+    function animateReturn() {
+        let returned = 0, stage = 0;
+        document.getElementById('result-collect').classList.add('active');
+        resultTimer = setInterval(() => {
+            if (returned < batches.length) {
+                returned = Math.min(batches.length, returned + 2);
+                document.getElementById('result-count').textContent = `${returned} / ${batches.length} 批`;
+                return;
+            }
+            stage++;
+            if (stage <= 3) document.getElementById(resultCards[stage]).classList.add('active');
+            if (stage >= 3) { clearInterval(resultTimer); resultTimer = null; }
+        }, 260);
+    }
     function animateDispatch() {
         stopDispatch(); buildDispatch(); let sent = 0;
         const send = () => {
-            if (sent >= batches.length) { stopDispatch(); return; }
+            if (sent >= batches.length) {
+                clearInterval(dispatchTimer); dispatchTimer = null; animateReturn(); return;
+            }
             const laneIndex = sent % 8;
             const row = queue.querySelector(`[data-batch="${sent}"]`);
             if (row) row.classList.add('sent');
