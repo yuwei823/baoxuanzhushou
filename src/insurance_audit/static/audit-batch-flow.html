@@ -51,7 +51,7 @@
         .stat b { display: block; font-size: 24px; }
         .stat span { color: var(--muted); font-size: 12px; }
 
-        .phase-map { display: grid; grid-template-columns: 3fr 8fr; gap: 8px; margin-bottom: 8px; }
+        .phase-map { display: grid; grid-template-columns: 4fr 7fr; gap: 8px; margin-bottom: 8px; }
         .phase-label { padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
         .phase-label.prep { color: #176958; background: var(--green-soft); }
         .phase-label.live { color: #214b98; background: var(--blue-soft); }
@@ -287,7 +287,7 @@
         <div>
             <div class="eyebrow">KNOWLEDGE PREPARATION + AUDIT PIPELINE</div>
             <h1>法规如何入库，文案如何进入模型</h1>
-            <p class="lead">整条链路分为两个阶段：法规发布时一次性完成离线切分和向量化；用户提交文案时复用这些产物，实时检索相关法条并完成 46 条规则的分批审核。</p>
+            <p class="lead">整条链路分为两个阶段：法规或规则集发布时一次性完成离线切分、向量化和规则聚类；用户提交文案时复用这些产物，实时检索相关法条并完成规则的分批审核。</p>
         </div>
         <div class="snapshot"><strong>当前本地配置快照</strong><br>official-v3 · batch=4 · concurrency=8</div>
     </header>
@@ -309,11 +309,11 @@
         <button class="step active" data-step="0" data-phase="prep"><span class="n">1</span><strong>法规发布</strong><small>核验并冻结快照</small></button>
         <button class="step" data-step="1" data-phase="prep"><span class="n">2</span><strong>整条切分</strong><small>4 部 → 359 条</small></button>
         <button class="step" data-step="2" data-phase="prep"><span class="n">3</span><strong>向量建库</strong><small>1024 维持久化</small></button>
-        <button class="step" data-step="3" data-phase="live"><span class="n">4</span><strong>证据分块</strong><small>按非空行保留位置</small></button>
-        <button class="step" data-step="4" data-phase="live"><span class="n">5</span><strong>开发案例</strong><small>5 条开发样本</small></button>
-        <button class="step" data-step="5" data-phase="live"><span class="n">6</span><strong>方案取舍</strong><small>三种策略实测</small></button>
-        <button class="step" data-step="6" data-phase="live"><span class="n">7</span><strong>检索与覆盖</strong><small>召回法条，规则全查</small></button>
-        <button class="step" data-step="7" data-phase="live"><span class="n">8</span><strong>规则聚类</strong><small>共享法条的规则成组</small></button>
+        <button class="step" data-step="3" data-phase="prep"><span class="n">4</span><strong>规则聚类</strong><small>共享法条的规则成组</small></button>
+        <button class="step" data-step="4" data-phase="live"><span class="n">5</span><strong>证据分块</strong><small>按非空行保留位置</small></button>
+        <button class="step" data-step="5" data-phase="live"><span class="n">6</span><strong>开发案例</strong><small>5 条开发样本</small></button>
+        <button class="step" data-step="6" data-phase="live"><span class="n">7</span><strong>方案取舍</strong><small>三种策略实测</small></button>
+        <button class="step" data-step="7" data-phase="live"><span class="n">8</span><strong>检索与覆盖</strong><small>召回法条，规则全查</small></button>
         <button class="step" data-step="8" data-phase="live"><span class="n">9</span><strong>批次装箱</strong><small>当前 46 → 13 批</small></button>
         <button class="step" data-step="9" data-phase="live"><span class="n">10</span><strong>Prompt 合并</strong><small>system + user JSON</small></button>
         <button class="step" data-step="10" data-phase="live"><span class="n">11</span><strong>并发发送</strong><small>8 路进入模型</small></button>
@@ -382,7 +382,36 @@
 
         <article class="scene" data-scene="3">
             <header class="scene-head">
-                <div><h2>④ 被审核文案变成可引用的证据块</h2><p>从这里开始，每次审核请求都会重新执行。每个非空行成为一个证据块（source），保存 source_id、原文和 Unicode 起点；每个证据块再按最多 512 字生成检索查询。</p></div>
+                <div><h2>④ 46 条规则不会简单地每 4 条切一刀</h2><p>规则集发布时，按“是否共享直接引用条文”预先构建规则簇。共享法条的规则留在一起，实时审核直接复用这些分组。</p></div>
+                <span class="pill">前期准备 · 分组关系持久复用</span>
+            </header>
+            <div class="flow3">
+                <div class="box">
+                    <h3>46 张规则卡</h3>
+                    <div class="stack">
+                        <div class="block rule">规则 A → 法条 18、22</div>
+                        <div class="block rule">规则 B → 法条 22、23</div>
+                        <div class="block rule">规则 C → 法条 37</div>
+                        <div class="block rule">规则 D → 法条 41、45</div>
+                    </div>
+                </div>
+                <div class="arrow">→</div>
+                <div class="box">
+                    <h3>按共享法条形成连通组</h3>
+                    <div class="stack">
+                        <div class="block law glow">簇 1：A + B · 共享法条 22</div>
+                        <div class="block law">簇 2：C · 独立规则</div>
+                        <div class="block law">簇 3：D + … · 共享其它法条</div>
+                    </div>
+                    <p class="mini">连通组在规则集发布时形成；实时审核只根据检索结果调整规则簇顺序，再完成批次装箱。</p>
+                </div>
+            </div>
+            <div class="notes"><div class="note">同一规则的直接条文和 supporting 条文属于必需内容。</div><div class="note">相似度只影响顺序和辅助上下文，不取消任何规则。</div><div class="note">规则簇边界会造成不足 4 条的批次，因此不是简单的 12 批。</div></div>
+        </article>
+
+        <article class="scene" data-scene="4">
+            <header class="scene-head">
+                <div><h2>⑤ 被审核文案变成可引用的证据块</h2><p>从这里开始，每次审核请求都会重新执行。每个非空行成为一个证据块（source），保存 source_id、原文和 Unicode 起点；每个证据块再按最多 512 字生成检索查询。</p></div>
                 <span class="pill">实时查询 · 不先压成摘要</span>
             </header>
             <div class="flow3">
@@ -416,9 +445,9 @@
             </div>
         </article>
 
-        <article class="scene" data-scene="4">
+        <article class="scene" data-scene="5">
             <header class="scene-head">
-                <div><h2>⑤ 使用了哪些案例</h2><p>5 条均为已暴露的合成开发案例，标签为 provisional，用于工程诊断，不是专家标注或冻结测试集。</p></div>
+                <div><h2>⑥ 使用了哪些案例</h2><p>5 条均为已暴露的合成开发案例，标签为 provisional，用于工程诊断，不是专家标注或冻结测试集。</p></div>
                 <span class="pill">测试集性质：开发样本</span>
             </header>
             <div class="case-grid" aria-label="三方案对照开发案例">
@@ -431,9 +460,9 @@
             <div class="report-strip"><span><strong>案例对照报告</strong></span><a href="/batch-flow/report" target="_blank" rel="noopener">查看完整报告</a></div>
         </article>
 
-        <article class="scene" data-scene="5">
+        <article class="scene" data-scene="6">
             <header class="scene-head">
-                <div><h2>⑥ 方案取舍：为什么提供初审与完全两种模式</h2><p>比较标准不只是速度，还包括规则覆盖、违规依据完整性和引用可追溯性。以下数据来自同一轮 15 次真实百炼调用。</p></div>
+                <div><h2>⑦ 方案取舍：为什么提供初审与完全两种模式</h2><p>比较标准不只是速度，还包括规则覆盖、违规依据完整性和引用可追溯性。以下数据来自同一轮 15 次真实百炼调用。</p></div>
                 <span class="pill">5 案例 × 3 方案 × 1 次</span>
             </header>
             <div class="strategy-grid" aria-label="三种审核策略比较">
@@ -468,9 +497,9 @@
             <div class="decision-callout"><b>产品化选择：两档模式</b><span>初审模式采用“只用 RAG”，用于快速筛查可疑项，未选规则明确标为未查验；完全模式采用“全部查验 + RAG”，检查 46 条规则并补充相关法条，用于形成完整规则结论。成本按 5 条开发案例实测 token 均值及华北 2 实时调用原价估算：qwen3.7-plus 输入 ¥2/百万 token、输出 ¥8/百万 token，text-embedding-v4 输入 ¥0.5/百万 token；不含免费额度、活动折扣和失败重试波动。</span></div>
         </article>
 
-        <article class="scene" data-scene="6">
+        <article class="scene" data-scene="7">
             <header class="scene-head">
-                <div><h2>⑦ 完全模式：规则查验与 RAG 如何汇合</h2><p>以下流程展示完全模式。初审模式不走 46 条规则查验，只审核 RAG 命中法条所关联的规则。</p></div>
+                <div><h2>⑧ 完全模式：规则查验与 RAG 如何汇合</h2><p>以下流程展示完全模式。初审模式不走 46 条规则查验，只审核 RAG 命中法条所关联的规则。</p></div>
                 <span class="pill">召回 ≠ 违规结论</span>
             </header>
             <div class="separation-demo" aria-label="审核基线与补充搜索流程">
@@ -498,35 +527,6 @@
                 </div>
             </div>
             <div class="notes"><div class="note"><strong>规则卡决定：</strong>必须检查什么；46 张全部进入审核。</div><div class="note"><strong>法规原文决定：</strong>判断依据和正式引用是什么；规则直接法条必须携带。</div><div class="note"><strong>RAG 决定：</strong>除直接法条外，还应为当前批次补充哪些相关原文。</div><div class="note"><strong>模型与程序决定：</strong>是否违规，以及证据和引用能否通过校验。</div></div>
-        </article>
-
-        <article class="scene" data-scene="7">
-            <header class="scene-head">
-                <div><h2>⑧ 46 条规则不会简单地每 4 条切一刀</h2><p>先用“是否共享直接引用条文”构建规则簇。共享法条的规则留在一起，减少同一法条在多个调用中的重复。</p></div>
-                <span class="pill">规则仍全部检查</span>
-            </header>
-            <div class="flow3">
-                <div class="box">
-                    <h3>46 张规则卡</h3>
-                    <div class="stack">
-                        <div class="block rule">规则 A → 法条 18、22</div>
-                        <div class="block rule">规则 B → 法条 22、23</div>
-                        <div class="block rule">规则 C → 法条 37</div>
-                        <div class="block rule">规则 D → 法条 41、45</div>
-                    </div>
-                </div>
-                <div class="arrow">→</div>
-                <div class="box">
-                    <h3>按共享法条形成连通组</h3>
-                    <div class="stack">
-                        <div class="block law glow">簇 1：A + B · 共享法条 22</div>
-                        <div class="block law">簇 2：C · 独立规则</div>
-                        <div class="block law">簇 3：D + … · 共享其它法条</div>
-                    </div>
-                    <p class="mini">命中检索结果的规则簇优先排列；多规则簇先装箱，互不共享法条的单规则再合并装箱。</p>
-                </div>
-            </div>
-            <div class="notes"><div class="note">同一规则的直接条文和 supporting 条文属于必需内容。</div><div class="note">相似度只影响顺序和辅助上下文，不取消任何规则。</div><div class="note">规则簇边界会造成不足 4 条的批次，因此不是简单的 12 批。</div></div>
         </article>
 
         <article class="scene" data-scene="8">
@@ -587,6 +587,54 @@
 </main>
 
 <script>
+    const ruleNames = {
+        "marketing_truthful_and_not_misleading": "营销内容真实准确",
+        "insurance_benefit_uncertainty_and_risk": "保险收益不确定性与风险提示",
+        "identify_insurance_product_and_provider": "保险产品与承保机构标识",
+        "disclose_material_policy_terms_and_restrictions": "重要保单条款与限制披露",
+        "no_regulatory_guarantee_or_filing_endorsement": "禁止借监管审核或备案背书",
+        "public_figure_endorsement_external_review": "公众人物代言合规核验",
+        "marketing_personnel_authorization_and_channel": "营销人员授权与发布渠道",
+        "stop_sale_and_price_change_claims": "停售与价格变动宣传",
+        "regional_and_third_party_marketing_scope": "经营地域与第三方营销范围",
+        "bundled_financial_products_and_default_choice": "捆绑销售与默认勾选",
+        "licensed_insurance_and_marketing_subject": "保险销售与营销主体资质",
+        "partner_contract_and_delegation": "合作协议与委托范围",
+        "suitability_and_consumer_demand": "适当性与消费者需求",
+        "truthful_health_disclosure_prompt": "健康信息如实告知提示",
+        "policy_confirmation_and_approved_terms": "保单确认与报备条款使用",
+        "premium_payment_and_accounts": "保费支付与收款账户",
+        "personal_information_consent_and_use": "个人信息授权与使用",
+        "unlawful_surrender_promotion": "非法退保宣传与代理",
+        "official_platform_mandatory_information": "官方平台必备信息披露",
+        "offline_service_availability_disclosure": "线下服务能力披露",
+        "voluntary_renewal_and_sales_choices": "自主续保与销售选择",
+        "intermediary_industry_name_and_brand": "中介机构名称与品牌标识",
+        "multi_product_display_separation": "多类金融产品分区展示",
+        "marketing_message_optout": "营销信息退订与拒收",
+        "popup_close_control": "营销弹窗一键关闭",
+        "algorithm_recommendation_controls": "算法推荐与关闭选项",
+        "regulated_account_names_and_trademarks": "金融账号名称与商标使用",
+        "third_party_sales_intervention": "第三方介入销售限制",
+        "paid_education_disguised_marketing": "付费教育包装营销",
+        "special_internet_insurance_business_scope": "互联网保险特殊经营范围",
+        "nonbank_payment_marketing_options": "非银行支付渠道营销限制",
+        "illegal_financial_activity_marketing": "非法金融活动营销",
+        "approved_marketing_content_use": "经审核营销内容使用",
+        "internet_platform_operating_conditions": "互联网平台运营条件",
+        "insurer_prohibited_deception_of_policyholder": "保险人禁止欺骗投保人",
+        "insurer_prohibited_off_contract_benefit_promise": "保险人禁止合同外利益承诺",
+        "insurer_prohibited_unauthorized_sales_delegation": "保险人禁止无资质委托销售",
+        "insurer_prohibited_false_information_release": "保险人禁止发布虚假信息",
+        "intermediary_prohibited_deception_and_concealment": "中介禁止欺骗与隐瞒",
+        "intermediary_prohibited_off_contract_benefit": "中介禁止合同外利益承诺",
+        "intermediary_prohibited_coercion_and_misrepresentation": "中介禁止胁迫诱导与造假",
+        "intermediary_prohibited_premium_misappropriation": "中介禁止侵占挪用保费",
+        "intermediary_prohibited_illegal_commission_seeking": "中介禁止谋取不正当利益",
+        "insurer_format_clause_explanation_duty": "格式条款提示与说明义务",
+        "insurer_prohibited_unfair_competition": "保险人禁止不正当竞争",
+        "intermediary_qualification_requirement": "保险中介从业资格要求"
+};
     const batches = [
         {n:4,a:22,c:5306,r:['marketing_truthful_and_not_misleading','insurance_benefit_uncertainty_and_risk','identify_insurance_product_and_provider','disclose_material_policy_terms_and_restrictions']},
         {n:4,a:25,c:5292,r:['no_regulatory_guarantee_or_filing_endorsement','marketing_personnel_authorization_and_channel','regional_and_third_party_marketing_scope','licensed_insurance_and_marketing_subject']},
@@ -602,7 +650,7 @@
         {n:4,a:15,c:3212,r:['regulated_account_names_and_trademarks','paid_education_disguised_marketing','nonbank_payment_marketing_options','internet_platform_operating_conditions']},
         {n:3,a:5,c:1122,r:['insurer_format_clause_explanation_duty','insurer_prohibited_unfair_competition','intermediary_qualification_requirement']}
     ];
-    const titles = ['法规发布','整条切分','向量建库','证据分块','开发案例','方案取舍','检索与覆盖','规则聚类','批次装箱','Prompt 合并','并发发送'];
+    const titles = ['法规发布','整条切分','向量建库','规则聚类','证据分块','开发案例','方案取舍','检索与覆盖','批次装箱','Prompt 合并','并发发送'];
     let current = 0, timer = null, dispatchTimer = null;
 
     function showStep(index) {
@@ -611,7 +659,7 @@
         document.querySelectorAll('.scene').forEach((node, i) => node.classList.toggle('active', i === current));
         document.getElementById('prev').disabled = current === 0;
         document.getElementById('next').disabled = current === 10;
-        const phase = current < 3 ? '前期准备' : '实时查询';
+        const phase = current < 4 ? '前期准备' : '实时查询';
         document.getElementById('status').textContent = `${phase} · 步骤 ${current + 1} / 11 · ${titles[current]}`;
         if (current === 10) animateDispatch(); else stopDispatch();
     }
@@ -636,12 +684,12 @@
     function selectBatch(index) {
         const b = batches[index];
         grid.querySelectorAll('.batch').forEach((node, i) => node.classList.toggle('active', i === index));
-        detail.innerHTML = `<h3>Batch ${String(index + 1).padStart(2,'0')}</h3><div class="mini">${b.n} 条规则 · ${b.a} 条必需法规 · ${b.c.toLocaleString()} 法规原文字符</div><ol class="rule-list">${b.r.map(x => `<li class="mono">${x}</li>`).join('')}</ol><p class="mini">这里显示的是当前规则集在无特定检索优先级下的静态装箱。具体文案会改变批次执行顺序和额外 RAG 条文，不会改变规则总覆盖。</p>`;
+        detail.innerHTML = `<h3>批次 ${String(index + 1).padStart(2,'0')}</h3><div class="mini">${b.n} 条规则 · ${b.a} 条必需法规 · ${b.c.toLocaleString()} 法规原文字符</div><ol class="rule-list">${b.r.map(x => `<li>${ruleNames[x] || '未命名规则'}</li>`).join('')}</ol><p class="mini">这里显示的是当前规则集在无特定检索优先级下的静态装箱。具体文案会改变批次执行顺序和额外 RAG 条文，不会改变规则总覆盖。</p>`;
     }
     batches.forEach((b, i) => {
         const button = document.createElement('button');
         button.type = 'button'; button.className = 'batch';
-        button.innerHTML = `<b>Batch ${String(i + 1).padStart(2,'0')}</b><small>${b.n} rules · ${b.a} laws</small><span class="dots">${'<i></i>'.repeat(b.n)}</span>`;
+        button.innerHTML = `<b>批次 ${String(i + 1).padStart(2,'0')}</b><small>${b.n} 条规则 · ${b.a} 条法规</small><span class="dots">${'<i></i>'.repeat(b.n)}</span>`;
         button.addEventListener('click', () => selectBatch(i));
         grid.appendChild(button);
     });
@@ -653,7 +701,7 @@
         queue.replaceChildren(); lanes.replaceChildren();
         batches.forEach((b, i) => {
             const row = document.createElement('div'); row.className = 'queue-item'; row.dataset.batch = i;
-            row.innerHTML = `<span>Batch ${String(i + 1).padStart(2,'0')}</span><span>${b.n} rules</span>`;
+            row.innerHTML = `<span>批次 ${String(i + 1).padStart(2,'0')}</span><span>${b.n} 条规则</span>`;
             queue.appendChild(row);
         });
         for (let i = 0; i < 8; i++) {
@@ -672,7 +720,7 @@
             const lane = lanes.querySelector(`[data-lane="${laneIndex}"]`);
             lane.querySelector('.model-packet')?.remove();
             const packet = document.createElement('div'); packet.className = 'model-packet';
-            packet.textContent = `Batch ${String(sent + 1).padStart(2,'0')} · ${batches[sent].n} rules`;
+            packet.textContent = `批次 ${String(sent + 1).padStart(2,'0')} · ${batches[sent].n} 条规则`;
             lane.appendChild(packet); sent++;
         };
         for (let i = 0; i < 8; i++) send();

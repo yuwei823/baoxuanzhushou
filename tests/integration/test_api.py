@@ -76,7 +76,7 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "46 / 46 全部保留" in response.text
     assert "46 条规则全部检查" in response.text
     assert "补充搜索 · RAG 法条检索" in response.text
-    retrieval_scene = response.text.split('data-scene="6"', 1)[1].split("</article>", 1)[0]
+    retrieval_scene = response.text.split('data-scene="7"', 1)[1].split("</article>", 1)[0]
     assert retrieval_scene.index("补充搜索 · RAG 法条检索") < retrieval_scene.index(
         "当前材料的每个 512 字片段"
     )
@@ -97,6 +97,12 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "使用了哪些案例" in response.text
     assert "明显违规" in response.text and "中性科普" in response.text
     assert "grid-template-columns: repeat(5, minmax(190px, 1fr))" in response.text
+    assert "grid-template-columns: 4fr 7fr" in response.text
+    assert response.text.index("规则集发布时，按“是否共享直接引用条文”") < response.text.index(
+        "被审核文案变成可引用的证据块"
+    )
+    assert 'data-step="3" data-phase="prep"' in response.text
+    assert "${ruleNames[x] || '未命名规则'}" in response.text
     assert 'href="/batch-flow/report"' in response.text
     assert response.text.count('class="step"') == 10
     assert response.text.count('class="step active"') == 1
@@ -185,6 +191,9 @@ def test_frontend_uses_initial_review_wording_and_chinese_rule_names(client):
     assert ">初审</button>" in page
     assert "简单模式" not in page and "简单模式" not in script
     assert "rule_display_names" in script
+    assert "rule_required_information" in script
+    assert "review_type_display_names" in script
+    assert "事项：${typeName}" in script
     assert "疑似共违反${total}条规则" in script
     assert "暂未形成结论" in script
     assert "部分规则的审核结果不够可靠，请重新审核。" in script
@@ -247,6 +256,12 @@ def test_depth_defaults_to_concise_and_accepts_strict(client):
     assert names["disclose_material_policy_terms_and_restrictions"] == (
         "重要保单条款与限制披露"
     )
+    required = concise["meta"]["rule_required_information"]
+    assert required["suitability_and_consumer_demand"][:2] == [
+        "消费者需求分析记录",
+        "风险承受能力与支付能力评估记录",
+    ]
+    assert concise["meta"]["review_type_display_names"]["needs_context"] == "需补充材料"
 
 
 def test_unknown_depth_is_rejected(client):

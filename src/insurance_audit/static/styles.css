@@ -861,6 +861,15 @@ li {
     margin-top: 8px
 }
 
+.review-item strong {
+    display: block;
+    margin-bottom: 4px
+}
+
+.review-item p {
+    margin: 3px 0
+}
+
 .error {
     padding: 12px;
     background: #fff0ee;

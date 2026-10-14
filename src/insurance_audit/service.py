@@ -7,7 +7,11 @@ from uuid import uuid4
 
 from insurance_audit.models.bailian import Budget, ModelFailure, structured
 from insurance_audit.retrieval import related_rule_ids
-from insurance_audit.rule_names import display_names_for
+from insurance_audit.rule_names import (
+    REVIEW_TYPE_DISPLAY_NAMES,
+    display_names_for,
+    required_information_for,
+)
 from insurance_audit.schemas import (
     AuditError,
     AuditResponse,
@@ -492,6 +496,8 @@ class AuditService:
                 "selected_rule_ids": selected_rule_ids,
                 "omitted_rule_ids": omitted_rule_ids,
                 "rule_display_names": display_names_for(self.corpus.rules),
+                "rule_required_information": required_information_for(self.corpus.rules),
+                "review_type_display_names": REVIEW_TYPE_DISPLAY_NAMES,
                 "hidden_review_items": len(reviews) - len(shown_reviews),
                 "retrieval_trace": retrieval_trace,
                 "context_trace": context_trace,

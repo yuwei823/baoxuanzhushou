@@ -58,9 +58,33 @@ function render(result) {
             : `完全模式 · ${c.rules.length}/${c.total} 条规则均已进入审核流程`;
         host.append(elem('p', coverageText, 'coverage-breakdown'));
     }
-    const ruleName = ruleId => result.meta?.rule_display_names?.[ruleId] || ruleId;
+    const ruleName = ruleId => result.meta?.rule_display_names?.[ruleId] || '未命名规则';
+    const localizedReviewText = value => {
+        let text = String(value || '');
+        for (const [ruleId, name] of Object.entries(result.meta?.rule_display_names || {})) {
+            text = text.split(ruleId).join(name);
+        }
+        return text;
+    };
     for (const v of result.violations || []) { const card = elem('article', undefined, 'finding'); card.append(elem('h3', v.reason), elem('p', `规则：${ruleName(v.rule_id)}`)); const cmp = elem('div', undefined, 'comparison'); const left = elem('div'); left.append(elem('h4', '营销内容证据')); for (const e of v.evidence) { const block = elem('div', undefined, 'evidence'); if (e.kind === 'absence') { block.textContent = `缺失：${e.required_disclosure}\n检查范围：${e.search_scope}\n完整性依据：用户声明`; } else { block.append(elem('small', `${e.image_id || '文本'} · ${e.block_id || e.source_id}`)); const source = (result.sources || []).find(s => s.source_id === e.source_id); const p = elem('p'); if (source) { const chars = Array.from(source.text), a = e.start - (source.start || 0), b = e.end - (source.start || 0); p.append(document.createTextNode(chars.slice(0, a).join('')), elem('mark', chars.slice(a, b).join('')), document.createTextNode(chars.slice(b).join(''))); } else p.textContent = e.quote; block.append(p); } left.append(block); } const right = elem('div'); right.append(elem('h4', '法规原文')); for (const citation of v.citations) { const d = details(`${citation.document_title} · ${citation.article_label}`); d.className = 'citation'; d.append(elem('p', citation.original_text)); right.append(d); } cmp.append(left, right); card.append(cmp, elem('p', v.confidence === null ? '未提供置信度' : `模型自评 ${v.confidence}，未经校准，不是正确率。`)); host.append(card); }
-    if (result.review_items?.length) { const d = details(`待核验事项 (${result.review_items.length})`); d.open = true; for (const r of result.review_items) d.append(elem('div', `${r.reason}\n需要：${r.required_information.join('、')}`, 'review-item')); host.append(d); }
+    if (result.review_items?.length) {
+        const d = details(`待核验事项 (${result.review_items.length})`); d.open = true;
+        for (const r of result.review_items) {
+            const item = elem('div', undefined, 'review-item');
+            const typeName = result.meta?.review_type_display_names?.[r.type] || '待核验事项';
+            item.append(elem('strong', `事项：${typeName}`));
+            if (r.rule_id) item.append(elem('strong', `规则：${ruleName(r.rule_id)}`));
+            item.append(elem('p', localizedReviewText(r.reason)));
+            const localizedRequired = r.rule_id
+                ? result.meta?.rule_required_information?.[r.rule_id] || [`与“${ruleName(r.rule_id)}”相关的证明材料`]
+                : (r.required_information || []).map(localizedReviewText);
+            const needed = localizedRequired.length
+                ? `需要补充：${localizedRequired.join('、')}`
+                : '需要补充：与该事项相关的背景信息或证明材料';
+            item.append(elem('p', needed)); d.append(item);
+        }
+        host.append(d);
+    }
     for (const e of result.errors || []) {
         const message = e.code === 'invalid_model_output'
             ? '部分规则的审核结果不够可靠，请重新审核。'
