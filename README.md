@@ -41,7 +41,7 @@ $env:PYTHONIOENCODING='utf-8'
 
 页面地址为 http://127.0.0.1:8000，支持文本和有序多图。P2 本轮验证见 [图文报告](reports/multimodal-acceptance.md)，操作见 [演示说明](docs/demo-script.md)。完整审核结果包含 completed/partial/failed 执行状态及三态业务结论；failed/null 是技术失败，不表示合规。合成案例报告不是正式评估成绩。
 
-本地文本模型为 qwen3.7-plus，使用 `BAILIAN_TEXT_ENABLE_THINKING=false` 控制思考模式；更换模型时按其能力确认该参数，移除参数则使用模型默认行为。依据：[百炼思考模式文档](https://help.aliyun.com/zh/model-studio/deep-thinking)。本地已启用 RETRIEVAL_MODE=hybrid，使用 text-embedding-v4/1024 维和 BM25。全局 RRF 召回后再按当前规则批次定向重排，每批最多补充 8 条/8,000 字符；46 条规则及其直接/支持条文仍完整覆盖。查询向量失败不会静默降级。
+本地文本模型为 qwen3.7-plus，使用 `BAILIAN_TEXT_ENABLE_THINKING=false` 控制思考模式；更换模型时按其能力确认该参数，移除参数则使用模型默认行为。依据：[百炼思考模式文档](https://help.aliyun.com/zh/model-studio/deep-thinking)。本地已启用 RETRIEVAL_MODE=hybrid，使用 text-embedding-v4/1024 维和 BM25。简单模式只审核 RAG 命中法条所关联的规则；完全模式审核 46 条规则全集，并将全局 RRF 召回结果按批次定向补充，每批最多 8 条/8,000 字符。查询向量失败不会静默降级。
 
 `build-index` 首次调用真实 Embedding，现有 359 条文每批最多 10 条；重复运行校验并复用同一版本。索引单独保存在 data/indexes/，绑定法规快照哈希、模型、维度和检索文本哈希。新快照发布后需显式重新执行 build-index；不匹配的旧索引不会被使用。当前整条索引限每条检索文本 2000 字符，未来超长条文需实现分款/父条方案，构建器会拒绝而非截断。
 

@@ -172,7 +172,7 @@ async def test_none_context_mode_skips_rag_search_entirely(corpus):
 
     corpus.search = unexpected_search
     result = await AuditService(corpus.settings, corpus, MockProvider()).review(
-        AuditRequest(text="普通保险知识介绍")
+        AuditRequest(text="普通保险知识介绍", depth="strict")
     )
 
     assert result.meta["retrieval_executed"] is False
@@ -205,6 +205,7 @@ async def test_long_material_prunes_optional_retrieval_context_instead_of_failin
     result = await AuditService(settings, corpus, MockProvider()).review(
         AuditRequest(
             text=material,
+            depth="strict",
             context={
                 "channel": "internet",
                 "publisher_type": "insurance_institution",
@@ -234,6 +235,48 @@ async def test_long_material_prunes_optional_retrieval_context_instead_of_failin
         assert set(row["retrieved_article_ids"]) | set(
             row["dropped_retrieved_article_ids"]
         ) == set(corpus.articles)
+
+
+@pytest.mark.asyncio
+async def test_depth_selects_retrieved_rules_or_full_baseline(corpus):
+    selected_rule_id = next(iter(corpus.rules))
+    selected_article_id = corpus.rules[selected_rule_id]["article_ids"][0]
+
+    async def one_article(*args, **kwargs):
+        return [selected_article_id], [{"query": "测试", "hits": [selected_article_id]}]
+
+    corpus.search = one_article
+    simple = await AuditService(corpus.settings, corpus, MockProvider()).review(
+        AuditRequest(
+            text="普通保险知识介绍",
+            depth="concise",
+            context={"material_completeness": "complete"},
+        )
+    )
+    complete = await AuditService(corpus.settings, corpus, MockProvider()).review(
+        AuditRequest(
+            text="普通保险知识介绍",
+            depth="strict",
+            context={"material_completeness": "complete"},
+        )
+    )
+
+    expected = {
+        rule_id
+        for rule_id, card in corpus.rules.items()
+        if selected_article_id
+        in card["article_ids"] + card.get("supporting_article_ids", [])
+    }
+    assert set(simple.meta["selected_rule_ids"]) == expected
+    assert len(simple.meta["omitted_rule_ids"]) == len(corpus.rules) - len(expected)
+    assert sum(r.status == "not_reviewed" for r in simple.coverage.rules) == len(
+        simple.meta["omitted_rule_ids"]
+    )
+    assert simple.decision == "needs_review"
+    assert complete.meta["rule_selection_mode"] == "all"
+    assert len(complete.meta["selected_rule_ids"]) == len(corpus.rules)
+    assert complete.meta["omitted_rule_ids"] == []
+    assert not any(r.status == "not_reviewed" for r in complete.coverage.rules)
 
 
 def test_targeted_batch_context_keeps_mandatory_law_and_caps_optional_hits(corpus):

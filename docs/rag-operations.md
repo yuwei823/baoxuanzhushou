@@ -8,11 +8,11 @@
 
 额外召回原文只在与当前批次共同相关时加入模型消息，meta.context_trace 记录实际加入与丢弃的 article_id、定向模式和 Prompt 字符数；meta.retrieval_trace 记录各段位置及两路排名。检索命中不允许模型新增未核对规则；最终引用仍限于该规则合法 article_ids，并由知识库回填。
 
-当前仍检查全部 46 张规则卡，不凭相似度排除规则。检索只调整规则组优先级和每批辅助条文；规则直接/支持条文不受 8 条/8,000 字符限制。5 条 provisional 开发案例的单次真实 A/B 中，targeted 与 global 都是 4/5，Prompt token 减少 14.7%、P50 降低 18.4%，但这不是正式准确率证据，详见 `reports/rag-batch-context-ab-2026-10-13/report.md`。
+完全模式检查全部 46 张规则卡：检索只调整规则组优先级和每批辅助条文；规则直接/支持条文不受 8 条/8,000 字符限制。简单模式则只检查命中法条所关联的规则，未选规则显式记为 `not_reviewed`。5 条 provisional 开发案例的单次真实 A/B 中，targeted 与 global 都是 4/5，Prompt token 减少 14.7%、P50 降低 18.4%，但这不是正式准确率证据，详见 `reports/rag-batch-context-ab-2026-10-13/report.md`。
 
 `RAG_BATCH_CONTEXT_MODE=none` 是严格关闭模式：不执行查询向量、BM25、RRF或基于检索结果的规则组排序，`meta.retrieval_executed=false`；46 张规则卡及其直接/支持法条仍完整保留。2026-10-14 的 5 条 provisional 单次真实开关对照中，targeted 为 5/5、none 为 4/5；none 的 Prompt token 减少 19.5%、总 token 减少 18.1%、P50 减少 3.0%，但中性科普发生一次最终证据输出校验失败。样本少且单次运行有波动，不能据此宣称 RAG 提升正式准确率。证据见 `reports/rag-on-off-ab-v2-2026-10-14/report.md`。
 
-同日另做了“仅基线 / 仅 RAG / 两者都开”三策略交错实测。仅 RAG 先召回法条，再只检查与命中法条有关联的规则，平均检查 19.2/46 条；它比仅基线少 33.4% Prompt token、P50 少 39.4%，但两个违规案例的规则级违规发现从 14 项降为 7 项。该模式只存在于基准脚本，不进入正式 API。三组都为 4/5，共同失败是中性科普的证据输出校验。详见 `reports/rag-three-strategies-2026-10-14/report.md`。
+同日另做了“仅基线 / 仅 RAG / 两者都开”三策略交错实测。仅 RAG 先召回法条，再只检查与命中法条有关联的规则，平均检查 19.2/46 条；它比仅基线少 33.4% Prompt token、P50 少 39.4%，但两个违规案例的规则级违规发现从 14 项降为 7 项。该策略现用于简单模式；基线 + RAG 用于完全模式。三组都为 4/5，共同失败是中性科普的证据输出校验。详见 `reports/rag-three-strategies-2026-10-14/report.md`。
 
 ## 配置与索引
 

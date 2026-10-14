@@ -1,13 +1,19 @@
 # 实施交接记录
 
-## 当前交接摘要（2026-10-13 按批次定向 RAG）
+## 当前交接摘要（2026-10-15 双审核模式）
 
 接手时以本节及最新 reports/performance-* 为准，下面 dated 记录保留历史事实。
+
+### 2026-10-15 模式拆分
+
+- 保留 API 参数 `depth=concise|strict` 兼容既有客户端，但含义已经改变：`concise` 对应“简单 · 仅查验可疑项”，只审核 RAG 命中法条关联的规则；`strict` 对应“完全 · 查验所有规则”，继续使用 46 条规则基线 + 按批次定向 RAG。
+- 简单模式未选规则写入逐规则台账，状态为 `not_reviewed`，并列入 `meta.omitted_rule_ids`；未发现明确违规时因覆盖不完整返回 `needs_review`，不会输出完整合规。RAG 失败则整体技术失败，不静默降级。
+- 页面、API 契约、项目介绍、RAG/规则卡说明、测试材料、workflow、intro 和 batch-flow 已同步新语义。全量测试为 **122 passed**；新增测试分别验证 RAG 选规则、完整规则基线、未查验台账和检索失败行为。
 
 ### 当前规则与实现
 
 - 当前快照 `official-v3-2026-10-12` 已发布：4 份用户本地法规，含保险法，359 条文、46 规则。严格 validate-corpus 为 release_ready=true，0 完整性错误、0 审阅门禁。不要沿用旧“保险法暂缓”的状态。v3 与 v2 内容完全一致，仅文档顺序不同（保险法置于首位）；已发布快照不可原位覆盖，故顺序调整必须新建 ruleset。
-- 文本 `qwen3.7-plus`，视觉 `qwen3-vl-plus`；hybrid=BM25 + text-embedding-v4/1024；Prompt `audit-v1.6-citation-guidance`，workflow `1.4-batch-targeted-rag`。默认 targeted：全局召回与当前批次直接法条的 BM25/向量相似度二次 RRF，每批最多补充 8 条/8,000 字符；46 条规则及直接/支持条文仍全部覆盖，不放宽引用/证据/未知条件检查。
+- 文本 `qwen3.7-plus`，视觉 `qwen3-vl-plus`；hybrid=BM25 + text-embedding-v4/1024；Prompt `audit-v1.6-citation-guidance`，workflow `1.5-depth-rule-selection`。默认 targeted：全局召回与当前批次直接法条的 BM25/向量相似度二次 RRF，每批最多补充 8 条/8,000 字符。完全模式覆盖全部 46 条规则；简单模式只覆盖 RAG 选中规则。
 - 2026-10-13 修复长、多段材料的 `context_budget_exceeded`：旧检索将每段 Top 8 的无序并集全部复制到每个判定批次；现按跨段累计 RRF 排序，强制保留规则直接/支持条文，并只在剩余预算中加入额外召回。context_trace 新增实际 Prompt 字符数和 dropped 召回 ID。用户提供的“慈铭体检+保险”原文在旧逻辑下召回 153 条、13 批超过 90,000 字符；修复后离线 46/46 台账、0 超限。真实 hybrid 复验召回 210 条，最大 Prompt 54,529 字符，completed/non_compliant、0 错误，trace_id=`a910cd8c-387d-42a6-9340-2060f294f082`。全量 114 tests passed，Ruff 通过。
 - 保留其他 agent 的法规聚类分批改动。当前本地 `.env` 为 batch=4、model_concurrency=8、attempts=40、单次45秒/总计150秒；代码及 `.env.example` 默认 batch=2。性能比较通过独立 Settings 覆盖，不修改密钥或模型配置。
 - 新增逐调用 queue_ms、request_ms、token_usage、reasoning_tokens（缺失为 null）、transport_retry、structure_attempt、outcome；旧 latency_ms 包含排队，保留兼容。meta.rule_status_counts 区分已检查、不适用、范围外、待上下文、待外部核验及技术失败。页面展示各状态数量和简要模式隐藏提示数量。
@@ -16,7 +22,7 @@
 
 - targeted/global 真实 A/B 已完成：同一 qwen3.7-plus、batch=4、concurrency=8、5 条 provisional 开发案例各 1 次，两组均 4/5；targeted Prompt token 625,312→533,436（-14.7%），P50 32.609→26.609 秒（-18.4%），结构修复 3→1。共同失败是教育案例 `disclose_material_policy_terms_and_restrictions` 的证据原句校验；不宣称准确率提升。详见 `reports/rag-batch-context-ab-2026-10-13/report.md`。
 - 2026-10-14 完成 targeted/严格 none 真实开关对照。`none` 现跳过查询向量、BM25、RRF及检索排序，并以 `meta.retrieval_executed=false` 明示；46 条规则和直接/支持法条仍完整保留。5 条 provisional 单次结果 targeted 5/5、none 4/5；none Prompt token -19.5%、总 token -18.1%、P50 -3.0%，中性科普发生一次最终证据校验失败。继续默认 targeted，但不把小样本单次差异宣传为正式准确率提升。详见 `reports/rag-on-off-ab-v2-2026-10-14/report.md`。
-- 2026-10-14 完成仅基线/仅 RAG/两者都开三策略交错实测，各 5 次。三组均 4/5，共同失败是中性科普证据输出校验。仅 RAG 平均检查 19.2/46 条规则，较仅基线 Prompt token -33.4%、P50 -39.4%，但两个违规案例的规则级违规发现从 14 项降至 7 项。仅 RAG 隔离在 `scripts/benchmark_rag_strategies.py`，不进入正式 API；正式默认继续全规则覆盖 + targeted RAG。详见 `reports/rag-three-strategies-2026-10-14/report.md`。
+- 2026-10-14 完成仅基线/仅 RAG/两者都开三策略交错实测，各 5 次。三组均 4/5，共同失败是中性科普证据输出校验。仅 RAG 平均检查 19.2/46 条规则，较仅基线 Prompt token -33.4%、P50 -39.4%，但两个违规案例的规则级违规发现从 14 项降至 7 项。2026-10-15 起仅 RAG 用于简单模式，组合策略用于完全模式；简单模式不形成完整合规结论。详见 `reports/rag-three-strategies-2026-10-14/report.md`。
 - `batch-flow` 已新增“方案取舍”和“测试案例”两步，页面直接展示三方案机制、实测指标、5 条开发案例及混合方案的选择依据，并通过 `/batch-flow/report` 提供完整三策略报告。当前共 11 个可播放步骤。
 - “慈铭体检+保险”长材料 targeted 真实复验 completed/non_compliant、0 错误、全局召回 210、13 批、最大 Prompt 44,442 字符、38.391 秒，trace_id=`68b51f73-b8d0-4f3f-a332-a69980f6b99c`。相较旧记录最大 Prompt 54,529 更小，但单次时延更高，不能把时延波动归因于 RAG。
 

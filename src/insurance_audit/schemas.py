@@ -21,8 +21,8 @@ class AuditContext(StrictModel):
 class AuditRequest(StrictModel):
     text: str = Field("", max_length=10000)
     context: AuditContext = Field(default_factory=AuditContext)
-    # "concise" hides non-blocking review items so simple material is not buried in
-    # caveats; "strict" surfaces every review item. Violations always show.
+    # Keep the wire values for compatibility. concise audits only rules selected
+    # through RAG; strict audits the complete rule baseline with RAG augmentation.
     depth: Literal["concise", "strict"] = "concise"
 
 
@@ -159,6 +159,7 @@ class RuleLedger(StrictModel):
         "external_verification_required",
         "failed",
         "out_of_scope",
+        "not_reviewed",
     ]
     finding: Literal["violation", "no_violation", "uncertain"] | None = None
     reason: str

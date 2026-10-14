@@ -6,6 +6,7 @@ from collections import Counter
 from uuid import uuid4
 
 from insurance_audit.models.bailian import Budget, ModelFailure, structured
+from insurance_audit.retrieval import related_rule_ids
 from insurance_audit.schemas import (
     AuditError,
     AuditResponse,
@@ -158,12 +159,34 @@ class AuditService:
                 retrieval_error = error
         stages["retrieval_ms"] = round((time.monotonic() - retrieval_started) * 1000)
         context_trace = []
+        all_rule_ids = list(self.corpus.rules)
+        rule_selection_mode = "retrieved" if request.depth == "concise" else "all"
+        if rule_selection_mode == "retrieved":
+            if not retrieval_executed:
+                retrieval_error = ModelFailure(
+                    "retrieval_disabled", "简单模式需要启用 RAG 法条检索。"
+                )
+            selected_rule_ids = (
+                related_rule_ids(self.corpus.rules, retrieved)
+                if retrieval_error is None
+                else []
+            )
+        else:
+            selected_rule_ids = all_rule_ids
+        selected_rule_id_set = set(selected_rule_ids)
+        omitted_rule_ids = [rid for rid in all_rule_ids if rid not in selected_rule_id_set]
 
         judge_started = time.monotonic()
-        batches = list(self.corpus.batches(self.settings.batch_rule_count, retrieved))
+        batches = list(
+            self.corpus.batches(
+                self.settings.batch_rule_count,
+                retrieved,
+                rule_ids=selected_rule_ids,
+            )
+        )
         await progress(
             stage="judge",
-            total_rules=len(self.corpus.rules),
+            total_rules=len(selected_rule_ids),
             planned_rules=sum(len(cards) for cards, _ in batches),
             total_batches=len(batches),
             completed_rules=0,
@@ -297,10 +320,10 @@ class AuditService:
                     done_rules += len(cards)
                     await progress(
                         stage="judge",
-                        total_rules=len(self.corpus.rules),
+                        total_rules=len(selected_rule_ids),
                         planned_rules=sum(len(cards) for cards, _ in batches),
                         total_batches=len(batches),
-                        completed_rules=min(done_rules, len(self.corpus.rules)),
+                        completed_rules=min(done_rules, len(selected_rule_ids)),
                         completed_batches=done_batches,
                         rule_ids=[c["rule_id"] for c in cards],
                     )
@@ -345,16 +368,55 @@ class AuditService:
                         reviews.append(review)
                     if violation:
                         violations.append(violation)
+        if rule_selection_mode == "retrieved" and retrieval_error is not None:
+            errors.append(
+                AuditError(
+                    stage="retrieve",
+                    code=retrieval_error.code,
+                    message=retrieval_error.message,
+                    retryable=retrieval_error.retryable,
+                    rule_ids=all_rule_ids,
+                )
+            )
+            ledger.extend(
+                RuleLedger(
+                    rule_id=rule_id,
+                    status="failed",
+                    reason="RAG 规则选择失败，本次未执行规则判定。",
+                )
+                for rule_id in all_rule_ids
+            )
+        elif rule_selection_mode == "retrieved":
+            ledger.extend(
+                RuleLedger(
+                    rule_id=rule_id,
+                    status="not_reviewed",
+                    reason="简单模式下未被 RAG 召回，本次未执行规则判定。",
+                )
+                for rule_id in omitted_rule_ids
+            )
+            reviews.append(
+                ReviewItem(
+                    type="limited_rule_scope",
+                    reason=(
+                        f"简单模式仅查验 RAG 选中的 {len(selected_rule_ids)} 条规则，"
+                        f"其余 {len(omitted_rule_ids)} 条未查验。"
+                    ),
+                    required_information=["如需完整规则结论，请使用“完全 · 查验所有规则”模式"],
+                )
+            )
         stages["judge_ms"] = round((time.monotonic() - judge_started) * 1000)
         await progress(
             stage="done",
-            total_rules=len(self.corpus.rules),
-            planned_rules=len(self.corpus.rules),
+            total_rules=len(selected_rule_ids),
+            planned_rules=len(selected_rule_ids),
             total_batches=len(batches),
-            completed_rules=len(self.corpus.rules),
+            completed_rules=len(selected_rule_ids),
             completed_batches=len(batches),
         )
-        eligible = sum(r.status not in ("not_applicable", "out_of_scope") for r in ledger)
+        eligible = sum(
+            r.status not in ("not_applicable", "out_of_scope", "not_reviewed") for r in ledger
+        )
         checked = sum(r.status == "checked" for r in ledger)
         resolved = sum(r.status == "checked" and r.finding != "uncertain" for r in ledger)
         status, decision, compliant = aggregate(violations, reviews, errors)
@@ -368,11 +430,7 @@ class AuditService:
             summary = "已发现违规，但部分检查未完成。"
         else:
             summary = summaries[decision]
-        # Concise mode keeps the verdict honest (advisory items still drive it) but
-        # hides them from the report so simple material is not buried in caveats.
         shown_reviews = reviews
-        if request.depth == "concise":
-            shown_reviews = [r for r in reviews if not r.advisory]
         response = AuditResponse(
             audit_id=str(uuid4()),
             trace_id=str(uuid4()),
@@ -399,7 +457,7 @@ class AuditService:
             meta={
                 "ruleset_hash": self.corpus.hash,
                 "prompt_version": PROMPT_VERSION,
-                "workflow_version": "1.4-batch-targeted-rag",
+                "workflow_version": "1.5-depth-rule-selection",
                 "diagnostics_version": "queue-request-v1",
                 "rule_status_counts": dict(Counter(r.status for r in ledger)),
                 "transport_retry_calls": sum(c.get("transport_retry", 0) > 0 for c in budget.calls),
@@ -424,6 +482,9 @@ class AuditService:
                 "retrieval_mode": self.settings.retrieval_mode,
                 "retrieval_executed": retrieval_executed,
                 "depth": request.depth,
+                "rule_selection_mode": rule_selection_mode,
+                "selected_rule_ids": selected_rule_ids,
+                "omitted_rule_ids": omitted_rule_ids,
                 "hidden_review_items": len(reviews) - len(shown_reviews),
                 "retrieval_trace": retrieval_trace,
                 "context_trace": context_trace,

@@ -72,7 +72,7 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "359 条法条一次性生成 1024 维向量索引" in response.text
     assert "用户文案的 512 字查询片段需要生成查询向量" in response.text
     assert "const batches = [" in response.text
-    assert "混合检索搜的是法条，不是“违规规则”" in response.text
+    assert "完全模式：基线与 RAG 如何汇合" in response.text
     assert "46 / 46 全部保留" in response.text
     assert "基线 · 46 条规则全部检查" in response.text
     assert "补充搜索 · RAG 法条检索" in response.text
@@ -87,10 +87,10 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "上轨" not in response.text and "下轨" not in response.text
     assert "规则卡决定：</strong>必须检查什么" in response.text
     assert "每批最多 8 条、8,000 字符" in response.text
-    assert "方案取舍：为什么最终选择混合方案" in response.text
+    assert "方案取舍：为什么提供简单与完全两种模式" in response.text
     assert "只检查基线" in response.text
     assert "只用 RAG 法条检索" in response.text
-    assert "最终选择：基线 + RAG" in response.text
+    assert "产品化选择：两档模式" in response.text
     assert "这次方案取舍使用了哪些案例" in response.text
     assert "明显违规" in response.text and "中性科普" in response.text
     assert "grid-template-columns: repeat(5, minmax(190px, 1fr))" in response.text
@@ -224,9 +224,10 @@ def test_depth_defaults_to_concise_and_accepts_strict(client):
         files={"text": (None, "监管部门担保收益"), "depth": (None, "strict")},
     ).json()
     assert strict["meta"]["depth"] == "strict"
-    # Strict surfaces at least as many review items, and never changes the violations.
-    assert len(strict["review_items"]) >= len(concise["review_items"])
-    assert len(strict["violations"]) == len(concise["violations"])
+    assert concise["meta"]["rule_selection_mode"] == "retrieved"
+    assert strict["meta"]["rule_selection_mode"] == "all"
+    assert len(concise["meta"]["selected_rule_ids"]) <= len(strict["meta"]["selected_rule_ids"])
+    assert strict["meta"]["omitted_rule_ids"] == []
 
 
 def test_unknown_depth_is_rejected(client):
@@ -257,12 +258,13 @@ def test_stream_emits_progress_then_the_same_result_as_the_blocking_endpoint(cli
     first = json.loads(events["progress"][0])
     last = json.loads(events["progress"][-1])
     assert first["completed_rules"] == 0
-    assert last["completed_rules"] == last["total_rules"] == len(client.app.state.corpus.rules)
+    assert last["completed_rules"] == last["total_rules"] > 0
     assert last["completed_batches"] == last["total_batches"] > 0
 
     # Exactly one result frame, carrying the same payload the blocking call returns.
     assert len(events["result"]) == 1
     streamed = json.loads(events["result"][0])
+    assert last["total_rules"] == len(streamed["meta"]["selected_rule_ids"])
     assert streamed["status"] == blocking["status"]
     assert streamed["decision"] == blocking["decision"]
     assert len(streamed["violations"]) == len(blocking["violations"])

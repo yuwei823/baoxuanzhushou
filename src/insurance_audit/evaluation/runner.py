@@ -115,6 +115,7 @@ async def run(args):
     from insurance_audit.service import AuditService
     from insurance_audit.uploads import read_uploads
 
+    depth = getattr(args, "depth", "strict")
     samples_path = args.samples or Path(f"data/eval/{args.split}.jsonl")
     samples = load_samples(samples_path, args.split)
     # Fixed test is reserved until label review, development freeze and G2 completion.
@@ -142,6 +143,7 @@ async def run(args):
         "mode": mode,
         "split": args.split,
         "requested_variant": args.variant,
+        "audit_depth": depth,
         "dataset_sha256": hashlib.sha256(samples_path.read_bytes()).hexdigest(),
         "replay_sha256": hashlib.sha256(args.replay.read_bytes()).hexdigest()
         if args.replay
@@ -185,7 +187,7 @@ async def run(args):
                         )
                     images = await read_uploads(uploads)
                     response = await service.review(
-                        AuditRequest(text=sample.text, context=sample.context), images
+                        AuditRequest(text=sample.text, context=sample.context, depth=depth), images
                     )
                     row["response"] = response.model_dump(mode="json")
                 except Exception as error:  # noqa: BLE001 - isolate one sample; retain failure in denominator

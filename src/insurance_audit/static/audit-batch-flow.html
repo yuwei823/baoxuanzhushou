@@ -433,7 +433,7 @@
 
         <article class="scene" data-scene="5">
             <header class="scene-head">
-                <div><h2>⑥ 方案取舍：为什么最终选择混合方案</h2><p>比较标准不只是速度，还包括规则覆盖、违规依据完整性和引用可追溯性。以下数据来自同一轮 15 次真实百炼调用。</p></div>
+                <div><h2>⑥ 方案取舍：为什么提供简单与完全两种模式</h2><p>比较标准不只是速度，还包括规则覆盖、违规依据完整性和引用可追溯性。以下数据来自同一轮 15 次真实百炼调用。</p></div>
                 <span class="pill">5 案例 × 3 方案 × 1 次</span>
             </header>
             <div class="strategy-grid" aria-label="三种审核策略比较">
@@ -464,12 +464,12 @@
                 <div>P50 延迟</div><div>32.24 秒</div><div>19.53 秒</div><div class="chosen">29.83 秒</div>
                 <div>两违规案例规则级发现</div><div>14 项</div><div>7 项</div><div class="chosen">13 项</div>
             </div>
-            <div class="decision-callout"><b>最终选择：基线 + RAG</b><span>它不是本轮最快或最省 token 的方案；胜出原因是始终检查 46 条规则，不把“检索不到”误当成“不违规”，同时为每个批次补充与材料相关的法规原文。正式效果增益仍需更大的人工标注测试集验证。</span></div>
+            <div class="decision-callout"><b>产品化选择：两档模式</b><span>简单模式采用“只用 RAG”，用于快速筛查可疑项，未选规则明确标为未查验；完全模式采用“基线 + RAG”，检查 46 条规则并补充相关法条，用于形成完整规则结论。仅 RAG 可能少发现违规项，不能把未召回理解为不违规。</span></div>
         </article>
 
         <article class="scene" data-scene="6">
             <header class="scene-head">
-                <div><h2>⑦ 混合检索搜的是法条，不是“违规规则”</h2><p>先分别理解规则检查基线与 RAG 补充搜索，再看两部分如何进入同一个审核批次。</p></div>
+                <div><h2>⑦ 完全模式：基线与 RAG 如何汇合</h2><p>以下流程展示完全模式。简单模式不走 46 条基线，只审核 RAG 命中法条所关联的规则。</p></div>
                 <span class="pill">召回 ≠ 违规结论</span>
             </header>
             <div class="separation-demo" aria-label="审核基线与补充搜索流程">

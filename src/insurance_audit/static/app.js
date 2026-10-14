@@ -2,12 +2,12 @@ const $ = id => document.getElementById(id);
 let pictures = [], resultPictures = [], lastResult = null, controller = null, timer = null, exampleGeneration = 0;
 const releasePictures = items => items.forEach(p => URL.revokeObjectURL(p.url));
 const labels = { compliant: '未发现违规', non_compliant: '发现违规', needs_review: '需要复核', failed: '审核失败', partial: '发现违规 · 审核未完成' };
-const states = { checked: '已检查', not_applicable: '不适用', needs_context: '需补充信息', external_verification_required: '需外部核验', failed: '执行失败', out_of_scope: '范围外' };
+const states = { checked: '已检查', not_applicable: '不适用', needs_context: '需补充信息', external_verification_required: '需外部核验', failed: '执行失败', out_of_scope: '范围外', not_reviewed: '简单模式未查验' };
 // Ledger order: items needing action first, then checked, then not applicable.
 // Anything unlisted (a future status) sorts last rather than being dropped.
-const stateOrder = { needs_context: 0, external_verification_required: 1, failed: 2, checked: 3, out_of_scope: 4, not_applicable: 5 };
+const stateOrder = { needs_context: 0, external_verification_required: 1, failed: 2, not_reviewed: 3, checked: 4, out_of_scope: 5, not_applicable: 6 };
 // Only "checked" is a clean pass; needs_* and failed need attention; the rest are neutral.
-const stateTone = { checked: 'ok', needs_context: 'warn', external_verification_required: 'warn', failed: 'warn' };
+const stateTone = { checked: 'ok', needs_context: 'warn', external_verification_required: 'warn', failed: 'warn', not_reviewed: 'warn' };
 const elem = (tag, text, cls) => { const e = document.createElement(tag); if (text !== undefined) e.textContent = text; if (cls) e.className = cls; return e; };
 function notice(text) { $('notice').hidden = !text; $('notice').textContent = text; }
 // The browser uses a stricter product limit than the 10,000-code-point API
@@ -51,9 +51,13 @@ function render(result) {
         const metrics = elem('div', undefined, 'metrics');
         [[result.violations.length, '违规项'], [pending, '需补充信息或外部核验'], [excluded, '不适用或范围外'], [counts.failed || 0, '执行失败']].forEach(([v, l]) => { const m = elem('div', undefined, 'metric'); m.append(elem('b', String(v)), elem('small', l)); metrics.append(m); });
         host.append(metrics);
-        host.append(elem('p', `规则处理情况 · ${c.rules.length}/${c.total} 已进入审核流程`, 'coverage-breakdown'));
+        const selected = result.meta?.selected_rule_ids?.length ?? c.total;
+        const omitted = result.meta?.omitted_rule_ids?.length ?? 0;
+        const coverageText = result.meta?.rule_selection_mode === 'retrieved'
+            ? `简单模式 · RAG 选中 ${selected}/${c.total} 条规则，本次未查验 ${omitted} 条`
+            : `完全模式 · ${c.rules.length}/${c.total} 条规则均已进入审核流程`;
+        host.append(elem('p', coverageText, 'coverage-breakdown'));
     }
-    if (result.meta?.hidden_review_items) host.append(elem('p', `简要模式隐藏了 ${result.meta.hidden_review_items} 项补充核验提示，可在“其余规则”中查看状态与依据。`, 'warning'));
     for (const v of result.violations || []) { const card = elem('article', undefined, 'finding'); card.append(elem('h3', v.reason), elem('p', `规则：${v.rule_id}`)); const cmp = elem('div', undefined, 'comparison'); const left = elem('div'); left.append(elem('h4', '营销内容证据')); for (const e of v.evidence) { const block = elem('div', undefined, 'evidence'); if (e.kind === 'absence') { block.textContent = `缺失：${e.required_disclosure}\n检查范围：${e.search_scope}\n完整性依据：用户声明`; } else { block.append(elem('small', `${e.image_id || '文本'} · ${e.block_id || e.source_id}`)); const source = (result.sources || []).find(s => s.source_id === e.source_id); const p = elem('p'); if (source) { const chars = Array.from(source.text), a = e.start - (source.start || 0), b = e.end - (source.start || 0); p.append(document.createTextNode(chars.slice(0, a).join('')), elem('mark', chars.slice(a, b).join('')), document.createTextNode(chars.slice(b).join(''))); } else p.textContent = e.quote; block.append(p); } left.append(block); } const right = elem('div'); right.append(elem('h4', '法规原文')); for (const citation of v.citations) { const d = details(`${citation.document_title} · ${citation.article_label}`); d.className = 'citation'; d.append(elem('p', citation.original_text)); right.append(d); } cmp.append(left, right); card.append(cmp, elem('p', v.confidence === null ? '未提供置信度' : `模型自评 ${v.confidence}，未经校准，不是正确率。`)); host.append(card); }
     if (result.review_items?.length) { const d = details(`待核验事项 (${result.review_items.length})`); d.open = true; for (const r of result.review_items) d.append(elem('div', `${r.reason}\n需要：${r.required_information.join('、')}`, 'review-item')); host.append(d); }
     for (const e of result.errors || []) host.append(elem('div', `${e.stage} · ${e.code}：${e.message}`, 'error'));

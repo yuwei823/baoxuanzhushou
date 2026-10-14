@@ -26,6 +26,16 @@ def corpus_release_ready(root: str, ruleset_id: str) -> bool:
     return validate_corpus(Path(root), ruleset_id)["release_ready"]
 
 
+def related_rule_ids(rules, retrieved_article_ids):
+    """Map retrieved law articles to rule cards without treating hits as violations."""
+    hits = set(retrieved_article_ids)
+    return [
+        rule_id
+        for rule_id, card in rules.items()
+        if hits.intersection(card["article_ids"] + card.get("supporting_article_ids", []))
+    ]
+
+
 class Corpus:
     def __init__(self, settings, require_index=True):
         self.settings = settings
@@ -141,7 +151,7 @@ class Corpus:
                 )
         return sorted(found)
 
-    def batches(self, batch_size, retrieved=()):
+    def batches(self, batch_size, retrieved=(), rule_ids=None):
         """Group rules so shared law text ships once per call.
 
         Rules are clustered by their direct article set (union-find over shared
@@ -151,7 +161,12 @@ class Corpus:
         would exceed its budget or the rule cap is reached.
         """
         hits = set(retrieved)
-        rules = list(self.rules.values())
+        selected = set(rule_ids) if rule_ids is not None else None
+        rules = [
+            card
+            for rule_id, card in self.rules.items()
+            if selected is None or rule_id in selected
+        ]
         parent = {c["rule_id"]: c["rule_id"] for c in rules}
 
         def find(x):

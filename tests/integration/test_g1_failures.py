@@ -19,7 +19,10 @@ def test_text_api_failure_matrix_and_sanitized_metadata(code, http_status, caplo
             raise ModelFailure(code, "模拟失败")
 
     with TestClient(create_app(Settings(_env_file=None, audit_mock=True), Failed())) as client:
-        response = client.post("/api/v1/audits", files={"text": (None, "private_marker_87321")})
+        response = client.post(
+            "/api/v1/audits",
+            files={"text": (None, "private_marker_87321"), "depth": (None, "strict")},
+        )
         total = len(client.app.state.corpus.rules)
     assert response.status_code == http_status
     assert response.json()["decision"] is None
@@ -37,7 +40,10 @@ def test_text_api_partial_violation_is_200_with_failed_rules():
             return await super().call(kind, messages, budget, **kwargs)
 
     with TestClient(create_app(Settings(_env_file=None, audit_mock=True), Partial())) as client:
-        r = client.post("/api/v1/audits", files={"text": (None, "监管部门担保收益")})
+        r = client.post(
+            "/api/v1/audits",
+            files={"text": (None, "监管部门担保收益"), "depth": (None, "strict")},
+        )
     assert r.status_code == 200
     assert r.json()["status"] == "partial" and r.json()["decision"] == "non_compliant"
     assert any(rule["status"] == "failed" for rule in r.json()["coverage"]["rules"])

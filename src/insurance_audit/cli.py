@@ -20,12 +20,14 @@ def main() -> None:
     audit = commands.add_parser("audit-text", help="Audit text through the shared service")
     audit.add_argument("text")
     audit.add_argument("--context", default="{}")
+    audit.add_argument("--depth", choices=("concise", "strict"), default="strict")
     evaluate = commands.add_parser(
         "evaluate", help="Run development evaluation or replay saved responses"
     )
     evaluate.add_argument("--split", choices=("dev", "test"), default="dev")
     evaluate.add_argument("--samples", type=Path)
     evaluate.add_argument("--variant", choices=("bm25", "hybrid"), default="hybrid")
+    evaluate.add_argument("--depth", choices=("concise", "strict"), default="strict")
     evaluate.add_argument("--out", type=Path, required=True)
     modes = evaluate.add_mutually_exclusive_group()
     modes.add_argument("--replay", type=Path)
@@ -104,7 +106,9 @@ def main() -> None:
             try:
                 return await AuditService(settings, Corpus(settings), provider).review(
                     AuditRequest(
-                        text=args.text, context=AuditContext.model_validate_json(args.context)
+                        text=args.text,
+                        context=AuditContext.model_validate_json(args.context),
+                        depth=args.depth,
                     )
                 )
             finally:

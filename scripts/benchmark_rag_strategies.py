@@ -20,7 +20,7 @@ from verify_g1 import CASES, CONTEXT
 
 from insurance_audit.config import Settings
 from insurance_audit.models.bailian import Bailian, Budget
-from insurance_audit.retrieval import Corpus
+from insurance_audit.retrieval import Corpus, related_rule_ids
 from insurance_audit.schemas import AuditContext, AuditRequest
 from insurance_audit.service import AuditService
 from insurance_audit.workflow import PROMPT_VERSION, text_sources
@@ -30,16 +30,6 @@ STRATEGIES = {
     "rag-only": {"context_mode": "targeted", "rule_mode": "retrieved"},
     "combined": {"context_mode": "targeted", "rule_mode": "all"},
 }
-
-
-def related_rule_ids(corpus, retrieved_article_ids):
-    """Return rules whose direct or supporting articles were retrieved."""
-    hits = set(retrieved_article_ids)
-    return [
-        rule_id
-        for rule_id, card in corpus.rules.items()
-        if hits.intersection(card["article_ids"] + card.get("supporting_article_ids", []))
-    ]
 
 
 class RetrievedRuleCorpus(Corpus):
@@ -96,7 +86,7 @@ async def run_case(settings, base_corpus, strategy, text, completeness):
                 text_sources(request.text), provider, pre_budget
             )
             retrieval_ms = round((time.monotonic() - retrieval_started) * 1000)
-            selected_rule_ids = related_rule_ids(base_corpus, retrieved)
+            selected_rule_ids = related_rule_ids(base_corpus.rules, retrieved)
             if not selected_rule_ids:
                 raise ValueError("Retrieval-only strategy selected no rules")
             corpus = RetrievedRuleCorpus(base_corpus, selected_rule_ids, retrieved, trace)

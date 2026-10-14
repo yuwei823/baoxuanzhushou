@@ -115,7 +115,11 @@ async def test_text_batch_timeout_retains_valid_violation_and_otherwise_fails(co
     service = AuditService(corpus.settings, corpus, FailedBatch())
     for text, expected in [("监管部门担保收益", "partial"), ("普通文字", "failed")]:
         result = await service.review(
-            AuditRequest(text=text, context=AuditContext(material_completeness="complete"))
+            AuditRequest(
+                text=text,
+                depth="strict",
+                context=AuditContext(material_completeness="complete"),
+            )
         )
         assert result.status == expected
         assert len(result.coverage.rules) == len(corpus.rules)
@@ -126,7 +130,9 @@ async def test_text_batch_timeout_retains_valid_violation_and_otherwise_fails(co
 async def test_all_nonapplicable_ratios_are_null(corpus):
     result = await AuditService(corpus.settings, corpus, MockProvider()).review(
         AuditRequest(
-            text="不含模拟违规词的完整材料", context=AuditContext(material_completeness="complete")
+            text="不含模拟违规词的完整材料",
+            depth="strict",
+            context=AuditContext(material_completeness="complete"),
         )
     )
     assert result.decision == "compliant" and result.coverage.eligible == 0

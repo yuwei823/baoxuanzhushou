@@ -448,7 +448,9 @@ async def test_text_thinking_override_does_not_change_vision_calls():
 @pytest.mark.asyncio
 async def test_attempt_limit_does_not_drop_unchecked_rules(corpus):
     settings = Settings(_env_file=None, audit_mock=True, audit_max_model_attempts=1)
-    result = await AuditService(settings, corpus, MockProvider()).review(AuditRequest(text="测试"))
+    result = await AuditService(settings, corpus, MockProvider()).review(
+        AuditRequest(text="测试", depth="strict")
+    )
     assert result.status == "failed"
     assert result.coverage.total == len(corpus.rules)
     assert any(r.status == "failed" for r in result.coverage.rules)
