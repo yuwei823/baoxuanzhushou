@@ -186,6 +186,8 @@ def test_frontend_uses_initial_review_wording_and_chinese_rule_names(client):
     assert "简单模式" not in page and "简单模式" not in script
     assert "rule_display_names" in script
     assert "疑似共违反${total}条规则" in script
+    assert "暂未形成结论" in script
+    assert "部分规则的审核结果不够可靠，请重新审核。" in script
 
 
 def test_uploads_are_closed_on_success_and_failure(client, monkeypatch):

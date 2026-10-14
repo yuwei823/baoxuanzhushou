@@ -24,7 +24,7 @@
 - 2026-10-14 完成 targeted/严格 none 真实开关对照。`none` 现跳过查询向量、BM25、RRF及检索排序，并以 `meta.retrieval_executed=false` 明示；46 条规则和直接/支持法条仍完整保留。5 条 provisional 单次结果 targeted 5/5、none 4/5；none Prompt token -19.5%、总 token -18.1%、P50 -3.0%，中性科普发生一次最终证据校验失败。继续默认 targeted，但不把小样本单次差异宣传为正式准确率提升。详见 `reports/rag-on-off-ab-v2-2026-10-14/report.md`。
 - 2026-10-14 完成仅基线/仅 RAG/两者都开三策略交错实测，各 5 次。三组均 4/5，共同失败是中性科普证据输出校验。仅 RAG 平均检查 19.2/46 条规则，较仅基线 Prompt token -33.4%、P50 -39.4%，但两个违规案例的规则级违规发现从 14 项降至 7 项。2026-10-15 起仅 RAG 用于初审模式，组合策略用于完全模式；初审模式不形成完整合规结论。详见 `reports/rag-three-strategies-2026-10-14/report.md`。
 - 2026-10-15 将产品文案统一为“初审模式/完全模式”；新增 46 条规则的中文展示名，响应通过 `meta.rule_display_names` 提供完整映射，前端违规卡片与规则台账使用中文名。Batch Flow 第 6 页按 5 条开发案例实测 token 与华北 2 实时调用原价展示估算单条成本：初审约 ¥0.154，完全约 ¥0.292。
-- 2026-10-15 修复中性科普批次偶发 `invalid_model_output`：模型已判定非违规时，其附带的解释性证据不会进入结果或聚合，程序在严格校验前将这类未使用字段规范为空；违规结论的证据原句、来源与引用校验保持不变。Prompt 版本更新为 `audit-v1.7-nonviolation-evidence-canonicalization`。同类失败的摘要改为明确指出“模型结果未通过结构或证据校验”。
+- 2026-10-15 修复中性科普批次偶发 `invalid_model_output`：模型已判定非违规时，其附带的解释性证据不会进入结果或聚合，程序在严格校验前将这类未使用字段规范为空；违规结论的证据原句、来源与引用校验保持不变。Prompt 版本更新为 `audit-v1.7-nonviolation-evidence-canonicalization`。同类失败在页面显示为“暂未形成结论”，并提示部分规则需要重新审核；技术代码仍保留在 JSON 和日志中。
 - `batch-flow` 已新增“方案取舍”和“测试案例”两步，页面直接展示三方案机制、实测指标、5 条开发案例及混合方案的选择依据，并通过 `/batch-flow/report` 提供完整三策略报告。当前共 11 个可播放步骤。
 - “慈铭体检+保险”长材料 targeted 真实复验 completed/non_compliant、0 错误、全局召回 210、13 批、最大 Prompt 44,442 字符、38.391 秒，trace_id=`68b51f73-b8d0-4f3f-a332-a69980f6b99c`。相较旧记录最大 Prompt 54,529 更小，但单次时延更高，不能把时延波动归因于 RAG。
 

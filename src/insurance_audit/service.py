@@ -433,7 +433,7 @@ class AuditService:
         if status == "partial":
             summary = "已发现违规，但部分检查未完成。"
         elif errors and all(error.code == "invalid_model_output" for error in errors):
-            summary = "模型结果未通过结构或证据校验，相关规则未完成审核。"
+            summary = "本次审核未能形成可靠结论，部分规则需要重新审核。"
         else:
             summary = summaries[decision]
         shown_reviews = reviews
