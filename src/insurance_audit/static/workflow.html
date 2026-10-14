@@ -164,7 +164,7 @@ flowchart TD
     H[("法规快照<br/>official-v3-2026-10-12<br/>4 部法规 · 359 条文 · 46 规则卡")] --> C
     H --> I{"审核模式"}
     G --> I
-    I -->|简单| O["命中法条关联规则<br/>其余标为 not_reviewed"]
+    I -->|初审| O["命中法条关联规则<br/>其余标为 not_reviewed"]
     I -->|完全| P["46 条规则全集<br/>+ RAG 定向补充"]
     O --> J["按共享条文聚类打包"]
     P --> J
@@ -197,11 +197,11 @@ flowchart TD
             </div>
             <div class="note">
                 <h3>调用量</h3>
-                <p>完全模式当前约为检索 <strong>1 次</strong>、裁决 <strong>25 次</strong>（8 路并发）；简单模式的裁决次数随 RAG 选中的规则数变化。</p>
+                <p>完全模式当前约为检索 <strong>1 次</strong>、裁决 <strong>25 次</strong>（8 路并发）；初审模式的裁决次数随 RAG 选中的规则数变化。</p>
             </div>
             <div class="note">
                 <h3>关键设计</h3>
-                <p>简单模式用 RAG 选择可疑规则，适合快速筛查；完全模式让 46 条规则<strong>全部参与判定</strong>，用于完整覆盖。</p>
+                <p>初审模式用 RAG 选择可疑规则，适合快速筛查；完全模式让 46 条规则<strong>全部参与判定</strong>，用于完整覆盖。</p>
             </div>
         </div>
 

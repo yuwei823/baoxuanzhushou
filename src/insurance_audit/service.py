@@ -7,6 +7,7 @@ from uuid import uuid4
 
 from insurance_audit.models.bailian import Budget, ModelFailure, structured
 from insurance_audit.retrieval import related_rule_ids
+from insurance_audit.rule_names import display_names_for
 from insurance_audit.schemas import (
     AuditError,
     AuditResponse,
@@ -164,7 +165,7 @@ class AuditService:
         if rule_selection_mode == "retrieved":
             if not retrieval_executed:
                 retrieval_error = ModelFailure(
-                    "retrieval_disabled", "简单模式需要启用 RAG 法条检索。"
+                    "retrieval_disabled", "初审模式需要启用 RAG 法条检索。"
                 )
             selected_rule_ids = (
                 related_rule_ids(self.corpus.rules, retrieved)
@@ -186,6 +187,7 @@ class AuditService:
         )
         await progress(
             stage="judge",
+            rule_selection_mode=rule_selection_mode,
             total_rules=len(selected_rule_ids),
             planned_rules=sum(len(cards) for cards, _ in batches),
             total_batches=len(batches),
@@ -320,6 +322,7 @@ class AuditService:
                     done_rules += len(cards)
                     await progress(
                         stage="judge",
+                        rule_selection_mode=rule_selection_mode,
                         total_rules=len(selected_rule_ids),
                         planned_rules=sum(len(cards) for cards, _ in batches),
                         total_batches=len(batches),
@@ -391,7 +394,7 @@ class AuditService:
                 RuleLedger(
                     rule_id=rule_id,
                     status="not_reviewed",
-                    reason="简单模式下未被 RAG 召回，本次未执行规则判定。",
+                    reason="初审模式下未被 RAG 召回，本次未执行规则判定。",
                 )
                 for rule_id in omitted_rule_ids
             )
@@ -399,15 +402,16 @@ class AuditService:
                 ReviewItem(
                     type="limited_rule_scope",
                     reason=(
-                        f"简单模式仅查验 RAG 选中的 {len(selected_rule_ids)} 条规则，"
+                        f"初审模式仅查验 RAG 选中的 {len(selected_rule_ids)} 条规则，"
                         f"其余 {len(omitted_rule_ids)} 条未查验。"
                     ),
-                    required_information=["如需完整规则结论，请使用“完全 · 查验所有规则”模式"],
+                    required_information=["如需完整规则结论，请使用“完全模式”"],
                 )
             )
         stages["judge_ms"] = round((time.monotonic() - judge_started) * 1000)
         await progress(
             stage="done",
+            rule_selection_mode=rule_selection_mode,
             total_rules=len(selected_rule_ids),
             planned_rules=len(selected_rule_ids),
             total_batches=len(batches),
@@ -485,6 +489,7 @@ class AuditService:
                 "rule_selection_mode": rule_selection_mode,
                 "selected_rule_ids": selected_rule_ids,
                 "omitted_rule_ids": omitted_rule_ids,
+                "rule_display_names": display_names_for(self.corpus.rules),
                 "hidden_review_items": len(reviews) - len(shown_reviews),
                 "retrieval_trace": retrieval_trace,
                 "context_trace": context_trace,

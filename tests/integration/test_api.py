@@ -87,10 +87,13 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "上轨" not in response.text and "下轨" not in response.text
     assert "规则卡决定：</strong>必须检查什么" in response.text
     assert "每批最多 8 条、8,000 字符" in response.text
-    assert "方案取舍：为什么提供简单与完全两种模式" in response.text
+    assert "方案取舍：为什么提供初审与完全两种模式" in response.text
     assert "只检查基线" in response.text
     assert "只用 RAG 法条检索" in response.text
     assert "产品化选择：两档模式" in response.text
+    assert "初审 ¥0.154" in response.text
+    assert "完全 ¥0.292" in response.text
+    assert "qwen3.7-plus 输入 ¥2/百万 token" in response.text
     assert "这次方案取舍使用了哪些案例" in response.text
     assert "明显违规" in response.text and "中性科普" in response.text
     assert "grid-template-columns: repeat(5, minmax(190px, 1fr))" in response.text
@@ -176,6 +179,15 @@ def test_input_page_enforces_the_stricter_frontend_character_limit(client):
     assert script.count("MAX_TEXT") >= 3
 
 
+def test_frontend_uses_initial_review_wording_and_chinese_rule_names(client):
+    page = client.get("/").text
+    script = client.get("/static/app.js").text
+    assert ">初审</button>" in page
+    assert "简单模式" not in page and "简单模式" not in script
+    assert "rule_display_names" in script
+    assert "疑似共违反${total}条规则。" in script
+
+
 def test_uploads_are_closed_on_success_and_failure(client, monkeypatch):
     closed = []
     original = UploadFile.close
@@ -228,6 +240,11 @@ def test_depth_defaults_to_concise_and_accepts_strict(client):
     assert strict["meta"]["rule_selection_mode"] == "all"
     assert len(concise["meta"]["selected_rule_ids"]) <= len(strict["meta"]["selected_rule_ids"])
     assert strict["meta"]["omitted_rule_ids"] == []
+    names = concise["meta"]["rule_display_names"]
+    assert len(names) == concise["coverage"]["total"] == 46
+    assert names["disclose_material_policy_terms_and_restrictions"] == (
+        "重要保单条款与限制披露"
+    )
 
 
 def test_unknown_depth_is_rejected(client):
@@ -260,6 +277,10 @@ def test_stream_emits_progress_then_the_same_result_as_the_blocking_endpoint(cli
     assert first["completed_rules"] == 0
     assert last["completed_rules"] == last["total_rules"] > 0
     assert last["completed_batches"] == last["total_batches"] > 0
+    judge_events = [json.loads(payload) for payload in events["progress"] if '"judge"' in payload]
+    assert judge_events and all(
+        event["rule_selection_mode"] == "retrieved" for event in judge_events
+    )
 
     # Exactly one result frame, carrying the same payload the blocking call returns.
     assert len(events["result"]) == 1

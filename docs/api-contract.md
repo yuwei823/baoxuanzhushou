@@ -6,11 +6,13 @@ POST /api/v1/audits 使用 multipart/form-data；text 为最多 10,000 Unicode �
 
 context 四个字段默认 unknown：channel（internet/offline），publisher_type（insurance_institution/insurance_intermediary/marketing_personnel/other），product_type（insurance/life_insurance/property_insurance/other），material_completeness（complete/partial）。用户声明不等于外部认证。
 
-depth 默认 concise，对应“简单 · 仅查验可疑项”：先用 BM25 与向量检索召回相关法条，再只审核与命中法条直接或支持关联的规则卡。strict 对应“完全 · 查验所有规则”：审核规则全集，并按批次用 RAG 补充相关法条。非法取值返回 422。
+depth 默认 concise，对应“初审”：先用 BM25 与向量检索召回相关法条，再只审核与命中法条直接或支持关联的规则卡。strict 对应“完全 · 查验所有规则”：审核规则全集，并按批次用 RAG 补充相关法条。非法取值返回 422。
 
-简单模式未被选中的规则以 coverage.rules.status=not_reviewed 明示，并记录在 meta.omitted_rule_ids；它们不会被当作不适用或已通过。若简单模式未发现明确违规，有限覆盖本身会使结论保持 needs_review；完整规则结论必须使用 strict。
+初审模式未被选中的规则以 coverage.rules.status=not_reviewed 明示，并记录在 meta.omitted_rule_ids；它们不会被当作不适用或已通过。若初审模式未发现明确违规，有限覆盖本身会使结论保持 needs_review；完整规则结论必须使用 strict。
 
-开发评估 CLI 默认使用 strict，避免把简单模式的有限覆盖当作正式评估口径；如需比较成本与召回范围，可显式传 `--depth concise`。`audit-text` CLI 同样默认 strict。
+`rule_id` 继续作为稳定的机器接口字段；`meta.rule_display_names` 返回当前规则集全部规则 ID 对应的中文名称。前端展示中文名称，JSON 中保留原始 ID 以便追踪、评估和回放。
+
+开发评估 CLI 默认使用 strict，避免把初审模式的有限覆盖当作正式评估口径；如需比较成本与召回范围，可显式传 `--depth concise`。`audit-text` CLI 同样默认 strict。
 
 接口默认开放，不校验访问口令。如需限制访问请在反向代理层实现。
 

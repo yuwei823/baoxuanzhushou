@@ -692,6 +692,11 @@ select {
     color: var(--muted);
     margin: 0 0 8px
 }
+.progress-candidate {
+    margin: 0 0 4px;
+    color: var(--amber);
+    font-weight: 700;
+}
 
 .progress-track {
     height: 4px;

@@ -2,7 +2,7 @@ const $ = id => document.getElementById(id);
 let pictures = [], resultPictures = [], lastResult = null, controller = null, timer = null, exampleGeneration = 0;
 const releasePictures = items => items.forEach(p => URL.revokeObjectURL(p.url));
 const labels = { compliant: '未发现违规', non_compliant: '发现违规', needs_review: '需要复核', failed: '审核失败', partial: '发现违规 · 审核未完成' };
-const states = { checked: '已检查', not_applicable: '不适用', needs_context: '需补充信息', external_verification_required: '需外部核验', failed: '执行失败', out_of_scope: '范围外', not_reviewed: '简单模式未查验' };
+const states = { checked: '已检查', not_applicable: '不适用', needs_context: '需补充信息', external_verification_required: '需外部核验', failed: '执行失败', out_of_scope: '范围外', not_reviewed: '初审模式未查验' };
 // Ledger order: items needing action first, then checked, then not applicable.
 // Anything unlisted (a future status) sorts last rather than being dropped.
 const stateOrder = { needs_context: 0, external_verification_required: 1, failed: 2, not_reviewed: 3, checked: 4, out_of_scope: 5, not_applicable: 6 };
@@ -54,14 +54,15 @@ function render(result) {
         const selected = result.meta?.selected_rule_ids?.length ?? c.total;
         const omitted = result.meta?.omitted_rule_ids?.length ?? 0;
         const coverageText = result.meta?.rule_selection_mode === 'retrieved'
-            ? `简单模式 · RAG 选中 ${selected}/${c.total} 条规则，本次未查验 ${omitted} 条`
+            ? `初审模式 · RAG 选中 ${selected}/${c.total} 条规则，本次未查验 ${omitted} 条`
             : `完全模式 · ${c.rules.length}/${c.total} 条规则均已进入审核流程`;
         host.append(elem('p', coverageText, 'coverage-breakdown'));
     }
-    for (const v of result.violations || []) { const card = elem('article', undefined, 'finding'); card.append(elem('h3', v.reason), elem('p', `规则：${v.rule_id}`)); const cmp = elem('div', undefined, 'comparison'); const left = elem('div'); left.append(elem('h4', '营销内容证据')); for (const e of v.evidence) { const block = elem('div', undefined, 'evidence'); if (e.kind === 'absence') { block.textContent = `缺失：${e.required_disclosure}\n检查范围：${e.search_scope}\n完整性依据：用户声明`; } else { block.append(elem('small', `${e.image_id || '文本'} · ${e.block_id || e.source_id}`)); const source = (result.sources || []).find(s => s.source_id === e.source_id); const p = elem('p'); if (source) { const chars = Array.from(source.text), a = e.start - (source.start || 0), b = e.end - (source.start || 0); p.append(document.createTextNode(chars.slice(0, a).join('')), elem('mark', chars.slice(a, b).join('')), document.createTextNode(chars.slice(b).join(''))); } else p.textContent = e.quote; block.append(p); } left.append(block); } const right = elem('div'); right.append(elem('h4', '法规原文')); for (const citation of v.citations) { const d = details(`${citation.document_title} · ${citation.article_label}`); d.className = 'citation'; d.append(elem('p', citation.original_text)); right.append(d); } cmp.append(left, right); card.append(cmp, elem('p', v.confidence === null ? '未提供置信度' : `模型自评 ${v.confidence}，未经校准，不是正确率。`)); host.append(card); }
+    const ruleName = ruleId => result.meta?.rule_display_names?.[ruleId] || ruleId;
+    for (const v of result.violations || []) { const card = elem('article', undefined, 'finding'); card.append(elem('h3', v.reason), elem('p', `规则：${ruleName(v.rule_id)}`)); const cmp = elem('div', undefined, 'comparison'); const left = elem('div'); left.append(elem('h4', '营销内容证据')); for (const e of v.evidence) { const block = elem('div', undefined, 'evidence'); if (e.kind === 'absence') { block.textContent = `缺失：${e.required_disclosure}\n检查范围：${e.search_scope}\n完整性依据：用户声明`; } else { block.append(elem('small', `${e.image_id || '文本'} · ${e.block_id || e.source_id}`)); const source = (result.sources || []).find(s => s.source_id === e.source_id); const p = elem('p'); if (source) { const chars = Array.from(source.text), a = e.start - (source.start || 0), b = e.end - (source.start || 0); p.append(document.createTextNode(chars.slice(0, a).join('')), elem('mark', chars.slice(a, b).join('')), document.createTextNode(chars.slice(b).join(''))); } else p.textContent = e.quote; block.append(p); } left.append(block); } const right = elem('div'); right.append(elem('h4', '法规原文')); for (const citation of v.citations) { const d = details(`${citation.document_title} · ${citation.article_label}`); d.className = 'citation'; d.append(elem('p', citation.original_text)); right.append(d); } cmp.append(left, right); card.append(cmp, elem('p', v.confidence === null ? '未提供置信度' : `模型自评 ${v.confidence}，未经校准，不是正确率。`)); host.append(card); }
     if (result.review_items?.length) { const d = details(`待核验事项 (${result.review_items.length})`); d.open = true; for (const r of result.review_items) d.append(elem('div', `${r.reason}\n需要：${r.required_information.join('、')}`, 'review-item')); host.append(d); }
     for (const e of result.errors || []) host.append(elem('div', `${e.stage} · ${e.code}：${e.message}`, 'error'));
-    if (c) { const d = details('其余规则'); const table = elem('table', undefined, 'ledger'); const head = elem('tr'); head.append(elem('th', '规则'), elem('th', '状态'), elem('th', '依据')); table.append(head); const ordered = [...c.rules].sort((a, b) => (stateOrder[a.status] ?? 9) - (stateOrder[b.status] ?? 9) || a.rule_id.localeCompare(b.rule_id)); for (const r of ordered) { const tr = elem('tr'); const status = elem('td', states[r.status] || r.status); const tone = stateTone[r.status]; if (tone) status.className = `state-${tone}`; tr.append(elem('td', r.rule_id), status, elem('td', r.reason)); table.append(tr); } d.append(table); host.append(d); }
+    if (c) { const d = details('其余规则'); const table = elem('table', undefined, 'ledger'); const head = elem('tr'); head.append(elem('th', '规则'), elem('th', '状态'), elem('th', '依据')); table.append(head); const ordered = [...c.rules].sort((a, b) => (stateOrder[a.status] ?? 9) - (stateOrder[b.status] ?? 9) || ruleName(a.rule_id).localeCompare(ruleName(b.rule_id), 'zh-CN')); for (const r of ordered) { const tr = elem('tr'); const status = elem('td', states[r.status] || r.status); const tone = stateTone[r.status]; if (tone) status.className = `state-${tone}`; tr.append(elem('td', ruleName(r.rule_id)), status, elem('td', r.reason)); table.append(tr); } d.append(table); host.append(d); }
     if (result.images?.length) { const d = details('逐图提取记录与可读性'); for (const image of result.images) { const original = resultPictures[Number(image.image_id.split('_')[1]) - 1]; if (original) { const preview = elem('img'); preview.src = original.url; preview.alt = `提交原图 ${image.image_id}`; preview.className = 'result-image'; d.append(preview); } d.append(elem('h4', image.image_id), elem('p', image.visible_text || '没有可靠文字', 'source-text')); for (const line of image.unreadable_regions) d.append(elem('p', `不可读：${line}`, 'warning')); for (const line of image.visual_observations) d.append(elem('p', `画面观察：${line}`)); } host.append(d); }
     for (const w of result.warnings || []) host.append(elem('p', w, 'warning')); if (result.meta) host.append(elem('p', `耗时 ${(result.meta.latency_ms / 1000).toFixed(1)} 秒 · 模型尝试 ${result.meta.attempts} 次 · 追踪 ${result.trace_id}`, 'privacy'));
 }
@@ -81,7 +82,12 @@ function setProgress(event) {
     const ratio = total ? Math.min(1, done / total) : 0;
     const label = event.stage === 'extract' ? '正在识别图片文字…' : event.stage === 'retrieve' ? '正在检索相关法规…' : event.stage === 'done' ? '正在汇总结论…' : `已比对 ${done} / ${total} 条规则`;
     const track = elem('div', undefined, 'progress-track'); const fill = elem('div', undefined, 'progress-fill'); fill.style.width = `${Math.round(ratio * 100)}%`; track.append(fill);
-    host.replaceChildren(elem('p', label, 'progress-label'), track);
+    const content = [];
+    if (event.stage === 'judge' && event.rule_selection_mode === 'retrieved') {
+        content.push(elem('p', `疑似共违反${total}条规则。`, 'progress-candidate'));
+    }
+    content.push(elem('p', label, 'progress-label'), track);
+    host.replaceChildren(...content);
 }
 // Append what the vision model reported for each image while the audit runs.
 function pushObservations(event) {
