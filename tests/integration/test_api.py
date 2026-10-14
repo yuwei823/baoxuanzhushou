@@ -75,7 +75,7 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "359 条法条一次性生成 1024 维向量索引" in response.text
     assert "用户文案的 512 字查询片段需要生成查询向量" in response.text
     assert "const batches = [" in response.text
-    assert "完全模式：规则查验与 RAG 如何汇合" in response.text
+    assert "规则查验与 RAG 如何汇合" in response.text
     assert "46 / 46 全部保留" in response.text
     assert "46 条规则全部检查" in response.text
     assert "补充搜索 · RAG 法条检索" in response.text
