@@ -69,6 +69,9 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "前期准备 · 法规或规则集变更时执行一次" in response.text
     assert "实时查询 · 每次用户提交文案时执行" in response.text
     assert "法规切成法条，规则卡再按共享法条形成规则簇" in response.text
+    assert "grid-template-columns: repeat(10, minmax(0, 1fr))" in response.text
+    assert ".phase-label.prep { grid-column: 1 / 4;" in response.text
+    assert ".phase-label.live { grid-column: 4 / -1;" in response.text
     assert "359 条法条一次性生成 1024 维向量索引" in response.text
     assert "用户文案的 512 字查询片段需要生成查询向量" in response.text
     assert "const batches = [" in response.text
@@ -100,7 +103,6 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "使用了哪些案例" in response.text
     assert "明显违规" in response.text and "中性科普" in response.text
     assert "grid-template-columns: repeat(5, minmax(190px, 1fr))" in response.text
-    assert "grid-template-columns: 3fr 7fr" in response.text
     assert response.text.index("按共享法条形成连通组") < response.text.index(
         "被审核文案变成可引用的证据块"
     )
@@ -108,6 +110,7 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "A 与 B 共享法条 22，因此进入同一规则簇" in response.text
     assert 'class="cluster-summary"' not in response.text
     assert 'class="article-rule-link"' in response.text
+    assert 'marker-end="url(#shared-rule-arrow)"' in response.text
     assert "条文与规则组织" in response.text
     assert "规则簇在规则集发布时形成，不会在每次用户请求中重新聚类" in response.text
     assert "<strong>规则聚类</strong>" not in response.text
