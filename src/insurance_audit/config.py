@@ -40,6 +40,14 @@ class Settings(BaseSettings):
 
     @property
     def configured(self):
-        return self.audit_mock or bool(
-            self.dashscope_api_key.get_secret_value() and self.bailian_base_url
-        )
+        if self.audit_mock:
+            return True
+        key = self.dashscope_api_key.get_secret_value().strip()
+        try:
+            # HTTP Authorization headers are ASCII. Reject copied placeholders
+            # such as "你的key" during readiness checks instead of letting the
+            # SDK raise UnicodeEncodeError inside the retrieval workflow.
+            key.encode("ascii")
+        except UnicodeEncodeError:
+            return False
+        return bool(key and self.bailian_base_url)

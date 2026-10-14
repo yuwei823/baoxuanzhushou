@@ -56,6 +56,16 @@ def test_invalid_vectors_rejected(vector):
         normalize(vector, 2)
 
 
+def test_non_ascii_api_key_is_not_considered_configured():
+    settings = Settings(
+        _env_file=None,
+        dashscope_api_key="你的key",
+        bailian_base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    )
+
+    assert settings.configured is False
+
+
 @pytest.mark.asyncio
 async def test_embedding_reorders_and_records_usage():
     async def create(**kwargs):
@@ -135,6 +145,22 @@ async def test_hybrid_failure_cannot_silently_fall_back(corpus):
     assert result.status == "failed" and result.decision is None
     assert len(result.coverage.rules) == len(corpus.rules)
     assert all(r.status == "failed" for r in result.coverage.rules)
+
+
+@pytest.mark.asyncio
+async def test_hybrid_search_only_labels_returned_vector_as_invalid(corpus):
+    corpus.settings.retrieval_mode = "hybrid"
+    corpus.settings.embedding_dimensions = 2
+    corpus.vectors = [[1, 0] for _ in corpus.ids]
+
+    class InvalidVector:
+        async def embed(self, texts, budget):
+            return [[1] for _ in texts]
+
+    with pytest.raises(ModelFailure) as captured:
+        await corpus.search(text_sources("测试文案"), InvalidVector(), Budget())
+
+    assert captured.value.code == "invalid_embedding_output"
 
 
 @pytest.mark.asyncio

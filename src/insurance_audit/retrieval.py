@@ -62,14 +62,25 @@ class Corpus:
         if self.settings.retrieval_mode == "hybrid":
             if self.vectors is None:
                 raise ModelFailure("index_not_ready", "匹配当前规则版本的向量索引未就绪。")
-            try:
-                for start in range(0, len(queries), 10):
-                    rows = await provider.embed([q[2] for q in queries[start : start + 10]], budget)
-                    if len(rows) != len(queries[start : start + 10]):
-                        raise ValueError("向量数量不匹配")
-                    vectors.extend(normalize(v, self.settings.embedding_dimensions) for v in rows)
-            except ValueError as error:
-                raise ModelFailure("invalid_embedding_output", "查询向量未通过校验。") from error
+            for start in range(0, len(queries), 10):
+                batch = queries[start : start + 10]
+                # Provider failures must retain their real error code. In
+                # particular, UnicodeEncodeError is a ValueError subclass; the
+                # previous broad try block mislabeled a malformed API key as an
+                # invalid embedding vector.
+                rows = await provider.embed([q[2] for q in batch], budget)
+                if len(rows) != len(batch):
+                    raise ModelFailure("invalid_embedding_output", "查询向量数量不匹配。")
+                try:
+                    normalized = [
+                        normalize(vector, self.settings.embedding_dimensions)
+                        for vector in rows
+                    ]
+                except ValueError as error:
+                    raise ModelFailure(
+                        "invalid_embedding_output", "查询向量未通过校验。"
+                    ) from error
+                vectors.extend(normalized)
         # Keep a global relevance order across all material segments.  The old
         # implementation returned an alphabetically sorted union of every
         # segment's top eight hits.  Long, line-oriented material could therefore
