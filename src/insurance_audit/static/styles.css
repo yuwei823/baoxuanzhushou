@@ -946,12 +946,23 @@ footer .contact {
     font-size: 12px
 }
 
-footer .contact a {
+footer .footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin-top: 10px;
+    font-size: 12px
+}
+
+footer .contact a,
+footer .footer-links a {
     color: var(--green);
     text-decoration: none
 }
 
-footer .contact a:hover {
+footer .contact a:hover,
+footer .footer-links a:hover {
     text-decoration: underline
 }
 

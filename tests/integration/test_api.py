@@ -46,6 +46,14 @@ def test_metadata_and_current_article_allowlist(client):
     assert "frame-ancestors 'none'" in client.get("/").headers["Content-Security-Policy"]
 
 
+def test_home_footer_links_to_the_three_explanation_pages(client):
+    page = client.get("/").text
+    assert 'aria-label="项目说明页面"' in page
+    assert 'href="/intro"' in page and "项目介绍 · Intro" in page
+    assert 'href="/workflow"' in page and "审核流程 · Workflow" in page
+    assert 'href="/batch-flow"' in page and "批次流程 · Batch Flow" in page
+
+
 def test_intro_route_serves_the_self_contained_deck_with_a_relaxed_csp(client):
     response = client.get("/intro")
     assert response.status_code == 200
