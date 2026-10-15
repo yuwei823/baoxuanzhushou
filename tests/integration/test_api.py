@@ -50,6 +50,12 @@ def test_intro_route_serves_the_self_contained_deck_with_a_relaxed_csp(client):
     assert response.status_code == 200
     assert response.headers["content-type"].startswith("text/html")
     assert "保宣合规助手" in response.text
+    assert "后端拆解" in response.text
+    assert "后端审核引擎" not in response.text
+    assert "初审模式只查 RAG 召回法条所关联的规则" in response.text
+    assert "案例库仅用于开发验证与评估准备，不参与实时裁决" in response.text
+    assert "图片先提取可见文字和画面事实" in response.text
+    assert "RAG 选中的可疑规则" not in response.text
 
     # The deck carries inline style and script, so it needs 'unsafe-inline'.
     csp = response.headers["Content-Security-Policy"]
@@ -71,15 +77,22 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "法规切成法条，规则卡再按共享法条形成规则簇" in response.text
     assert "grid-template-columns: repeat(10, minmax(0, 1fr))" in response.text
     assert ".phase-label.prep { grid-column: 1 / 4;" in response.text
-    assert ".phase-label.live { grid-column: 4 / -1;" in response.text
+    assert ".phase-label.live { grid-column: 4 / 9;" in response.text
+    assert ".phase-label.review { grid-column: 9 / -1;" in response.text
+    assert "验证复盘 · 案例与方案取舍" in response.text
+    assert "前期准备、实时查询和验证复盘三部分" in response.text
+    assert "当前规则卡总数" in response.text
+    assert "完全模式计划批次" in response.text
     assert "359 条法条一次性生成 1024 维向量索引" in response.text
     assert "用户文案的 512 字查询片段需要生成查询向量" in response.text
     assert "const batches = [" in response.text
-    assert "规则查验与 RAG 如何汇合" in response.text
+    assert "规则查验与 RAG 汇合" in response.text
     assert "46 / 46 全部保留" in response.text
     assert "46 条规则全部检查" in response.text
+    assert "本页展示完全模式" in response.text
+    assert "初审模式只检查 RAG 召回法条所关联的规则" in response.text
     assert "补充搜索 · RAG 法条检索" in response.text
-    retrieval_scene = response.text.split('data-scene="6"', 1)[1].split("</article>", 1)[0]
+    retrieval_scene = response.text.split('data-scene="4"', 1)[1].split("</article>", 1)[0]
     assert retrieval_scene.index("补充搜索 · RAG 法条检索") < retrieval_scene.index(
         "当前材料的每个 512 字片段"
     )
@@ -92,19 +105,48 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "每批最多 8 条、8,000 字符" in response.text
     assert "方案取舍：为什么提供初审与完全两种模式" in response.text
     assert "46 条规则全部查验" in response.text
-    assert "使用 RAG 法条检索，检索出的规则进行查验" in response.text
+    assert "使用 RAG 检索出法条再进行查验" in response.text
     assert "产品化选择：两档模式" in response.text
     assert 'class="head strategy-head"' in response.text
+    assert 'class="head strategy-head initial"' in response.text
     assert 'class="head strategy-head chosen"' in response.text
+    assert ".strategy-metric .initial { color: #176958; background: var(--green-soft);" in response.text
+    assert response.text.count('class="initial"') == 6
+    assert 'content: "初审模式"' in response.text
+    assert 'content: "完全模式"' in response.text
+    assert 'content: "最终选择"' not in response.text
     assert 'class="strategy-grid"' not in response.text
     assert "¥0.154" in response.text
     assert "¥0.292" in response.text
     assert "qwen3.7-plus 输入 ¥2/百万 token" in response.text
-    assert "使用了哪些案例" in response.text
+    assert response.text.count("5 / 5") == 3
+    assert "<div>开发案例通过</div><div>5 / 5</div>" not in response.text
+    assert "两违规案例规则级发现</div><div>13 项</div>" in response.text
+    assert '<div class="initial">7 项</div><div class="chosen">13 项</div>' in response.text
+    assert "三种方案均有 1 个共同技术失败案例" in response.text
+    assert "⑨ 案例及结论" in response.text
+    assert 'aria-label="审核结论及其含义"' in response.text
+    assert ".decision-legend { display: grid; grid-template-columns: 1fr;" in response.text
+    assert response.text.index('aria-label="三方案对照开发案例"') < response.text.index(
+        'aria-label="审核结论及其含义"'
+    )
+    assert "is_compliant = no" in response.text
+    assert "is_compliant = yes" in response.text
+    assert "is_compliant = null" in response.text
+    assert "技术故障不属于审核结论" in response.text
+    assert "发现违规 · 审核未完成" in response.text
     assert "明显违规" in response.text and "中性科普" in response.text
+    assert '<span class="expected">不合规</span>' in response.text
+    assert '<span class="expected">合规</span>' in response.text
+    assert '<span class="expected">需复核</span>' in response.text
+    assert '<span class="expected">non_compliant</span>' not in response.text
+    assert '<span class="expected">needs_review</span>' not in response.text
+    assert response.text.index("⑧ 批次并发审核") < response.text.index("⑨ 案例及结论")
+    assert response.text.index("⑨ 案例及结论") < response.text.index("⑩ 方案取舍")
+    assert "if (current === 7) animateDispatch();" in response.text
     assert "grid-template-columns: repeat(5, minmax(190px, 1fr))" in response.text
     assert response.text.index("按共享法条形成连通组") < response.text.index(
-        "被审核文案变成可引用的证据块"
+        "被审核文案切分为证据块"
     )
     assert "规则卡引用法条" in response.text
     assert "A 与 B 共享法条 22，因此进入同一规则簇" in response.text
@@ -163,6 +205,16 @@ def test_workflow_route_serves_the_diagram_with_its_cdn_fallback(client):
     # Mermaid source is inlined and rendered client-side.
     assert "flowchart TD" in response.text
     assert "mermaid.min.js" in response.text
+    assert "按非空行保留原句与位置" in response.text
+    assert "每个证据块再按最多 512 字切片" in response.text
+    assert "每个检索片段各取 Top 8 候选" in response.text
+    assert "召回法条所关联的规则" in response.text
+    assert "13 个裁决批次" in response.text
+    assert "查询向量按每 10 个检索片段分批调用" in response.text
+    assert "案例库不进入实时 Prompt，也不参与裁决" in response.text
+    assert "效果数据需以独立评估报告为准" in response.text
+    assert "裁决 <strong>25 次</strong>" not in response.text
+    assert "检索（1 次调用）" not in response.text
 
     csp = response.headers["Content-Security-Policy"]
     assert "style-src 'self' 'unsafe-inline'" in csp
@@ -216,6 +268,8 @@ def test_frontend_uses_initial_review_wording_and_chinese_rule_names(client):
     assert "review_type_display_names" in script
     assert "事项：${typeName}" in script
     assert "疑似共违反${total}条规则" in script
+    assert "details('全部规则')" in script
+    assert "details('其余规则')" not in script
     assert "暂未形成结论" in script
     assert "部分规则的审核结果不够可靠，请重新审核。" in script
 

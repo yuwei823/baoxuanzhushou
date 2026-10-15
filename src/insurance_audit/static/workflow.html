@@ -143,8 +143,8 @@
     <main>
         <a class="back" href="/">← 返回审核页面</a>
         <h1>端到端流程图</h1>
-        <p class="lead">一次审核从提交材料到输出结论的完整链路。数字为当前规则集
-            <code>official-v3-2026-10-12</code> 的实测值。
+        <p class="lead">一次审核从提交材料到输出结论的完整链路。规则集规模与运行参数取自当前本地配置
+            <code>official-v3-2026-10-12</code>；效果数据需以独立评估报告为准。
         </p>
 
         <div class="canvas">
@@ -152,29 +152,29 @@
                  of truth and is kept in sync with docs/project-introduction.md. -->
             <pre class="mermaid" id="source">
 flowchart TD
-    A["用户提交<br/>营销文案 / 图文材料"] --> B["切分：按 512 字符分段"]
-    B --> C{"检索（1 次调用）"}
+    A["用户提交<br/>营销文案 / 图文材料"] --> B["证据分块<br/>按非空行保留原句与位置"]
+    B --> C["检索查询<br/>每个证据块再按最多 512 字切片"]
 
     C --> D["BM25<br/>jieba 分词 · 关键词匹配"]
     C --> E["Embedding<br/>text-embedding-v4 · 1024 维"]
     D --> F["RRF 融合<br/>score = Σ 1/(60+rank)"]
     E --> F
-    F --> G["取前 8 条相关条文"]
+    F --> G["形成相关法条全局排序<br/>每个检索片段各取 Top 8 候选"]
 
     H[("法规快照<br/>official-v3-2026-10-12<br/>4 部法规 · 359 条文 · 46 规则卡")] --> C
     H --> I{"审核模式"}
     G --> I
-    I -->|初审| O["命中法条关联规则<br/>其余标为 not_reviewed"]
+    I -->|初审| O["召回法条所关联的规则<br/>其余标为 not_reviewed"]
     I -->|完全| P["46 条规则全集<br/>+ RAG 定向补充"]
-    O --> J["按共享条文聚类打包"]
+    O --> J["按共享条文形成的规则簇打包<br/>每批重复携带完整证据"]
     P --> J
     J --> K["并发裁决（上限 8 路）<br/>qwen3.7-plus"]
     K --> L["结构校验<br/>引用回查：不存在的条文被拒绝"]
 
     L --> M["逐规则台账<br/>含已查验与未查验状态"]
-    M --> Q["结论：compliant / non_compliant / needs_review<br/>+ 证据 + 法规原文 + trace_id"]
+    M --> Q["结论：合规 / 不合规 / 需复核<br/>+ 证据 + 法规原文 + trace_id"]
 
-    R[("案例库 100 条<br/>L1=40 / L2=15 / L3=4 / L4=9 / L5=32")] -.->|"素材与准则来源<br/>非裁决依据"| H
+    R[("案例库 100 条<br/>L1=40 / L2=15 / L3=4 / L4=9 / L5=32")] -.->|"开发样本来源<br/>非实时裁决依据"| S["开发验证与评估准备<br/>标签 provisional"]
 
     style H fill:#e8f4ea,stroke:#4a7c59
     style R fill:#fdf6e3,stroke:#b58900
@@ -186,7 +186,7 @@ flowchart TD
         <div class="notes">
             <div class="note">
                 <h3>图注</h3>
-                <p><strong>实线</strong> = 运行时链路；<strong>虚线</strong> = 离线素材来源（案例库不参与裁决）。</p>
+                <p><strong>实线</strong> = 运行时链路；<strong>虚线</strong> = 开发验证素材（案例库不进入实时 Prompt，也不参与裁决）。</p>
             </div>
             <div class="note">
                 <h3>配色</h3>
@@ -197,11 +197,11 @@ flowchart TD
             </div>
             <div class="note">
                 <h3>调用量</h3>
-                <p>完全模式当前约为检索 <strong>1 次</strong>、裁决 <strong>25 次</strong>（8 路并发）；初审模式的裁决次数随 RAG 选中的规则数变化。</p>
+                <p>完全模式当前计划为 <strong>13 个裁决批次</strong>（最多 8 路并发）；查询向量按每 10 个检索片段分批调用，初审模式的规则数和裁决批次数随召回结果变化。结构修复会增加实际模型调用次数。</p>
             </div>
             <div class="note">
                 <h3>关键设计</h3>
-                <p>初审模式用 RAG 选择可疑规则，适合快速筛查；完全模式让 46 条规则<strong>全部参与判定</strong>，用于完整覆盖。</p>
+                <p>初审模式审核 RAG 召回法条所关联的规则，适合快速筛查；完全模式让 46 条规则<strong>全部参与判定</strong>，并用 RAG 定向补充相关法条。</p>
             </div>
         </div>
 
