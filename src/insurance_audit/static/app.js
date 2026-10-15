@@ -49,7 +49,7 @@ function render(result) {
         const pending = (counts.needs_context || 0) + (counts.external_verification_required || 0);
         const excluded = (counts.not_applicable || 0) + (counts.out_of_scope || 0);
         const metrics = elem('div', undefined, 'metrics');
-        [[result.violations.length, '违规项'], [pending, '需补充信息或外部核验'], [excluded, '不适用或范围外'], [counts.failed || 0, '执行失败']].forEach(([v, l]) => { const m = elem('div', undefined, 'metric'); m.append(elem('b', String(v)), elem('small', l)); metrics.append(m); });
+        [[result.violations.length, '违规项', 'metric-violation'], [pending, '需补充信息或外部核验', 'metric-review'], [excluded, '不适用或范围外', ''], [counts.failed || 0, '执行失败', '']].forEach(([v, l, tone]) => { const m = elem('div', undefined, `metric${tone ? ` ${tone}` : ''}`); m.append(elem('b', String(v)), elem('small', l)); metrics.append(m); });
         host.append(metrics);
         const selected = result.meta?.selected_rule_ids?.length ?? c.total;
         const omitted = result.meta?.omitted_rule_ids?.length ?? 0;

@@ -802,6 +802,26 @@ select {
     color: var(--muted)
 }
 
+.metric.metric-violation {
+    color: var(--red);
+    background: #fff0ee;
+    border: 1px solid #e6b8b5
+}
+
+.metric.metric-violation small {
+    color: var(--red)
+}
+
+.metric.metric-review {
+    color: var(--amber);
+    background: #fff6e5;
+    border: 1px solid #ead3a4
+}
+
+.metric.metric-review small {
+    color: var(--amber)
+}
+
 .finding {
     border: 1px solid #ebd9d3;
     border-radius: 9px;

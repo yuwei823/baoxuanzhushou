@@ -303,6 +303,11 @@ def test_frontend_uses_initial_review_wording_and_chinese_rule_names(client):
     assert "疑似共违反${total}条规则" in script
     assert "details('全部规则')" in script
     assert "details('其余规则')" not in script
+    assert "'违规项', 'metric-violation'" in script
+    assert "'需补充信息或外部核验', 'metric-review'" in script
+    styles = client.get("/static/styles.css").text
+    assert ".metric.metric-violation" in styles and "background: #fff0ee" in styles
+    assert ".metric.metric-review" in styles and "background: #fff6e5" in styles
     assert "暂未形成结论" in script
     assert "部分规则的审核结果不够可靠，请重新审核。" in script
 
