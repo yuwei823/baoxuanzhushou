@@ -54,6 +54,13 @@ def test_home_footer_links_to_the_three_explanation_pages(client):
     assert 'href="/batch-flow"' in page and "批次流程 · Batch Flow" in page
 
 
+def test_desktop_workspace_stretches_both_panels_to_the_same_height(client):
+    styles = client.get("/static/styles.css").text
+    workspace = styles.split(".workspace {", 1)[1].split("}", 1)[0]
+    assert "align-items: stretch" in workspace
+    assert "align-items: start" not in workspace
+
+
 def test_intro_route_serves_the_self_contained_deck_with_a_relaxed_csp(client):
     response = client.get("/intro")
     assert response.status_code == 200
