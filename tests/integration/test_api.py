@@ -1,6 +1,7 @@
 import asyncio
 import io
 import json
+import re
 
 import httpx
 import pytest
@@ -96,9 +97,7 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert retrieval_scene.index("补充搜索 · RAG 法条检索") < retrieval_scene.index(
         "当前材料的每个 512 字片段"
     )
-    assert '<div class="recall-product"><b>产物</b>定向召回的补充法条</div>' in (
-        retrieval_scene
-    )
+    assert '<div class="recall-product"><b>产物</b>定向召回的补充法条</div>' in (retrieval_scene)
     assert "规则直接法条 + 补充搜索产物" in retrieval_scene
     assert "上轨" not in response.text and "下轨" not in response.text
     assert "规则卡决定：</strong>必须检查什么" in response.text
@@ -110,7 +109,10 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert 'class="head strategy-head"' in response.text
     assert 'class="head strategy-head initial"' in response.text
     assert 'class="head strategy-head chosen"' in response.text
-    assert ".strategy-metric .initial { color: #176958; background: var(--green-soft);" in response.text
+    assert (
+        ".strategy-metric .initial { color: #176958; background: var(--green-soft);"
+        in response.text
+    )
     assert response.text.count('class="initial"') == 6
     assert 'content: "初审模式"' in response.text
     assert 'content: "完全模式"' in response.text
@@ -120,7 +122,21 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "¥0.292" in response.text
     assert "qwen3.7-plus 输入 ¥2/百万 token" in response.text
     assert response.text.count("5 / 5") == 3
-    assert "<div>开发案例通过</div><div>5 / 5</div>" not in response.text
+    # Every metric row must carry the full three-column comparison (plain /
+    # initial / chosen). Asserting the absence of a substring such as
+    # "<div>开发案例通过</div><div>5 / 5</div>" cannot work, because that text
+    # is itself the prefix of a correct three-column row.
+    metric_rows = re.findall(
+        r"<div>([^<]+)</div>((?:<div[^>]*>[^<]*</div>)+)",
+        response.text.split('class="strategy-metric"', 1)[1].split('class="decision-callout"', 1)[
+            0
+        ],
+    )
+    assert metric_rows, "strategy metric table must have rows"
+    for label, cells in metric_rows:
+        assert len(re.findall(r"<div", cells)) == 3, label
+        assert 'class="initial"' in cells, label
+        assert 'class="chosen"' in cells, label
     assert "两违规案例规则级发现</div><div>13 项</div>" in response.text
     assert '<div class="initial">7 项</div><div class="chosen">13 项</div>' in response.text
     assert "三种方案均有 1 个共同技术失败案例" in response.text
@@ -165,7 +181,9 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "前端收到的是后端校验和聚合后的统一响应" in response.text
     assert "function animateReturn()" in response.text
     assert "grid-template-columns: minmax(420px, 1fr) minmax(0, 2fr)" in response.text
-    assert ".queue { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))" in response.text
+    assert (
+        ".queue { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))" in response.text
+    )
     assert 'href="/batch-flow/report"' in response.text
     assert response.text.count('class="step"') == 9
     assert response.text.count('class="step active"') == 1
@@ -328,9 +346,7 @@ def test_depth_defaults_to_concise_and_accepts_strict(client):
     assert strict["meta"]["omitted_rule_ids"] == []
     names = concise["meta"]["rule_display_names"]
     assert len(names) == concise["coverage"]["total"] == 46
-    assert names["disclose_material_policy_terms_and_restrictions"] == (
-        "重要保单条款与限制披露"
-    )
+    assert names["disclose_material_policy_terms_and_restrictions"] == ("重要保单条款与限制披露")
     required = concise["meta"]["rule_required_information"]
     assert required["suitability_and_consumer_demand"][:2] == [
         "消费者需求分析记录",
