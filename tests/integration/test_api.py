@@ -300,7 +300,7 @@ def test_frontend_uses_initial_review_wording_and_chinese_rule_names(client):
     assert "rule_required_information" in script
     assert "review_type_display_names" in script
     assert "事项：${typeName}" in script
-    assert "疑似共违反${total}条规则" in script
+    assert "初步搜索，共涉及${total}条规则" in script
     assert "details('全部规则')" in script
     assert "details('其余规则')" not in script
     assert "'违规项', 'metric-violation'" in script
