@@ -51,12 +51,12 @@
         .stat b { display: block; font-size: 24px; }
         .stat span { color: var(--muted); font-size: 12px; }
 
-        .phase-map { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 8px; margin-bottom: 8px; }
+        .phase-map { display: grid; grid-template-columns: repeat(11, minmax(0, 1fr)); gap: 8px; margin-bottom: 8px; }
         .phase-label { padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
         .phase-label.prep { grid-column: 1 / 4; color: #176958; background: var(--green-soft); }
         .phase-label.live { grid-column: 4 / 9; color: #214b98; background: var(--blue-soft); }
         .phase-label.review { grid-column: 9 / -1; color: #573aa6; background: var(--violet-soft); }
-        .steps { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 8px; margin-bottom: 14px; }
+        .steps { display: grid; grid-template-columns: repeat(11, minmax(0, 1fr)); gap: 8px; margin-bottom: 14px; }
         .step {
             position: relative; min-height: 64px; padding: 10px 10px 10px 38px;
             border: 1px solid var(--line); border-radius: 13px; background: rgba(255,255,255,.68);
@@ -253,6 +253,8 @@
         .strategy-metric .head { color: var(--muted); background: #f2f5fa; font-weight: 700; }
         .strategy-metric .initial { color: #176958; background: var(--green-soft); font-weight: 700; }
         .strategy-metric .chosen { color: #214b98; background: var(--blue-soft); font-weight: 700; }
+        .strategy-metric .candidate { color: #573aa6; background: var(--violet-soft); font-weight: 700; }
+        .strategy-metric .recommended { color: #176958; background: var(--green-soft); font-weight: 700; }
         .strategy-metric .metric-label { display: flex; align-items: center; font-size: 16px; }
         .strategy-head { position: relative; padding: 15px !important; }
         .strategy-head h3 { margin: 0 0 6px; color: var(--ink); font-size: 17px; line-height: 1.35; }
@@ -262,6 +264,13 @@
         .strategy-head.initial::after, .strategy-head.chosen::after { position: absolute; right: 12px; top: 12px; padding: 4px 7px; border-radius: 999px; color: #fff; font-size: 11px; font-weight: 700; }
         .strategy-head.initial::after { content: "初审模式"; background: var(--green); }
         .strategy-head.chosen::after { content: "完全模式"; background: var(--blue); }
+        .strategy-head.candidate, .strategy-head.recommended { position: relative; padding-right: 78px !important; }
+        .strategy-head.candidate::after, .strategy-head.recommended::after { position: absolute; right: 12px; top: 12px; padding: 4px 7px; border-radius: 999px; color: #fff; font-size: 11px; font-weight: 700; }
+        .strategy-head.candidate::after { content: "估算方案"; background: var(--violet); }
+        .strategy-head.recommended::after { content: "建议评估"; background: var(--green); }
+        .improvement-note { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; margin-top: 14px; padding: 14px 16px; border-radius: 14px; color: #715800; background: var(--yellow-soft); }
+        .improvement-note b { font-size: 18px; white-space: nowrap; }
+        .improvement-note span { font-size: 12px; line-height: 1.55; }
         .decision-callout { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; margin-top: 14px; padding: 14px 16px; border-radius: 14px; color: #214b98; background: var(--blue-soft); }
         .decision-callout b { font-size: 18px; white-space: nowrap; }
         .decision-callout span { font-size: 12px; line-height: 1.55; }
@@ -322,7 +331,7 @@
             .decision-note { grid-column: 1; }
             .strategy-metric > div { padding: 7px 5px; font-size: 11px; overflow-wrap: anywhere; }
             .strategy-metric { grid-template-columns: 130px repeat(3, 250px); overflow-x: auto; }
-            .decision-callout, .report-strip { display: grid; grid-template-columns: 1fr; }
+            .decision-callout, .improvement-note, .report-strip { display: grid; grid-template-columns: 1fr; }
             .terms { grid-template-columns: 1fr; }
             .batch-grid, .lanes { grid-template-columns: repeat(2, 1fr); }
             .queue { grid-template-columns: 1fr; }
@@ -356,7 +365,7 @@
     <div class="phase-map" aria-label="阶段划分">
         <div class="phase-label prep">前期准备 · 法规或规则集变更时执行一次 · 产物持久化复用</div>
         <div class="phase-label live">实时查询 · 每次用户提交文案时执行 · 结果随材料变化</div>
-        <div class="phase-label review">验证复盘 · 案例与方案取舍</div>
+        <div class="phase-label review">验证复盘 · 案例、方案取舍与可提高项</div>
     </div>
     <nav class="steps" aria-label="处理步骤">
         <button class="step active" data-step="0" data-phase="prep"><span class="n">1</span><strong>法规发布</strong><small>核验并冻结快照</small></button>
@@ -369,6 +378,7 @@
         <button class="step" data-step="7" data-phase="live"><span class="n">8</span><strong>并发发送</strong><small>8 路进入模型</small></button>
         <button class="step" data-step="8" data-phase="review"><span class="n">9</span><strong>案例及结论</strong><small>开发案例+审核结论</small></button>
         <button class="step" data-step="9" data-phase="review"><span class="n">10</span><strong>方案取舍</strong><small>三种策略实测</small></button>
+        <button class="step" data-step="10" data-phase="review"><span class="n">11</span><strong>可提高项</strong><small>决策模型成本估算</small></button>
     </nav>
 
     <section class="stage" aria-live="polite">
@@ -639,11 +649,31 @@
             </div>
             <div class="decision-callout"><b>产品化选择：两档模式</b><span>初审模式采用“只用 RAG”，用于快速筛查相关规则，未选规则明确标为未查验；完全模式采用“全部查验 + RAG”，检查 46 条规则并补充相关法条，用于形成完整规则结论。本轮三种方案均有 1 个共同技术失败案例，因此数据用于方案取舍诊断，不代表正式准确率。成本按 5 条开发案例实测 token 均值及华北 2 实时调用原价估算：qwen3.7-plus 输入 ¥2/百万 token、输出 ¥8/百万 token，text-embedding-v4 输入 ¥0.5/百万 token；不含免费额度、活动折扣和失败重试波动。</span></div>
         </article>
+
+        <article class="scene" data-scene="10">
+            <header class="scene-head">
+                <div><h2>⑪ 可提高项：初审判定改用 decision-model-preview</h2><p>保持当前初审的 RAG 选规则和每批最多 4 条规则不变，只替换“是否疑似违规”的判断模型。以下为基于现有 5 条开发案例用量的工程估算，尚未完成真实 decision 调用。</p></div>
+                <span class="pill">成本估算 · 尚未接入</span>
+            </header>
+            <div class="strategy-metric" role="table" aria-label="初审决策模型成本可提高项">
+                <div class="head metric-label">指标</div>
+                <div class="head strategy-head"><h3>当前初审</h3><div class="mini">RAG 选规则 + qwen3.7-plus 完整判断</div><div class="strategy-flow">平均 19.2 条规则 → 6.2 个 qwen 批次</div><ul><li>优势：直接生成理由、证据与条文引用。</li><li>现状：时间和输出 token 较高。</li></ul></div>
+                <div class="head strategy-head candidate"><h3>纯 Decision 初筛</h3><div class="mini">装箱不变 · 每条规则拆为类型化问题</div><div class="strategy-flow">平均 19.2 条规则 → 6.2 个 decision 请求</div><ul><li>优势：短结构输出，当前预览期不消耗 Credits。</li><li>取舍：不能单独生成理由、证据和引用。</li></ul></div>
+                <div class="head strategy-head recommended"><h3>Decision + qwen 复核</h3><div class="mini">decision 初筛 · qwen 只复核候选项</div><div class="strategy-flow">6.2 个 decision 请求 + 目标 1～2 个 qwen 批次</div><ul><li>优势：保留证据链，同时减少 qwen 长输出。</li><li>取舍：节省幅度取决于候选和不确定规则数量。</li></ul></div>
+                <div>平均检查规则</div><div>19.2</div><div class="candidate">19.2</div><div class="recommended">19.2</div>
+                <div>模型请求构成</div><div>6.2 批 qwen</div><div class="candidate">6.2 批 decision</div><div class="recommended">6.2 批 decision + 1～2 批 qwen</div>
+                <div>P50 用时</div><div>19.53 秒 · 实测</div><div class="candidate">3～8 秒 · 估算</div><div class="recommended">6～20 秒 · 估算</div>
+                <div>平均单条审核成本</div><div>¥0.154 · 原价实测</div><div class="candidate">接近 ¥0 · 预览期</div><div class="recommended">¥0.025～¥0.050 · 估算</div>
+                <div>理由、证据与引用</div><div>完整输出</div><div class="candidate">不能单独提供</div><div class="recommended">由 qwen 大模型复核生成并程序校验</div>
+                <div>当前可接入在线后端</div><div>可以</div><div class="candidate">不可以*</div><div class="recommended">不可以*</div>
+            </div>
+            <div class="improvement-note"><b>可提高，但当前受限</b><span>* `decision-model-preview` 当前限时免费，但只通过 Token Plan 个人版提供；官方条款禁止把个人版密钥用于自定义应用后端、自动化脚本或非交互式批量调用。¥39.01 为 1000 条分摊当前 Lite 月费与查询 Embedding 的量级估算，不代表可上线报价。应先取得允许后端使用的正式产品或书面授权，再通过影子 A/B 验证 3～8 秒、1～2 个 qwen 复核批次和成本降幅。</span></div>
+        </article>
     </section>
 
     <footer class="controls">
         <div class="controls-left"><button id="prev" class="control" type="button">上一步</button><button id="play" class="control primary" type="button">自动播放</button><button id="next" class="control" type="button">下一步</button></div>
-        <div id="status">前期准备 · 步骤 1 / 10 · 法规发布</div>
+        <div id="status">前期准备 · 步骤 1 / 11 · 法规发布</div>
     </footer>
 </main>
 
@@ -711,17 +741,17 @@
         {n:4,a:15,c:3212,r:['regulated_account_names_and_trademarks','paid_education_disguised_marketing','nonbank_payment_marketing_options','internet_platform_operating_conditions']},
         {n:3,a:5,c:1122,r:['insurer_format_clause_explanation_duty','insurer_prohibited_unfair_competition','intermediary_qualification_requirement']}
     ];
-    const titles = ['法规发布','条文与规则组织','向量建库','证据分块','检索与覆盖','批次装箱','Prompt 合并','并发发送','开发案例','方案取舍'];
+    const titles = ['法规发布','条文与规则组织','向量建库','证据分块','检索与覆盖','批次装箱','Prompt 合并','并发发送','开发案例','方案取舍','可提高项'];
     let current = 0, timer = null, dispatchTimer = null, resultTimer = null;
 
     function showStep(index) {
-        current = Math.max(0, Math.min(9, index));
+        current = Math.max(0, Math.min(10, index));
         document.querySelectorAll('.step').forEach((node, i) => node.classList.toggle('active', i === current));
         document.querySelectorAll('.scene').forEach((node, i) => node.classList.toggle('active', i === current));
         document.getElementById('prev').disabled = current === 0;
-        document.getElementById('next').disabled = current === 9;
+        document.getElementById('next').disabled = current === 10;
         const phase = current < 3 ? '前期准备' : (current < 8 ? '实时查询' : '验证复盘');
-        document.getElementById('status').textContent = `${phase} · 步骤 ${current + 1} / 10 · ${titles[current]}`;
+        document.getElementById('status').textContent = `${phase} · 步骤 ${current + 1} / 11 · ${titles[current]}`;
         if (current === 7) animateDispatch(); else stopDispatch();
     }
 
@@ -733,9 +763,9 @@
     function toggleAuto() {
         if (timer) { stopAuto(); return; }
         document.getElementById('play').textContent = '暂停';
-        if (current === 9) showStep(0);
+        if (current === 10) showStep(0);
         timer = setInterval(() => {
-            if (current === 9) { stopAuto(); return; }
+            if (current === 10) { stopAuto(); return; }
             showStep(current + 1);
         }, 2400);
     }

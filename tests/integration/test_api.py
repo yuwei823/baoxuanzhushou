@@ -91,11 +91,11 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "前期准备 · 法规或规则集变更时执行一次" in response.text
     assert "实时查询 · 每次用户提交文案时执行" in response.text
     assert "法规切成法条，规则卡再按共享法条形成规则簇" in response.text
-    assert "grid-template-columns: repeat(10, minmax(0, 1fr))" in response.text
+    assert "grid-template-columns: repeat(11, minmax(0, 1fr))" in response.text
     assert ".phase-label.prep { grid-column: 1 / 4;" in response.text
     assert ".phase-label.live { grid-column: 4 / 9;" in response.text
     assert ".phase-label.review { grid-column: 9 / -1;" in response.text
-    assert "验证复盘 · 案例与方案取舍" in response.text
+    assert "验证复盘 · 案例、方案取舍与可提高项" in response.text
     assert "前期准备、实时查询和验证复盘三部分" in response.text
     assert "当前规则卡总数" in response.text
     assert "完全模式计划批次" in response.text
@@ -174,6 +174,16 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert '<span class="expected">needs_review</span>' not in response.text
     assert response.text.index("⑧ 批次并发审核") < response.text.index("⑨ 案例及结论")
     assert response.text.index("⑨ 案例及结论") < response.text.index("⑩ 方案取舍")
+    assert response.text.index("⑩ 方案取舍") < response.text.index("⑪ 可提高项")
+    assert "初审判定改用 decision-model-preview" in response.text
+    assert 'aria-label="初审决策模型成本可提高项"' in response.text
+    assert "6.2 批 decision + 1～2 批 qwen" in response.text
+    assert "19.53 秒 · 实测" in response.text
+    assert "3～8 秒 · 估算" in response.text
+    assert "¥0.025～¥0.050 · 估算" in response.text
+    assert "约 ¥39.01*" in response.text
+    assert "禁止把个人版密钥用于自定义应用后端" in response.text
+    assert "不代表可上线报价" in response.text
     assert "if (current === 7) animateDispatch();" in response.text
     assert "grid-template-columns: repeat(5, minmax(190px, 1fr))" in response.text
     assert response.text.index("按共享法条形成连通组") < response.text.index(
@@ -200,11 +210,11 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
         ".queue { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))" in response.text
     )
     assert 'href="/batch-flow/report"' in response.text
-    assert response.text.count('class="step"') == 9
+    assert response.text.count('class="step"') == 10
     assert response.text.count('class="step active"') == 1
-    assert response.text.count('class="scene"') == 9
+    assert response.text.count('class="scene"') == 10
     assert response.text.count('class="scene active"') == 1
-    assert "步骤 1 / 10" in response.text
+    assert "步骤 1 / 11" in response.text
 
     csp = response.headers["Content-Security-Policy"]
     assert "style-src 'self' 'unsafe-inline'" in csp

@@ -7,6 +7,8 @@
 
 最新进展：G1 五例真实验收全部符合预期（Prompt audit-v1.6-citation-guidance）；G2 Unicode/HTML 压力案例 completed/non_compliant。P4 已交付 Dockerfile/compose/Caddyfile/deploy.yml/部署文档与访问口令、并发上限。详见 reports/g1-acceptance-2026-10-12.md、reports/multimodal-acceptance.md、docs/deployment.md。以下 dated 记录为历史事实。
 
+2026-10-18：新增 `docs/decision-model-initial-review-plan.md` 与 `docs/decision-model-cost-assessment.md`。计划仅在初审模式评估 `decision-model-preview`，由其承担 RAG 选中规则的结构化适用性与疑似违规判定；现有 qwen 继续负责候选违规的证据与法条适用性复核，程序继续回填引用并确定性聚合。官方当前只通过 Token Plan 个人版提供该模型，而个人版禁止自定义应用后端、自动化脚本和非交互式批量调用，因此必须先取得后端可用产品或书面授权，再做接入探针和影子 A/B；完全模式不变。
+
 2026-10-12 性能复验：新增排队/请求/重试/结构修复和规则状态诊断；105 tests passed。三个模型固定五例初筛已完成，保留 qwen3.7-plus；批次/并发两轮矩阵进行中。详情 docs/audit-performance.md 和 HANDOFF 当前摘要。
 
 ### 2026-10-11 开发进展同步
