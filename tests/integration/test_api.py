@@ -181,7 +181,8 @@ def test_batch_flow_route_serves_the_animation_with_a_relaxed_csp(client):
     assert "19.53 秒 · 实测" in response.text
     assert "3～8 秒 · 估算" in response.text
     assert "¥0.025～¥0.050 · 估算" in response.text
-    assert "约 ¥39.01*" in response.text
+    assert "¥39.01 为 1000 条分摊当前 Lite 月费" in response.text
+    assert response.text.count("需进一步开发*") == 2
     assert "禁止把个人版密钥用于自定义应用后端" in response.text
     assert "不代表可上线报价" in response.text
     assert "if (current === 7) animateDispatch();" in response.text
